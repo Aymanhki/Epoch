@@ -1,7 +1,8 @@
 import socket
 import threading
-from epoch_backend.webserver.utils import send_response
-from epoch_backend.webserver.router import handle_routing
+from epoch_backend.business.utils import send_response
+from epoch_backend.business.router import handle_routing
+
 
 class webserver:
     def __init__(self):

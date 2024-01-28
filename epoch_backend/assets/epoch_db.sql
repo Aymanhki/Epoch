@@ -1,21 +1,3 @@
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'epoch_db') THEN
-        CREATE DATABASE epoch_db;
-    END IF;
-END $$;
-
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_user WHERE usename = 'epoch_admin') THEN
-        CREATE USER epoch_admin WITH PASSWORD 'Epoch@3';
-    END IF;
-
-    ALTER ROLE epoch_admin SET client_encoding TO 'utf8';
-    ALTER ROLE epoch_admin SET timezone TO 'UTC';
-    GRANT ALL PRIVILEGES ON DATABASE epoch_db TO epoch_admin;
-END $$;
-
 CREATE TABLE IF NOT EXISTS media_content (
     media_id SERIAL PRIMARY KEY,
     content_type VARCHAR(20) NOT NULL,
@@ -41,3 +23,4 @@ CREATE TABLE IF NOT EXISTS posts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     release TIMESTAMP
 );
+

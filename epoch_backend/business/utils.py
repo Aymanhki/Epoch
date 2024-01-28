@@ -1,6 +1,8 @@
 import datetime
 import os
 import pytz
+import json
+import psycopg2
 
 def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
     try:
@@ -84,4 +86,42 @@ def is_session_valid( request_data, sessions):
     return False
 
 
+def get_db_connection():
+    try:
+        with open("./assets/db_params.json", "r") as f:
+            db_params = json.load(f)
+            f.close()
 
+        connection = psycopg2.connect(
+            host=db_params["host"],
+            port=db_params["port"],
+            dbname=db_params["database"],
+            user=db_params["user"],
+            password=db_params["password"],
+            connect_timeout=db_params["connect_timeout"]
+        )
+
+        return connection
+
+    except Exception as e:
+        print(e)
+        raise e
+
+
+def start_db_tables():
+    try:
+        with open("./assets/epoch_db.sql", "r") as f:
+            epoch_tables = f.read()
+            f.close()
+
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(epoch_tables)
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+
+    except Exception as e:
+        print(e)
+        raise e

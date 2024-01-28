@@ -1,7 +1,7 @@
 import os
-from epoch_backend.webserver.utils import send_response, get_last_modified, guess_file_type, is_session_valid
+from epoch_backend.business.utils import send_response, get_last_modified, guess_file_type, is_session_valid
 
-HOME_PATH = os.path.normpath('.././epoch_frontend/public/')
+HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')
 
 def handle_routing(relative_path, request_data, conn, method, sessions):
@@ -57,7 +57,7 @@ def handle_static_request(method, conn, path):
     headers = {
         "Content-Type": content_type,
         "Last-Modified": last_modified,
-        "Server": "Ayman's webserver"
+        "Server": "Ayman's business"
     }  # To send back to the client
 
     if method == "HEAD":  # If the method is HEAD, send a response without the body
