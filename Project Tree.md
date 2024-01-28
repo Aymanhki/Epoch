@@ -38,7 +38,7 @@ epoch
     │   │   └── Router.js
     │   ├── pages
     │   │   ├── home.js
-    │   │   ├── login.js
+    │   │   ├── user.js
     │   │   ├── profile.js
     │   │   └── register.js
     │   ├── services

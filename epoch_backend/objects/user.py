@@ -1,7 +1,13 @@
 class user:
-    def __init__(self, username, password):
+    def __init__(self, id: int, name: str, username: str, password: str, bio: str, profile_pic_id: int, created_at: str):
         self.username = username
         self.password = password
+        self.id = id
+        self.name = name
+        self.bio = bio
+        self.profile_pic_id = profile_pic_id
+        self.created_at = created_at
+
 
     def __eq__(self, other):
         return self.username == other.username and self.password == other.password

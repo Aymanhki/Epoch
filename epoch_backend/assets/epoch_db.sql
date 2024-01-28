@@ -24,3 +24,9 @@ CREATE TABLE IF NOT EXISTS posts (
     release TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS sessions (
+    session_id TEXT PRIMARY KEY,
+    user_id INT REFERENCES users(user_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+

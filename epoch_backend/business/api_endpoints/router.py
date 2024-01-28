@@ -1,17 +1,20 @@
 import os
-from epoch_backend.business.utils import send_response, get_last_modified, guess_file_type, is_session_valid
+from epoch_backend.business.utils import send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
+from epoch_backend.business.api_endpoints.user_endpoints import post_user, get_user
+from epoch_backend.business.db_controller.access_session_persistence import access_session_persistence
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')
 
-def handle_routing(relative_path, request_data, conn, method, sessions):
+def handle_routing(relative_path, request_data, conn, method):
     if relative_path.startswith('/api/'):
         if relative_path.startswith('/api/') and relative_path != '/api/login':
-            if not is_session_valid(request_data, sessions):
+            session_id = get_session_id_from_request(request_data)
+            if access_session_persistence().get_session(session_id) is None:
                 send_response(conn, 401, "Unauthorized", body=b"<h1>401 Unauthorized</h1>")
                 return
 
-        handle_api_request(method, relative_path, request_data, conn, sessions)
+        handle_api_request(method, relative_path, request_data, conn)
 
     else:
         if relative_path == '/':
@@ -20,20 +23,24 @@ def handle_routing(relative_path, request_data, conn, method, sessions):
         full_path = os.path.join(HOME_PATH, relative_path.lstrip('/'))  # Get the full path of the file requested by the client
         handle_static_request(method, conn, full_path)
 
-def handle_api_request(method, path, request_data, conn, sessions):
+def handle_api_request(method, path, request_data, conn):
+    if method == "OPTIONS":  # Handle CORS preflight request
+        send_cors_options_response(request_data, conn)
+        return
+
     if path == "/api/login":
         if method == "POST":  # if the user is logging in
-            pass # login logic
+            post_user(conn, request_data)
 
         elif method == "GET":  # if the client is checking if there is a valid session
-            if is_session_valid(request_data, sessions):
-                send_response(conn, 200, "OK", body=b"")
-
-            else:
-                send_response(conn, 401, "Unauthorized", body=b"<h1>401 Unauthorized</h1>")
+            session_id = get_session_id_from_request(request_data)
+            get_user(conn, request_data, session_id)
 
         elif method == "DELETE":
             pass # log out logic
+
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
     elif path == "":
         pass # handle other api requests

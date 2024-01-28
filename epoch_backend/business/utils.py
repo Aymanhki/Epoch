@@ -73,17 +73,17 @@ def guess_file_type(file_extension):
     # the encoding of the file/folder because it is expected by header 'Content-Type' in the response header
     return extension_to_type.get(file_extension, "text/text"), file_extension
 
-def is_session_valid( request_data, sessions):
+def get_session_id_from_request( request_data):
     headers = request_data.split('\r\n\r\n')[0]
 
     for line in headers.split('\r\n'):
         if line.startswith("Cookie:"):
             cookies = line.split(":", 1)[1].strip().split(";")
             for cookie in cookies:
-                if cookie.strip().startswith("session_id="):
+                if cookie.strip().startswith("epoch_session_id="):
                     session_id = cookie.split('=')[1]
-                    return session_id in sessions
-    return False
+                    return session_id
+    return None
 
 
 def get_db_connection():
@@ -125,3 +125,34 @@ def start_db_tables():
     except Exception as e:
         print(e)
         raise e
+
+def send_cors_options_response(request_data, conn):
+    headers, body = request_data.split("\r\n\r\n", 1)
+    origin = get_origin_from_headers(headers)
+
+    send_response(conn, 204, "No Content", body=b"", headers=get_cors_headers(origin))
+
+def get_cors_headers(origin="*"):
+    return {
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization",
+        "Access-Control-Allow-Credentials": "true",
+    }
+
+def get_origin_from_headers(headers):
+    headers_list = headers.split("\r\n")
+
+    # Find the element with 'Origin: '
+    origin_line = None
+
+    for line in headers_list:
+        if line.startswith("Origin: "):
+            origin_line = line
+            break
+
+    if origin_line:
+        origin = origin_line.split(": ")[1]
+        return origin
+    else:
+        print("Origin header not found.")
