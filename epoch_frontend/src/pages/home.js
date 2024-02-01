@@ -15,12 +15,14 @@ function Home() {
                 setRedirectToLogin(false);
                 setUserInfo(data);
             })
-            .catch(error => {setRedirectToLogin(true);});
+            .catch(error => {
+                setRedirectToLogin(true);
+            });
     }, []);
 
     // Redirect to home if redirectToHome is true
     if (redirectToLogin) {
-        window.location.href = "/login";
+        window.location.href = "/epoch/login";
         return <div><h2>User Not Signed In</h2></div>;
     }
 
@@ -28,6 +30,9 @@ function Home() {
         <div>
             <h1>Home Page</h1>
             <h2> Hello {userInfo.name}</h2>
+            {userInfo.profile_pic_data && (
+                <img src={userInfo.profile_pic_data} alt="Profile Pic" style={{maxWidth: '100px'}}/>
+            )}
             <h2>Your user id is {userInfo.id}</h2>
             <h2>Your username is {userInfo.username}</h2>
             <h2>Your password is {userInfo.password}</h2>

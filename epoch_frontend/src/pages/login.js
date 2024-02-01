@@ -7,15 +7,13 @@ function Login() {
     // State variables for username and password
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [loginInPrompt, setLoginInPrompt] = useState('Checking existing session...')
+    const [signingInPrompt, setSigningInPrompt] = useState('Checking existing session...')
 
     // State variables for field errors
     const [usernameError, setUsernameError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
     const [generalError, setGeneralError] = useState(false);
 
-    // State variable for redirect
-    const [redirectToHome, setRedirectToHome] = useState(false);
 
     // Function to handle form submission
     const handleSubmit = (e) => {
@@ -36,31 +34,43 @@ function Login() {
 
         // If both fields are filled, perform login action
         if (username && password) {
-            setLoginInPrompt('Logging In...');
+            setSigningInPrompt('Logging In...');
             tryLogin(username, password)
                 .then(success => {
-                    window.location.href = "/home";
-                    setLoginInPrompt('Log In');
+                    window.location.href = "/epoch/home";
+                    setSigningInPrompt('Ok');
                 })
-                .catch(error => {setGeneralError(true);})
+                .catch(error => {
+                    setGeneralError(true);
+                    setSigningInPrompt('Log In');
+                })
         }
     };
 
-    // Check for valid session cookie on component mount
     useEffect(() => {
+        let isMounted = true;
+
         getUserInfo()
-            .then(data => {setRedirectToHome(true);})
+            .then(data => {
+                if (isMounted) {
+                    console.log(data);
+                    setSigningInPrompt('Ok');
+                    window.location.href = "/epoch/home";
+                }
+            })
             .catch(error => {
-                setRedirectToHome(false);
-                setLoginInPrompt('Log In');
+                if (isMounted) {
+                    console.error(error);
+                    setSigningInPrompt('Log In');
+                }
             });
+
+        // Cleanup function to handle component unmounting
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
-    // Redirect to home if redirectToHome is true
-    if (redirectToHome) {
-        window.location.href = "/home";
-        return <div><h2>User Signed In</h2></div>;
-    }
 
     return (
         <div className="login-container">
@@ -75,7 +85,7 @@ function Login() {
                         textAlign: 'left',
                         alignSelf: 'flex-start'
                     }}>
-                        {loginInPrompt}
+                        {signingInPrompt}
                     </h2>
 
                     <label htmlFor="username">Username {usernameError && <span style={{color: 'red'}}>*</span>}
@@ -107,13 +117,13 @@ function Login() {
                     }}/>
 
                     {generalError &&
-                        <span style={{color: 'red', marginLeft: '5px'}}>Incorrect username or password</span>}
+                        <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>Incorrect username or password</span>}
 
-                    <button type="submit">{loginInPrompt}</button>
+                    <button type="submit">{signingInPrompt}</button>
 
                     <p style={{textAlign: 'center', marginTop: '10px'}}>
                         Don't have an account?{' '}
-                        <Link to="/register" style={{textDecoration: 'underline', cursor: 'pointer', color: '#ffffff'}}>
+                        <Link to="/epoch/register" style={{textDecoration: 'underline', cursor: 'pointer', color: '#ffffff'}}>
                             Register here
                         </Link>
                     </p>
@@ -135,16 +145,6 @@ function Login() {
                         ante. Donec aliquam erat quis arcu malesuada facilisis. In hac habitasse platea dictumst.
                         Aliquam finibus iaculis quam et auctor. Pellentesque habitant morbi tristique senectus et netus
                         et malesuada fames ac turpis egestas. Nam non hendrerit elit.
-                    </p>
-                    <p>
-                        Donec nec justo nisi. Nulla cursus dignissim lobortis. Nam eleifend dolor nulla, ut semper nisl
-                        placerat ut. Ut feugiat metus sed magna laoreet, vitae porttitor lorem rhoncus. Aenean semper
-                        molestie ante, et scelerisque lectus mattis tincidunt. Nunc imperdiet suscipit urna. Maecenas
-                        ullamcorper congue orci at consequat. Fusce ipsum ex, consectetur eget quam non, mollis
-                        elementum mi. Integer eros nisl, efficitur et quam ut, porttitor pellentesque tortor. Cras eu
-                        malesuada nunc, eget varius lorem. Ut semper at ante a consectetur. Vivamus finibus, enim ac
-                        dapibus sagittis, mauris felis maximus nisi, et condimentum ex est quis orci. Morbi quis
-                        sollicitudin nunc.
                     </p>
                 </div>
             </div>

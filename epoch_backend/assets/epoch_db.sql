@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS media_content (
     media_id SERIAL PRIMARY KEY,
     content_type VARCHAR(20) NOT NULL,
     content_data BYTEA NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -29,4 +30,26 @@ CREATE TABLE IF NOT EXISTS sessions (
     user_id INT REFERENCES users(user_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS followers (
+    user_id INT REFERENCES users(user_id),
+    follower_id INT REFERENCES users(user_id),
+    PRIMARY KEY (user_id, follower_id)
+);
+-- How to get followers for a given user in Python
+-- def get_followers(user_id):
+--     cur.execute("SELECT follower_id FROM followers WHERE user_id = %s", (user_id,))
+--     followers = [follower[0] for follower in cur.fetchall()]
+--     return followers
+
+CREATE TABLE IF NOT EXISTS following (
+    user_id INT REFERENCES users(user_id),
+    following_id INT REFERENCES users(user_id),
+    PRIMARY KEY (user_id, following_id)
+);
+-- How to get users following by a given user in Python
+-- def get_following(user_id):
+--     cur.execute("SELECT following_id FROM following WHERE user_id = %s", (user_id,))
+--     following = [following_id[0] for following_id in cur.fetchall()]
+--     return following
 

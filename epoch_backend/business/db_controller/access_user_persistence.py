@@ -12,7 +12,7 @@ class access_user_persistence(user_persistence):
         return self.user_persistence.get_user_by_id(user_id)
 
     def add_user(self, new_user: user):
-        pass
+        return self.user_persistence.add_user(new_user)
 
     def remove_user(self, username: str):
         pass

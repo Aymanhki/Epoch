@@ -33,7 +33,21 @@ class epoch_user_persistence(user_persistence):
             return user(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4], result[0][5], str(result[0][6]))
 
     def add_user(self, new_user: user):
-        pass
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"INSERT INTO users (name, username, password, bio, profile_pic) VALUES ('{new_user.name}', '{new_user.username}', '{new_user.password}', '{new_user.bio}', {new_user.profile_pic_id})")
+        cursor.execute(f"SELECT user_id FROM users WHERE username = '{new_user.username}'")
+        result = cursor.fetchone()
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        user_id = None
+
+        if result is not None:
+            user_id = result[0]
+
+        return user_id
 
     def remove_user(self, username: str):
         pass

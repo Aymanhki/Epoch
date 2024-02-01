@@ -3,7 +3,8 @@ import os
 import pytz
 import json
 import psycopg2
-
+from fastapi import File
+from fastapi import FastAPI
 def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
     try:
         response_line = f"HTTP/1.1 {status_code} {reason_phrase}\r\n"
@@ -71,6 +72,7 @@ def guess_file_type(file_extension):
 
     # If the file extension is not in the mapping, default to text/text the second parameter is supposed to be
     # the encoding of the file/folder because it is expected by header 'Content-Type' in the response header
+    file_extension = file_extension.lower()
     return extension_to_type.get(file_extension, "text/text"), file_extension
 
 def get_session_id_from_request( request_data):
@@ -136,7 +138,7 @@ def get_cors_headers(origin="*"):
     return {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization",
+        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name",
         "Access-Control-Allow-Credentials": "true",
     }
 
@@ -156,3 +158,4 @@ def get_origin_from_headers(headers):
         return origin
     else:
         print("Origin header not found.")
+
