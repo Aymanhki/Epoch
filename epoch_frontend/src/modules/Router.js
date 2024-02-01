@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 
 import Login from '../pages/login';
 import Register from '../pages/register';
@@ -10,11 +10,11 @@ function Router() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Login />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/" element={<Navigate to="/epoch/login" />} />
+                <Route path="/epoch/login" element={<Login />} />
+                <Route path="/epoch/register" element={<Register />} />
+                <Route path="/epoch/home" element={<Home />} />
+                <Route path="/epoch/profile" element={<Profile />} />
             </Routes>
         </BrowserRouter>
     );

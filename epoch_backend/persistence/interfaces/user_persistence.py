@@ -7,6 +7,10 @@ class user_persistence(ABC):
         pass
 
     @abstractmethod
+    def get_user_by_id(self, user_id: int):
+        pass
+
+    @abstractmethod
     def add_user(self, new_user: user):
         pass
 
