@@ -25,3 +25,6 @@ class access_user_persistence(user_persistence):
 
     def validate_login(self, username: str, password: str):
         return self.user_persistence.validate_login(username, password)
+
+    def update_user_profile_pic(self, user_id: int, profile_pic_id: int):
+        self.user_persistence.update_user_profile_pic(user_id, profile_pic_id)

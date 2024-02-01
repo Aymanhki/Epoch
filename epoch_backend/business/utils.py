@@ -3,8 +3,15 @@ import os
 import pytz
 import json
 import psycopg2
-from fastapi import File
-from fastapi import FastAPI
+from google.cloud import storage
+from urllib.parse import urlparse, unquote
+
+
+
+BUCKET_NAME = "epoch_backend_cloud_storage"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "virtual-bonito-412515-fed6b41548c9.json"))
+
+
 def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
     try:
         response_line = f"HTTP/1.1 {status_code} {reason_phrase}\r\n"
@@ -138,7 +145,7 @@ def get_cors_headers(origin="*"):
     return {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name",
+        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id",
         "Access-Control-Allow-Credentials": "true",
     }
 
@@ -159,3 +166,46 @@ def get_origin_from_headers(headers):
     else:
         print("Origin header not found.")
 
+
+def upload_file_to_cloud(user_id, file_name, file, content_type):
+    path = ''
+
+    if user_id is not None:
+        path = f"epoch_media/users/{user_id}/{file_name}"
+    else:
+        path = f"epoch_media/{file_name}"
+
+    client = storage.Client()
+    bucket = client.get_bucket(BUCKET_NAME)
+
+    blob = bucket.blob(path)
+    blob.upload_from_string(file, content_type=content_type)
+
+    file_url = f"https://storage.googleapis.com/{BUCKET_NAME}/{path}"
+
+    return file_url
+
+
+def download_file_to_cloud(file_url):
+    client = storage.Client()
+    bucket = client.get_bucket(BUCKET_NAME)
+    parsed_url = urlparse(file_url)
+    object_path = unquote(parsed_url.path.lstrip('/'))
+    object_path = object_path.replace(f"{BUCKET_NAME}/", "")
+
+    blob = bucket.blob(object_path)
+    file = blob.download_as_string()
+
+    return file
+
+def is_file_in_bucket(file_path):
+    client = storage.Client()
+    bucket = client.get_bucket(BUCKET_NAME)
+    parsed_url = urlparse(file_path)
+    object_path = unquote(parsed_url.path.lstrip('/'))
+    object_path = object_path.replace(f"{BUCKET_NAME}/", "")
+
+    blob = bucket.blob(object_path)
+    blob_exists = blob.exists()
+
+    return blob_exists

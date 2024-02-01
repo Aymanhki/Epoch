@@ -9,10 +9,16 @@ class epoch_media_persistence(media_persistence):
     def add_media(self, new_media: media):
         connection = get_db_connection()
         cursor = connection.cursor()
-        query = "INSERT INTO media_content (content_type, content_data, file_name) VALUES (%s, %s, %s)"
-        cursor.execute(query, (new_media.content_type, new_media.content_data, new_media.file_name))
-        query = "SELECT media_id FROM media_content WHERE content_type = %s AND file_name = %s AND content_data = %s"
-        cursor.execute(query, (new_media.content_type, new_media.file_name, new_media.content_data))
+
+        if new_media.associated_user is not None:
+            query = "INSERT INTO media_content (content_type, file_name, associated_user, path) VALUES (%s, %s, %s, %s)"
+            cursor.execute(query, (new_media.content_type, new_media.file_name, new_media.associated_user, new_media.path))
+        else:
+            query = "INSERT INTO media_content (content_type, file_name, path) VALUES (%s, %s, %s)"
+            cursor.execute(query, (new_media.content_type, new_media.file_name, new_media.path))
+
+        query = "SELECT media_id FROM media_content WHERE content_type = %s AND file_name = %s AND path = %s"
+        cursor.execute(query, (new_media.content_type, new_media.file_name, new_media.path))
         result = cursor.fetchone()
         connection.commit()
         cursor.close()
@@ -43,7 +49,7 @@ class epoch_media_persistence(media_persistence):
         new_media = None
 
         if result is not None:
-            new_media = media(result[1], result[2], result[3])
+            new_media = media(result[1], result[2], result[4], result[5])
 
         return new_media
 

@@ -1,9 +1,10 @@
 CREATE TABLE IF NOT EXISTS media_content (
     media_id SERIAL PRIMARY KEY,
     content_type VARCHAR(20) NOT NULL,
-    content_data BYTEA NOT NULL,
     file_name VARCHAR(255) NOT NULL,
-    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    associated_user INT NULL,
+    path TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -12,9 +13,10 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     bio TEXT,
-    profile_pic INT REFERENCES media_content(media_id),
+    profile_pic INT REFERENCES media_content(media_id) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
 
 CREATE TABLE IF NOT EXISTS posts (
     post_id SERIAL PRIMARY KEY,
@@ -53,3 +55,5 @@ CREATE TABLE IF NOT EXISTS following (
 --     following = [following_id[0] for following_id in cur.fetchall()]
 --     return following
 
+
+-- INSERT INTO  media_content (content_type, file_name, path) VALUES ('image/png', 'default_pfp.png', '../epoch_backend/assets/epoch_media/default_pfp.png');
