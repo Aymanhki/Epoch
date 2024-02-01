@@ -3,8 +3,7 @@ import os
 import pytz
 import json
 import psycopg2
-from fastapi import File
-from fastapi import FastAPI
+
 def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
     try:
         response_line = f"HTTP/1.1 {status_code} {reason_phrase}\r\n"
@@ -138,7 +137,7 @@ def get_cors_headers(origin="*"):
     return {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name",
+        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id",
         "Access-Control-Allow-Credentials": "true",
     }
 

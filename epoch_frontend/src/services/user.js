@@ -71,17 +71,19 @@ function removeSessionCookie() {
     document.cookie = "epoch_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
-function uploadFile(file) {
+function uploadFile(file, userId) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', 'http://localhost:8080/api/upload', true);
         xhr.setRequestHeader('Content-Type', file.type);
         xhr.setRequestHeader('File-Name', encodeURIComponent(file.name));
+        xhr.setRequestHeader('User-Id', userId);
+        xhr.withCredentials = true;
 
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    resolve(JSON.parse(xhr.responseText));
+                    resolve(true);
                 }
                 else
                 {
@@ -111,7 +113,7 @@ function registerUser(userObject) {
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    resolve(true);
+                    resolve(JSON.parse(xhr.responseText));
                 } else {
                     reject(xhr.responseText);
                 }

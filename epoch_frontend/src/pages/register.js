@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import '../styles/Register.css';
-import {removeSessionCookie, uploadFile, registerUser} from '../services/user';
-
+import {removeSessionCookie, uploadFile, registerUser, tryLogin} from '../services/user';
+import {Spinner} from '../modules/Spinner';
 
 function Register() {
     const [name, setName] = useState('');
@@ -15,6 +15,7 @@ function Register() {
     const [passwordError, setPasswordError] = useState(false);
     const [nameError, setNameError] = useState(false);
     const [generalError, setGeneralError] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const fileInputRef = React.createRef();
 
     const handleProfilePicChange = async (e) => {
@@ -41,68 +42,72 @@ function Register() {
         }
 
         setRegisteringPrompt('Registering...');
+        setIsLoading(true);
         removeSessionCookie();
-        var userObject;
+        const userObject = {
+            name: name,
+            username: username,
+            password: password,
+            bio: bio,
 
-        if (profilePic)
-        {
-            setRegisteringPrompt('Uploading...');
-            uploadFile(profilePic)
-                .then((success) => {
-
-                    setRegisteringPrompt('Almost there...')
-
-                    userObject = {
-                        name: name,
-                        username: username,
-                        password: password,
-                        bio: bio,
-                        profile_pic_id: success.media_id
-                    };
+        };
 
 
-                    registerUser(userObject)
+        registerUser(userObject)
+            .then((success) => {
+
+                if (profilePic) {
+                    uploadFile(profilePic, success.user_id)
                         .then((success) => {
-                        setRegisteringPrompt('Ok');
-                        window.location.href = "/epoch/profile";
-                    })
-                        .catch((error) => {
+                            tryLogin(username, password)
+                                .then((success) => {
+                                    window.location.href = '/epoch/profile';
+                                    setRegisteringPrompt('Register');
+                                    setIsLoading(false);
+                                })
+                                .catch((error) => {
+                                    setGeneralError(true);
+                                    setRegisteringPrompt('Register');
+                                    setIsLoading(false);
+
+                                });
+
+                        }).catch(() => {
+                        setGeneralError(true);
                         setRegisteringPrompt('Register');
-                        setGeneralError(error);
+                        setIsLoading(false);
+
                     });
+                } else {
+                    tryLogin(username, password)
+                        .then((success) => {
+                            window.location.href = '/epoch/profile';
+                            setRegisteringPrompt('Register');
+                            setIsLoading(false);
 
-                }).catch(() => {
-                setRegisteringPrompt('Register');
-                setGeneralError(true);
-            });
-        }
-        else
-        {
-            userObject = {
-                name: name,
-                username: username,
-                password: password,
-                bio: bio,
-                profile_pic_id: 1
-            };
+                        })
+                        .catch((error) => {
+                            setGeneralError(true);
+                            setRegisteringPrompt('Register');
+                            setIsLoading(false);
 
-            setRegisteringPrompt('Hang on...')
+                        });
+                }
 
-            registerUser(userObject)
-                .then((success) => {
-                setRegisteringPrompt('Ok');
-                window.location.href = "/epoch/profile";
             })
-                .catch((error) => {
-                setRegisteringPrompt('Register');
+            .catch((error) => {
                 setGeneralError(error);
+                setRegisteringPrompt('Register');
+                setIsLoading(false);
+
             });
-        }
     };
 
 
     return (
-        <div className="register-container">
+        <div>
+            {isLoading && <Spinner/>}
+            <div className="register-container">
                 <div className="register-form">
                     <form onSubmit={handleSubmit}>
                         <h1 style={{
@@ -114,13 +119,16 @@ function Register() {
                             alignSelf: 'flex-start'
                         }}>{registeringPrompt}</h1>
 
-                        <div className="profile-pic-upload-container" >
+                        <div className="profile-pic-upload-container">
 
                             <div className="profile-pic-upload">
                                 {profilePic ? (
-                                    <img src={typeof profilePic === 'string' ? profilePic : URL.createObjectURL(profilePic)} alt="Profile Pic" />
+                                    <img
+                                        src={typeof profilePic === 'string' ? profilePic : URL.createObjectURL(profilePic)}
+                                        alt="Profile Pic"/>
                                 ) : (
-                                    <img src={process.env.PUBLIC_URL + '/images/default_pfp.png'} alt="Default Profile Pic" />
+                                    <img src={process.env.PUBLIC_URL + '/images/default_pfp.png'}
+                                         alt="Default Profile Pic"/>
                                 )}
                             </div>
 
@@ -153,7 +161,8 @@ function Register() {
                         }}/>
 
                         <label htmlFor="bio">Bio</label>
-                        <textarea className="bio-textarea" id="bio" name="bio" value={bio} onChange={(e) => setBio(e.target.value)}/>
+                        <textarea className="bio-textarea" id="bio" name="bio" value={bio}
+                                  onChange={(e) => setBio(e.target.value)}/>
 
                         <label htmlFor="username">Username {usernameError && <span style={{color: 'red'}}>*</span>}
                             {usernameError && !username.trim() &&
@@ -186,7 +195,11 @@ function Register() {
                         }}/>
 
                         {generalError &&
-                            <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>Could not register</span>}
+                            <span style={{
+                                color: 'red',
+                                marginLeft: '5px',
+                                marginBottom: '5px'
+                            }}>Could not register</span>}
 
                         <button type="submit" className={"register-button"}>{registeringPrompt}</button>
 
@@ -205,6 +218,7 @@ function Register() {
                         </p>
                     </form>
                 </div>
+            </div>
         </div>
     );
 }

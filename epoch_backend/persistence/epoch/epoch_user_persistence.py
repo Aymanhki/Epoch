@@ -1,3 +1,4 @@
+
 from epoch_backend.persistence.interfaces.user_persistence import user_persistence
 from epoch_backend.objects.user import user
 from epoch_backend.business.utils import get_db_connection
@@ -35,7 +36,12 @@ class epoch_user_persistence(user_persistence):
     def add_user(self, new_user: user):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute(f"INSERT INTO users (name, username, password, bio, profile_pic) VALUES ('{new_user.name}', '{new_user.username}', '{new_user.password}', '{new_user.bio}', {new_user.profile_pic_id})")
+
+        if new_user.profile_pic_id is None:
+            cursor.execute(f"INSERT INTO users (name, username, password, bio) VALUES ('{new_user.name}', '{new_user.username}', '{new_user.password}', '{new_user.bio}')")
+        else:
+            cursor.execute(f"INSERT INTO users (name, username, password, bio, profile_pic) VALUES ('{new_user.name}', '{new_user.username}', '{new_user.password}', '{new_user.bio}', {new_user.profile_pic_id})")
+
         cursor.execute(f"SELECT user_id FROM users WHERE username = '{new_user.username}'")
         result = cursor.fetchone()
         connection.commit()
@@ -70,3 +76,13 @@ class epoch_user_persistence(user_persistence):
             return False
         else:
             return result[0][3] == password
+
+    def update_user_profile_pic(self, user_id: int, profile_pic_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"UPDATE users SET profile_pic = {profile_pic_id} WHERE user_id = {user_id}")
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+

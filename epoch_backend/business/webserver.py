@@ -38,7 +38,7 @@ class webserver:
     def handle_request(self, conn, addr):
         try:
             conn.settimeout(16800)
-            request_data = conn.recv(2000000000)
+            request_data = conn.recv(1048576)
 
             if request_data.startswith(b"POST /api/upload"):
                 upload_file(conn, request_data) # we don't decode the request_data here because the file uploaded is received in binary

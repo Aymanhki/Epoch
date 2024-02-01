@@ -29,3 +29,7 @@ class user_persistence(ABC):
     @abstractmethod
     def validate_login(self, username: str, password: str):
         pass
+
+    @abstractmethod
+    def update_user_profile_pic(self, user_id: int, profile_pic_id: int):
+        pass

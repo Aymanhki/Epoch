@@ -1,22 +1,29 @@
 import React, {useState, useEffect} from 'react';
 import '../styles/Login.css';
 import {getUserInfo} from '../services/user'
+import {Spinner} from '../modules/Spinner'
+
 
 function Home() {
 
     // State variable for redirect
     const [redirectToLogin, setRedirectToLogin] = useState(false);
     const [userInfo, setUserInfo] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
+
 
     // Check for valid session cookie on component mount
     useEffect(() => {
+        setIsLoading(true);
         getUserInfo()
             .then(data => {
                 setRedirectToLogin(false);
                 setUserInfo(data);
+                setIsLoading(false);
             })
             .catch(error => {
                 setRedirectToLogin(true);
+                setIsLoading(false);
             });
     }, []);
 
@@ -28,10 +35,11 @@ function Home() {
 
     return (
         <div>
+            {isLoading && <Spinner/>}
             <h1>Home Page</h1>
             <h2> Hello {userInfo.name}</h2>
             {userInfo.profile_pic_data && (
-                <img src={userInfo.profile_pic_data} alt="Profile Pic" style={{maxWidth: '100px'}}/>
+                <img src={userInfo.profile_pic_data} alt="Profile Pic" style={{maxWidth: '300px'}}/>
             )}
             <h2>Your user id is {userInfo.id}</h2>
             <h2>Your username is {userInfo.username}</h2>
