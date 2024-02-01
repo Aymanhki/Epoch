@@ -5,10 +5,10 @@ epoch_frontend/.pnp
 epoch_frontend/.pnp.js
 
 # testing
-epoch_frontend/coverage
+epoch_frontend/coverage/
 
 # production
-epoch_frontend/build
+epoch_frontend/build/
 
 # misc
 .DS_Store
@@ -24,3 +24,8 @@ epoch_frontend/yarn-error.log*
 
 # python
 __pycache__
+
+# db
+epoch_backend/assets/epoch_media/users/
+
+
