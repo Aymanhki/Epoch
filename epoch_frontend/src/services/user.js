@@ -2,7 +2,10 @@
 function tryLogin(username, password) {
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:8080/api/login", true); // Login the user
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+
+        xhr.open("POST", `${serverUrl}/api/login`, true); // Login the user
         xhr.setRequestHeader("Content-Type", "application/json"); // Set the request header
         xhr.withCredentials = true;
 
@@ -40,7 +43,9 @@ function getUserInfo() {
         }
 
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'http://localhost:8080/api/login', true);
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        xhr.open('GET', `${serverUrl}/api/login`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
 
@@ -74,9 +79,12 @@ function removeSessionCookie() {
 function uploadFile(file, userId) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://localhost:8080/api/upload', true);
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+
+        xhr.open('POST', `${serverUrl}/api/upload`, true);
         xhr.setRequestHeader('Content-Type', file.type);
-        xhr.setRequestHeader('File-Name', encodeURIComponent(file.name));
+        xhr.setRequestHeader('File-Name', file.name);
         xhr.setRequestHeader('User-Id', userId);
         xhr.withCredentials = true;
 
@@ -106,7 +114,10 @@ function uploadFile(file, userId) {
 function registerUser(userObject) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://localhost:8080/api/register', true);
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+
+        xhr.open('POST', `${serverUrl}/api/register`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
 

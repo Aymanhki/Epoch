@@ -6,16 +6,16 @@ from api_endpoints.router import handle_routing
 from api_endpoints.user_endpoints import upload_file
 
 class webserver:
-    def __init__(self):
+    def __init__(self, host='0.0.0.0', port=8080):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_socket.bind(('localhost', 8080))
+        self.server_socket.bind((host, port))
         self.server_socket.listen(40)
         self.active_threads = []
         self.thread_lock = threading.Lock()
 
-    def run(self):
-        print(f"*** Server running on port {self.server_socket.getsockname()[1]}, serving \'/epoch\' ***\n")
+    def run(self, host, port):
+        print(f"*** Server running on {host}:{port}, serving '/epoch' ***\n")
 
         try:
             while True:

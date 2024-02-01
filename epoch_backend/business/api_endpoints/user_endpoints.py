@@ -1,6 +1,6 @@
 import datetime
 import json
-from epoch_backend.business.utils import send_response, get_cors_headers, get_origin_from_headers
+from epoch_backend.business.utils import send_response, get_cors_headers, get_origin_from_headers, upload_file_to_cloud, download_file_to_cloud, is_file_in_bucket
 from epoch_backend.business.db_controller.access_user_persistence import access_user_persistence
 from epoch_backend.business.db_controller.access_media_persistence import access_media_persistence
 from epoch_backend.business.db_controller.access_session_persistence import access_session_persistence
@@ -9,7 +9,6 @@ from epoch_backend.objects.media import media
 from epoch_backend.objects.user import user
 import uuid
 import base64
-import os
 
 def post_user(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)  # Split request data into headers and body
@@ -47,18 +46,13 @@ def get_user(conn, request_data, session_id):
         user_fetch = access_user_persistence().get_user_by_id(user_id)
 
         if user_fetch is not None and user_fetch.__dict__ is not None and len(user_fetch.__dict__) > 0:
-
             profile_pic_data = access_media_persistence().get_media(user_fetch.profile_pic_id)
 
             if profile_pic_data is not None:
-                if os.path.exists(profile_pic_data.path):
-                    with open(profile_pic_data.path, 'rb') as f:
-                        profile_pic_data = f.read()
-                        f.close()
+                if  is_file_in_bucket(profile_pic_data.path):
+                    profile_pic_data = download_file_to_cloud(profile_pic_data.path)
                 else:
-                    with open(access_media_persistence().get_media(1).path, 'rb') as f:
-                        profile_pic_data = f.read()
-                        f.close()
+                    profile_pic_data = download_file_to_cloud(access_media_persistence().get_media(1).path)
 
                 profile_pic_data_base64 = base64.b64encode(bytes(profile_pic_data)).decode('utf-8')
                 user_info_with_pic = user_fetch.__dict__
@@ -91,8 +85,6 @@ def register_user(conn, request_data):
     else:
         send_response(conn, 409, "Conflict", body=b"<h1>409 Conflict</h1>", headers=get_cors_headers(origin))
 
-
-
 def upload_file(conn, request_data):
     headers, body = request_data.split(b'\r\n\r\n', 1)
     content_length = int(headers.split(b'\r\n')[3].split(b': ')[1])
@@ -106,18 +98,7 @@ def upload_file(conn, request_data):
     while len(body) < content_length:
         body += conn.recv(1048576)
 
-    path = '../epoch_backend/assets/epoch_media/users/' + user_id + '/'
-
-
-    if not os.path.exists(path):
-        os.makedirs(path)
-
-    path += file_name
-
-    with open(path, 'wb') as f:
-        f.write(body)
-        f.close()
-
+    path = upload_file_to_cloud(user_id, file_name, file=body, content_type=content_type)
     media_file = media(content_type, file_name, user_id, path)
     media_id = access_media_persistence().add_media(media_file)
 

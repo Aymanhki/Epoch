@@ -1,12 +1,4 @@
-pip
-python
-os
-base64
-uuid
-json
-datetime
-psycopg2
-pytz
-socket
-threading
-abc
+pytz==2021.1
+psycopg2==2.9.1
+
+
