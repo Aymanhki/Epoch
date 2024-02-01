@@ -1,6 +1,5 @@
 ```
 epoch
-.
 ├── .github
 │   └── workflows
 │       └── ci.yaml
@@ -11,11 +10,11 @@ epoch
 ├── ReadMe.md
 ├── epoch_backend
 │   ├── .venv
+│   ├── Dockerfile
 │   ├── assets
 │   │   ├── db_params.json
 │   │   ├── epoch_db.sql
-│   │   └── epoch_media
-│   │       └── default_pfp.png
+│   │   └── virtual-bonito-412515-fed6b41548c9.json
 │   ├── business
 │   │   ├── api_endpoints
 │   │   │   ├── router.py
@@ -45,6 +44,7 @@ epoch
 │   ├── requirements.txt
 │   └── tests
 ├── epoch_frontend
+│   ├── Dockerfile
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── public
@@ -56,6 +56,7 @@ epoch
 │   │   │   └── global.css
 │   │   └── vendor
 │   │       └── bootstrap.min.css
+│   ├── server.js
 │   ├── src
 │   │   ├── App.js
 │   │   ├── index.js
@@ -83,9 +84,8 @@ epoch
     ├── Jan18Minutes.md
     ├── Jan23Minutes.md
     └── Jan27Minutes.md
-
 ```
 
 ```
-tree -a --gitignore -I '.git' -o ./Project\ Tree.md  
+tree -a --gitignore -I '.git' 
 ```
