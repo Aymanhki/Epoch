@@ -33,3 +33,6 @@ class user_persistence(ABC):
     @abstractmethod
     def update_user_profile_pic(self, user_id: int, profile_pic_id: int):
         pass
+
+    def remove_user_by_id(self, user_id: int):
+        pass

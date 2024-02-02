@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import '../styles/Register.css';
-import {removeSessionCookie, uploadFile, registerUser, tryLogin} from '../services/user';
+import {removeSessionCookie, uploadFile, registerUser, tryLogin, deleteUser} from '../services/user';
 import {Spinner} from '../modules/Spinner';
 
 function Register() {
@@ -73,6 +73,19 @@ function Register() {
                                 });
 
                         }).catch(() => {
+                        deleteUser(success.user_id)
+                            .then(() => {
+                                setGeneralError(true);
+                                setRegisteringPrompt('Register');
+                                setIsLoading(false);
+
+                            })
+                            .catch(() => {
+                                setGeneralError(true);
+                                setRegisteringPrompt('Register');
+                                setIsLoading(false);
+
+                            });
                         setGeneralError(true);
                         setRegisteringPrompt('Register');
                         setIsLoading(false);

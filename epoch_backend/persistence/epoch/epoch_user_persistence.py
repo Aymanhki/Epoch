@@ -56,7 +56,12 @@ class epoch_user_persistence(user_persistence):
         return user_id
 
     def remove_user(self, username: str):
-        pass
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"DELETE FROM users WHERE username = '{username}'")
+        connection.commit()
+        cursor.close()
+        connection.close()
 
     def update_user(self, user_to_update: user):
         pass
@@ -81,6 +86,14 @@ class epoch_user_persistence(user_persistence):
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute(f"UPDATE users SET profile_pic = {profile_pic_id} WHERE user_id = {user_id}")
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+    def remove_user_by_id(self, user_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"DELETE FROM users WHERE user_id = {user_id}")
         connection.commit()
         cursor.close()
         connection.close()
