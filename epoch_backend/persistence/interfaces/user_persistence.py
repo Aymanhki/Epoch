@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from epoch_backend.objects.user import user
+from objects.user import user
 
 class user_persistence(ABC):
     @abstractmethod

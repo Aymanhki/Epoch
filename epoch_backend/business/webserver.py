@@ -1,9 +1,9 @@
 import math
 import socket
 import threading
-from epoch_backend.business.utils import send_response
-from api_endpoints.router import handle_routing
-from api_endpoints.user_endpoints import upload_file
+from business.utils import send_response
+from business.api_endpoints.router import handle_routing
+from business.api_endpoints.user_endpoints import upload_file
 
 class webserver:
     def __init__(self, host='0.0.0.0', port=8080):

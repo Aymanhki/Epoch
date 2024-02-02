@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from epoch_backend.objects.session import session
+from objects.session import session
 
 class session_persistence(ABC):
     @abstractmethod

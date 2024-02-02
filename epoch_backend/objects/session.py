@@ -1,4 +1,3 @@
-import datetime
 
 class session:
     def __init__(self, session_id, user_id):
