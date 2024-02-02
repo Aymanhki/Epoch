@@ -1,6 +1,7 @@
-from epoch_backend.persistence.interfaces.user_persistence import user_persistence
-from epoch_backend.objects.user import user
-from epoch_backend.business.services import services
+from persistence.interfaces.user_persistence import user_persistence
+from objects.user import user
+from business.services import services
+
 class access_user_persistence(user_persistence):
     def __init__(self):
         self.user_persistence = services.get_user_persistence()

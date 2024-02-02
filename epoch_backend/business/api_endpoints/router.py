@@ -1,7 +1,7 @@
 import os
-from epoch_backend.business.utils import send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
-from epoch_backend.business.api_endpoints.user_endpoints import post_user, get_user, register_user, upload_file_to_cloud
-from epoch_backend.business.db_controller.access_session_persistence import access_session_persistence
+from business.utils import send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
+from business.api_endpoints.user_endpoints import post_user, get_user, register_user
+from business.db_controller.access_session_persistence import access_session_persistence
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')

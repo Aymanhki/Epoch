@@ -1,6 +1,6 @@
-from epoch_backend.persistence.interfaces.session_persistence import session_persistence
-from epoch_backend.objects.session import session
-from epoch_backend.business.utils import get_db_connection
+from persistence.interfaces.session_persistence import session_persistence
+from objects.session import session
+from business.utils import get_db_connection
 from datetime import datetime, timedelta
 
 class epoch_session_persistence(session_persistence):

@@ -1,6 +1,6 @@
-from epoch_backend.persistence.interfaces.media_persistence import media_persistence
-from epoch_backend.objects.media import media
-from epoch_backend.business.services import services
+from persistence.interfaces.media_persistence import media_persistence
+from objects.media import media
+from business.services import services
 
 class access_media_persistence(media_persistence):
     def __init__(self):

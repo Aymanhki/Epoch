@@ -1,7 +1,7 @@
 
-from epoch_backend.persistence.interfaces.user_persistence import user_persistence
-from epoch_backend.objects.user import user
-from epoch_backend.business.utils import get_db_connection
+from persistence.interfaces.user_persistence import user_persistence
+from objects.user import user
+from business.utils import get_db_connection
 
 class epoch_user_persistence(user_persistence):
     def __init__(self):
