@@ -16,7 +16,7 @@ class access_user_persistence(user_persistence):
         return self.user_persistence.add_user(new_user)
 
     def remove_user(self, username: str):
-        pass
+        self.user_persistence.remove_user(username)
 
     def update_user(self, user_to_update: user):
         pass
@@ -29,3 +29,6 @@ class access_user_persistence(user_persistence):
 
     def update_user_profile_pic(self, user_id: int, profile_pic_id: int):
         self.user_persistence.update_user_profile_pic(user_id, profile_pic_id)
+
+    def remove_user_by_id(self, user_id: int):
+        self.user_persistence.remove_user_by_id(user_id)

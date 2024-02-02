@@ -135,6 +135,29 @@ function registerUser(userObject) {
     });
 }
 
+function deleteUser(userId) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+
+        xhr.open('DELETE', `${serverUrl}/api/delete/user`, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.withCredentials = true;
+
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    resolve(true);
+                } else {
+                    reject(xhr.responseText);
+                }
+            }
+        };
+
+        xhr.send(JSON.stringify({userId: userId}));
+    });
+}
 
 
-module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadFile, registerUser};
+module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadFile, registerUser, deleteUser};

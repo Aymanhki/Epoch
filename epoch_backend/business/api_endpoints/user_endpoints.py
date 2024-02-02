@@ -124,3 +124,16 @@ def upload_file(conn, request_data):
         send_response(conn, 200, "OK", body=b"<h1>200 OK</h1>", headers=get_cors_headers(origin))
     else:
         send_response(conn, 500, "Internal Server Error", body=b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
+
+
+def delete_user(conn, request_data):
+    headers, body = request_data.split("\r\n\r\n", 1)
+    data = json.loads(body)
+    user_id = data.get("userId")
+    origin = get_origin_from_headers(headers)
+
+    if access_user_persistence().get_user_by_id(user_id) is not None:
+        access_user_persistence().remove_user_by_id(user_id)
+        send_response(conn, 200, "OK", body=b"<h1>200 OK</h1>", headers=get_cors_headers(origin))
+    else:
+        send_response(conn, 404, "Not Found", body=b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))
