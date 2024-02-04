@@ -25,7 +25,7 @@ jobs:
             rm -rf epoch_backend epoch_frontend
             sudo fuser -k -n tcp 443
             sudo fuser -k -n tcp 8080
-            git clone https://github.com/Aymanhki/Epoch.git ./
+            git clone https://github.com/Aymanhki/Epoch.git ../home/
           EOF
 
       - name: Deploying Backend (Build and Run Backend Docker Container)
