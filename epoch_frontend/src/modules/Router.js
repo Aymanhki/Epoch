@@ -11,6 +11,11 @@ function Router() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Navigate to="/epoch/login" />} />
+                <Route path="/epoch" element={<Navigate to="/epoch/login" />} />
+                <Route path="/login" element={<Navigate to="/epoch/login" />} />
+                <Route path="/register" element={<Navigate to="/epoch/register" />} />
+                <Route path="/home" element={<Navigate to="/epoch/home" />} />
+                <Route path="/profile" element={<Navigate to="/epoch/profile" />} />
                 <Route path="/epoch/login" element={<Login />} />
                 <Route path="/epoch/register" element={<Register />} />
                 <Route path="/epoch/home" element={<Home />} />
