@@ -73,7 +73,7 @@ function Login() {
             .catch(error => {
                 if (isMounted) {
                     console.error(error);
-                    setSigningInPrompt('Log In');
+                    setSigningInPrompt('Sign in');
                     setIsLoading(false);
                 }
             });

@@ -119,7 +119,7 @@ button:hover {
   }
 
   .login-container {
-    background: radial-gradient(circle, #222222, #000000, #333333, #000000);
+    background: linear-gradient(to top, #555555, #000000, #000000, #000000, #000000, #555555);
   }
 
   .login-form {

@@ -20,8 +20,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex: 0.3;
-
+    width: 80%; /* Adjust the width based on your design */
+    height: 80%;
 }
 
 label {
@@ -57,10 +57,9 @@ label {
     font-family: 'Futura', sans-serif;
     font-weight: lighter;
     font-size: 16px;
-
-    min-width: 22vw;
+    min-width: 95%;
     min-height: 10vh;
-    max-width: 22vw;
+    max-width: 95%;
     max-height: 10vh;
 
 }
@@ -134,4 +133,93 @@ label {
     font-weight: lighter;
     font-size: 18px;
     border: 1px solid #1a2a6c;
+}
+
+@media (prefers-color-scheme: dark) {
+    .register-container {
+        background: linear-gradient(to top, #555555, #000000, #000000, #000000, #000000, #555555);
+    }
+
+    .register-form {
+        background-color: #222222;
+        color: #ffffff;
+    }
+
+    label {
+        color: #ffffff;
+    }
+
+    .register-button {
+        background-color: #ffffff;
+        color: #222222;
+        border: 1px solid #fff;
+    }
+
+    .register-button:hover {
+        background-color: #222222;
+        color: #ffffff;
+        border: 1px solid #222222;
+    }
+
+    .profile-pic-upload {
+        border-color: #fff;
+    }
+
+    .plus-sign {
+        background-color: #222222;
+        color: #fff;
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+
+
+}
+
+
+@media (max-width: 768px) {
+    .register-form {
+        padding: 0px;
+        margin: 0px;
+        width: 100%;
+        height: auto;
+    }
+
+    .profile-pic-upload-container {
+        margin: 5px auto;
+    }
+
+    .profile-pic-upload {
+        width: 80px;
+        height: 80px;
+    }
+
+    .plus-sign {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+        bottom: 20px;
+        right: 20px;
+    }
+
+    .register-button {
+        padding: 5px;
+        font-size: 16px;
+    }
+
+    .bio-textarea {
+        min-width: 95%;
+        max-width: 95%;
+        min-height: 10%;
+        max-height: 10%;
+    }
+
+    input {
+        height: 16px;
+    }
+
+    label {
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
 }

@@ -126,9 +126,9 @@ function Register() {
                     <form onSubmit={handleSubmit}>
                         <h1 style={{fontSize: '32px', marginBottom: '20px', fontFamily: 'Futura', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>{registeringPrompt}</h1>
 
-                        <div className="profile-pic-upload-container" onClick={() => {fileInputRef.current.click(); setIsLoading(true)}}>
+                        <div className="profile-pic-upload-container" >
 
-                            <div className="profile-pic-upload" onClick={() => {fileInputRef.current.click(); setIsLoading(true)}}>
+                            <div className="profile-pic-upload" >
                                 {profilePic ? (
                                     <img
                                         src={typeof profilePic === 'string' ? profilePic : URL.createObjectURL(profilePic)}
@@ -217,7 +217,6 @@ function Register() {
                                 style={{
                                     textDecoration: 'underline',
                                     cursor: 'pointer',
-                                    color: '#1a2a6c',
                                 }}
                             >
                                 Log in here
