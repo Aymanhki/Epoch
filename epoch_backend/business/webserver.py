@@ -48,6 +48,12 @@ class webserver:
             print("\n*** Server terminated by user. ***\n")
 
         finally:
+            try:
+                os.remove('./privkey.pem')
+                os.remove('./fullchain.pem')
+            except:
+                pass
+
             self.cleanup_threads()
             self.server_socket.close()
 
