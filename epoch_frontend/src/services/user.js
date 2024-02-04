@@ -5,7 +5,7 @@ function tryLogin(username, password) {
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
 
-        xhr.open("POST", `${serverUrl}/api/login`, true); // Login the user
+        xhr.open("POST", `${serverUrl}/api/login/`, true); // Login the user
         xhr.setRequestHeader("Content-Type", "application/json"); // Set the request header
         xhr.withCredentials = true;
 
@@ -45,7 +45,7 @@ function getUserInfo() {
         var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('GET', `${serverUrl}/api/login`, true);
+        xhr.open('GET', `${serverUrl}/api/login/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
 
@@ -82,7 +82,7 @@ function uploadFile(file, userId) {
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
 
-        xhr.open('POST', `${serverUrl}/api/upload`, true);
+        xhr.open('POST', `${serverUrl}/api/upload/`, true);
         xhr.setRequestHeader('Content-Type', file.type);
         xhr.setRequestHeader('File-Name', file.name);
         xhr.setRequestHeader('User-Id', userId);
@@ -118,7 +118,7 @@ function registerUser(userObject) {
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
 
 
-        xhr.open('POST', `${serverUrl}/api/register`, true);
+        xhr.open('POST', `${serverUrl}/api/register/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
 
@@ -142,7 +142,7 @@ function deleteUser(userId) {
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
 
-        xhr.open('DELETE', `${serverUrl}/api/delete/user`, true);
+        xhr.open('DELETE', `${serverUrl}/api/delete/user/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
 
