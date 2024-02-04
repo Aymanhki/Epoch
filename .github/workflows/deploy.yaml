@@ -18,19 +18,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y openssh-client sshpass
 
-      - name: SSH into Google Cloud VM
+      - name: SSH into Google Cloud VM for cleanup
         run: |
-          sshpass -p "Epoch@3" ssh -o StrictHostKeyChecking=no root@35.203.60.186 << EOF
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
             cd ../home/epoch
             rm -rf epoch_backend epoch_frontend
             sudo fuser -k -n tcp 443
             sudo fuser -k -n tcp 8080
             git clone https://github.com/Aymanhki/Epoch.git ./
-            cd epoch/epoch_backend/
+          EOF
+
+      - name: Deploying Backend (Build and Run Backend Docker Container)
+        run: |
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+            cd ../home/epoch/epoch_backend/
             docker build -t epoch_backend ./
             docker run -d -p 8080:8080 epoch_backend
-            cd ..
-            cd epoch/epoch_frontend
+          EOF
+
+      - name: Build and Run Frontend Docker Container
+        run: |
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+            cd ./home/epoch/epoch_frontend/
             docker build -t epoch_frontend ./
             docker run -d -p 443:443 epoch_frontend
             exit
