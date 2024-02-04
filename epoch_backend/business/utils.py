@@ -145,8 +145,9 @@ def get_cors_headers(origin="*"):
     return {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id",
+        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks",
         "Access-Control-Allow-Credentials": "true",
+
     }
 
 def get_origin_from_headers(headers):

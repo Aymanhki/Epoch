@@ -117,7 +117,7 @@ function Register() {
 
             })
             .catch((error) => {
-                setGeneralError(error);
+                setGeneralError(true);
                 setRegisteringPrompt('Register');
                 setIsLoading(false);
 
