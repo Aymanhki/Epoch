@@ -20,7 +20,7 @@ def post_user(conn, request_data):
             content_length = int(line.split(" ")[1])
 
     while len(body) < content_length:
-        body += conn.recv(1024)
+        body += conn.recv(1024).decode('UTF-8')
 
     data = json.loads(body)  # Parse the JSON body
     username = data.get("username")  # Get the username from the JSON body
@@ -55,7 +55,7 @@ def get_user(conn, request_data, session_id):
             content_length = int(line.split(" ")[1])
 
     while len(body) < content_length:
-        body += conn.recv(1024)
+        body += conn.recv(1024).decode('UTF-8')
 
     origin = get_origin_from_headers(headers)
     headers = get_cors_headers(origin)
@@ -95,7 +95,7 @@ def register_user(conn, request_data):
             content_length = int(line.split(" ")[1])
 
     while len(body) < content_length:
-        body += conn.recv(1024)
+        body += conn.recv(1024).decode('UTF-8')
 
 
     data = json.loads(body)
@@ -167,7 +167,7 @@ def delete_user(conn, request_data):
             content_length = int(line.split(" ")[1])
 
     while len(body) < content_length:
-        body += conn.recv(1024)
+        body += conn.recv(1024).decode('UTF-8')
 
     data = json.loads(body)
     user_id = data.get("userId")

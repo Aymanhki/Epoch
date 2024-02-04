@@ -94,7 +94,6 @@ def get_session_id_from_request( request_data):
                     return session_id
     return None
 
-
 def get_db_connection():
     try:
         with open("./assets/db_params.json", "r") as f:
@@ -115,7 +114,6 @@ def get_db_connection():
     except Exception as e:
         print(e)
         raise e
-
 
 def start_db_tables():
     try:

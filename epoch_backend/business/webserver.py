@@ -20,8 +20,8 @@ class webserver:
             # Wrap the socket with SSL context
             self.server_socket = ssl.wrap_socket(
                 self.server_socket,
-                keyfile=ssl_keyfile,
-                certfile=ssl_certfile,
+                keyfile=get_private_key(),
+                certfile=get_full_chain(),
                 server_side=True
             )
 
