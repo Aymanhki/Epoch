@@ -242,11 +242,11 @@ def get_private_key():
 
         if result:
 
-            with open('../assets/privkey.pem', "w") as temp_file:
+            with open('./privkey.pem', "w") as temp_file:
                 temp_file.write(result[0])
                 temp_file.write("\n")
 
-            return '../assets/privkey.pem'
+            return './privkey.pem'
         else:
             raise Exception("Private key not found in the database.")
 
@@ -264,11 +264,12 @@ def get_full_chain():
         connection.close()
 
         if result:
-            with open('../assets/fullchain.pem', "w") as temp_file:
+
+            with open('./fullchain.pem', "w") as temp_file:
                 temp_file.write(result[0])
                 temp_file.write("\n")
 
-            return '../assets/fullchain.pem'
+            return './fullchain.pem'
         else:
             raise Exception("Full chain not found in the database.")
 

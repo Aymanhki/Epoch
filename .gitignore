@@ -28,6 +28,8 @@ __pycache__
 # db
 epoch_backend/assets/epoch_media/users/
 epoch_backend/assets/really_secret_files.txt
+epoch_backend/privkey.pem
+epoch_backend/fullchain.pem
 
 
 
