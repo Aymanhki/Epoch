@@ -12,6 +12,16 @@ import base64
 
 def post_user(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)  # Split request data into headers and body
+
+    content_length = 0
+
+    for line in headers.split("\r\n"):
+        if "Content-Length" in line:
+            content_length = int(line.split(" ")[1])
+
+    while len(body) < content_length:
+        body += conn.recv(1024)
+
     data = json.loads(body)  # Parse the JSON body
     username = data.get("username")  # Get the username from the JSON body
     password = data.get("password")  # Get the password from the JSON body
@@ -37,6 +47,16 @@ def post_user(conn, request_data):
 
 def get_user(conn, request_data, session_id):
     headers, body = request_data.split("\r\n\r\n", 1)
+
+    content_length = 0
+
+    for line in headers.split("\r\n"):
+        if "Content-Length" in line:
+            content_length = int(line.split(" ")[1])
+
+    while len(body) < content_length:
+        body += conn.recv(1024)
+
     origin = get_origin_from_headers(headers)
     headers = get_cors_headers(origin)
     session_fetch = access_session_persistence().get_session(session_id)
@@ -67,6 +87,17 @@ def get_user(conn, request_data, session_id):
 
 def register_user(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)
+
+    content_length = 0
+
+    for line in headers.split("\r\n"):
+        if "Content-Length" in line:
+            content_length = int(line.split(" ")[1])
+
+    while len(body) < content_length:
+        body += conn.recv(1024)
+
+
     data = json.loads(body)
     username = data.get("username")
     password = data.get("password")
@@ -128,6 +159,16 @@ def upload_file(conn, request_data):
 
 def delete_user(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)
+
+    content_length = 0
+
+    for line in headers.split("\r\n"):
+        if "Content-Length" in line:
+            content_length = int(line.split(" ")[1])
+
+    while len(body) < content_length:
+        body += conn.recv(1024)
+
     data = json.loads(body)
     user_id = data.get("userId")
     origin = get_origin_from_headers(headers)

@@ -117,6 +117,7 @@ function registerUser(userObject) {
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
 
+
         xhr.open('POST', `${serverUrl}/api/register`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
