@@ -21,8 +21,9 @@ jobs:
       - name: SSH into Google Cloud VM for cleanup
         run: |
           sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
-            cd ../home/epoch
-            rm -rf epoch_backend epoch_frontend
+            echo "Current directory path: $(pwd)"
+            cd ../home/
+            rm -rf epoch
             sudo fuser -k -n tcp 443
             sudo fuser -k -n tcp 8080
             docker stop $(docker ps -q)
