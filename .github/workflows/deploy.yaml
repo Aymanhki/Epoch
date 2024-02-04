@@ -1,10 +1,7 @@
-name: Deploy on Push to Main
+name: Deploy to Google Cloud VM
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -13,40 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    - name: Set up Google Cloud CLI
-      uses: google-github-actions/setup-gcloud@v0.4.0
-      with:
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
-        project_id: virtual-bonito-412515
-        export_default_credentials: true
+      - name: Install SSH Client and sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client sshpass
 
-    - name: Build and Push Docker Images
-      run: |
-        gcloud auth configure-docker
-        docker build -t gcr.io/virtual-bonito-412515/backend:$GITHUB_SHA ./epoch_backend
-        docker build -t gcr.io/virtual-bonito-412515/frontend:$GITHUB_SHA ./epoch_frontend
-        docker push gcr.io/virtual-bonito-412515/backend:$GITHUB_SHA
-        docker push gcr.io/virtual-bonito-412515/frontend:$GITHUB_SHA
-
-    - name: Deploy Backend on VM
-      run: |
-        echo "${{ secrets.DEPLOY_SSH_KEY }}" > deploy_key
-        chmod 600 deploy_key
-        scp -i deploy_key -o StrictHostKeyChecking=no gcr.io/virtual-bonito-412515/backend:$GITHUB_SHA root@35.203.60.186:./epoch_backend
-        ssh -i deploy_key -o StrictHostKeyChecking=no root@35.203.60.186 "docker pull gcr.io/virtual-bonito-412515/backend:$GITHUB_SHA && docker run -d -p 8080:8080 --name backend gcr.io/virtual-bonito-412515/backend:$GITHUB_SHA"
-      continue-on-error: true
-
-    - name: Deploy Frontend on VM
-      run: |
-        echo "${{ secrets.DEPLOY_SSH_KEY }}" > deploy_key
-        chmod 600 deploy_key
-        scp -i deploy_key -o StrictHostKeyChecking=no gcr.io/virtual-bonito-412515/frontend:$GITHUB_SHA root@35.203.60.186:./epoch_frontend
-        ssh -i deploy_key -o StrictHostKeyChecking=no root@35.203.60.186 "docker pull gcr.io/virtual-bonito-412515/frontend:$GITHUB_SHA && docker run -d -p 80:80 --name frontend gcr.io/virtual-bonito-412515/frontend:$GITHUB_SHA"
-      continue-on-error: true
-
-    - name: Cleanup Deploy Key
-      run: |
-        rm deploy_key
+      - name: SSH into Google Cloud VM
+        run: |
+          sshpass -p "Epoch@3" ssh -o StrictHostKeyChecking=no root@35.203.60.186 << EOF
+            cd ../home/epoch
+            rm -rf epoch_backend epoch_frontend
+            sudo fuser -k -n tcp 443
+            sudo fuser -k -n tcp 8080
+            git clone https://github.com/Aymanhki/Epoch.git ./
+            cd epoch/epoch_backend/
+            docker build -t epoch_backend ./
+            docker run -d -p 8080:8080 epoch_backend
+            cd ..
+            cd epoch/epoch_frontend
+            docker build -t epoch_frontend ./
+            docker run -d -p 443:443 epoch_frontend
+            exit
+          EOF

@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Expose port 80
-EXPOSE 80
+EXPOSE 443
 
 # Command to run your Node.js server
 CMD ["node", "server.js"]
