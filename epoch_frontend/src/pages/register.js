@@ -20,8 +20,15 @@ function Register() {
 
     const handleProfilePicChange = async (e) => {
         const file = e.target.files[0];
+
+        if (!file) {
+            setIsLoading(false);
+            return;
+        }
+
         setProfilePic(file);
-        setIsLoading(false);
+        window.removeEventListener('focus', handleFocusBack);
+
     };
 
     const handleSubmit = (e) => {
@@ -117,6 +124,11 @@ function Register() {
             });
     };
 
+    function handleFocusBack(){
+        setIsLoading(false);
+        window.removeEventListener('focus', handleFocusBack);
+    }
+
 
     return (
         <div>
@@ -124,7 +136,7 @@ function Register() {
             <div className="register-container">
                 <div className="register-form">
                     <form onSubmit={handleSubmit}>
-                        <h1 style={{fontSize: '32px', marginBottom: '20px', fontFamily: 'Futura', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>{registeringPrompt}</h1>
+                        <h1 style={{fontSize: '32px', marginBottom: '10px', fontFamily: 'Futura', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>{registeringPrompt}</h1>
 
                         <div className="profile-pic-upload-container" >
 
@@ -139,7 +151,7 @@ function Register() {
                                 )}
                             </div>
 
-                            <div className="plus-sign" onClick={() => {fileInputRef.current.click(); setIsLoading(true)}}>+</div>
+                            <div className="plus-sign" onClick={() => {fileInputRef.current.click(); setIsLoading(true); window.addEventListener('focus', handleFocusBack); }}>+</div>
 
                             <input
                                 type="file"
@@ -149,6 +161,7 @@ function Register() {
                                 ref={fileInputRef} // Attach the ref to the file input
                                 style={{display: 'none'}} // Hide the file input
                                 onChange={handleProfilePicChange}
+
                             />
                         </div>
 
