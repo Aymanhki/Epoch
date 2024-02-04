@@ -20,8 +20,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 80%; /* Adjust the width based on your design */
-    height: 80%;
+    width: 30%;
+    height: 90%;
 }
 
 label {
