@@ -56,7 +56,7 @@ class webserver:
             conn.settimeout(16800)
             request_data = conn.recv(1048576)
 
-            if request_data.startswith(b"POST /api/upload"):
+            if request_data.startswith(b"POST /api/upload/"):
                 upload_file(conn, request_data)
             else:
                 request_data = request_data.decode('UTF-8')
