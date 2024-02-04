@@ -10,6 +10,8 @@ function Login() {
     const [password, setPassword] = useState('');
     const [signingInPrompt, setSigningInPrompt] = useState('Checking existing session...')
     const [isLoading, setIsLoading] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
 
     // State variables for field errors
     const [usernameError, setUsernameError] = useState(false);
@@ -71,102 +73,148 @@ function Login() {
             .catch(error => {
                 if (isMounted) {
                     console.error(error);
-                    setSigningInPrompt('Log In');
+                    setSigningInPrompt('Sign in');
                     setIsLoading(false);
                 }
             });
-
-
 
         return () => {
             isMounted = false;
         };
     }, [setIsLoading]);
 
+      useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+          window.removeEventListener('resize', handleResize);
+        };
+      }, []);
 
     return (
         <div>
             {isLoading && <Spinner/>}
             <div className="login-container">
+
+                {isMobile ? (
                 <div className="login-form">
                     <form onSubmit={handleSubmit}>
 
-                        <h2 style={{
-                            fontSize: '32px',
-                            marginBottom: '20px',
-                            fontFamily: 'Futura',
-                            fontWeight: 'bold',
-                            textAlign: 'left',
-                            alignSelf: 'flex-start'
-                        }}>
+                        <h2 style={{fontSize: '32px', marginBottom: '20px', fontFamily: 'Futura', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>
                             {signingInPrompt}
                         </h2>
 
-                        <label htmlFor="username">Username {usernameError && <span style={{color: 'red'}}>*</span>}
-                            {usernameError && !username.trim() &&
-                                <span style={{color: 'red', marginLeft: '5px'}}>Username field cannot be empty</span>}
+                        <label htmlFor="username" className={"label-white"}>Username {usernameError && <span style={{color: 'red'}}>*</span>}
+                            {usernameError && !username.trim() && <span style={{color: 'red', marginLeft: '5px'}}>Username field cannot be empty</span>}
                         </label>
 
-                        <input type="text" id="username" name="username" value={username} onChange={(e) => {
-                            setUsername(e.target.value);
-                            setUsernameError(false);
-                            setGeneralError(false);
-                        }} onBlur={() => {
-                            setUsernameError(!username.trim());
-                            setGeneralError(false);
-                        }}/>
+                        <input type="text" id="username" name="username" value={username} onChange={(e) => {setUsername(e.target.value);setUsernameError(false);setGeneralError(false);}} onBlur={() => {setUsernameError(!username.trim());setGeneralError(false);}}/>
 
-                        <label htmlFor="password">Password {passwordError && <span style={{color: 'red'}}>*</span>}
-                            {passwordError && !password.trim() &&
-                                <span style={{color: 'red', marginLeft: '5px'}}>Password field cannot be empty</span>}
+                        <label htmlFor="password" className={"label-white"}>Password {passwordError && <span style={{color: 'red'}}>*</span>}
+                            {passwordError && !password.trim() && <span style={{color: 'red', marginLeft: '5px'}}>Password field cannot be empty</span>}
                         </label>
 
-                        <input type="password" id="password" name="password" value={password} onChange={(e) => {
-                            setPassword(e.target.value);
-                            setPasswordError(false);
-                            setGeneralError(false);
-                        }} onBlur={() => {
-                            setPasswordError(!password.trim());
-                            setGeneralError(false);
-                        }}/>
+                        <input type="password" id="password" name="password" value={password} onChange={(e) => {setPassword(e.target.value);setPasswordError(false);setGeneralError(false);}} onBlur={() => {setPasswordError(!password.trim());setGeneralError(false);}}/>
 
-                        {generalError &&
-                            <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>Incorrect username or password</span>}
+                        {generalError && <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>Incorrect username or password</span>}
 
                         <button type="submit">{signingInPrompt}</button>
 
                         <p style={{textAlign: 'center', marginTop: '10px'}}>
                             Don't have an account?{' '}
-                            <Link to="/epoch/register"
-                                  style={{textDecoration: 'underline', cursor: 'pointer', color: '#ffffff'}}>
+                            <Link to="/epoch/register" style={{textDecoration: 'underline', cursor: 'pointer', color: '#ffffff'}}>
                                 Register here
                             </Link>
                         </p>
-
                     </form>
                 </div>
+                    ) : (
+                    <>
+                        <div className="login-form">
+                            <form onSubmit={handleSubmit}>
 
-                <div className="app-description">
-                    <div className="description-box">
-                        <h2 style={{fontSize: '32px', marginBottom: '20px', fontFamily: 'Futura', fontWeight: 'bold'}}>
-                            Epoch
-                        </h2>
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate sapien porta
-                            justo
-                            tristique molestie. Nunc tortor leo, pellentesque sed sem a, commodo iaculis nibh. Quisque
-                            sed
-                            velit vel justo interdum tincidunt sit amet a quam. Integer nec quam vel nulla convallis
-                            feugiat. Sed semper sapien id lectus scelerisque, vitae placerat ligula tempor. Duis dapibus
-                            pharetra urna, vel mattis dui. Aenean augue neque, facilisis facilisis dictum eget, luctus
-                            in
-                            ante. Donec aliquam erat quis arcu malesuada facilisis. In hac habitasse platea dictumst.
-                            Aliquam finibus iaculis quam et auctor. Pellentesque habitant morbi tristique senectus et
-                            netus
-                            et malesuada fames ac turpis egestas. Nam non hendrerit elit.
-                        </p>
-                    </div>
-                </div>
+                                <h2 style={{
+                                    fontSize: '32px',
+                                    marginBottom: '20px',
+                                    fontFamily: 'Futura',
+                                    fontWeight: 'bold',
+                                    textAlign: 'left',
+                                    alignSelf: 'flex-start'
+                                }}>
+                                    {signingInPrompt}
+                                </h2>
+
+                                <label htmlFor="username" className={"label-white"}>Username {usernameError &&
+                                    <span style={{color: 'red'}}>*</span>}
+                                    {usernameError && !username.trim() && <span
+                                        style={{color: 'red', marginLeft: '5px'}}>Username field cannot be empty</span>}
+                                </label>
+
+                                <input type="text" id="username" name="username" value={username} onChange={(e) => {
+                                    setUsername(e.target.value);
+                                    setUsernameError(false);
+                                    setGeneralError(false);
+                                }} onBlur={() => {
+                                    setUsernameError(!username.trim());
+                                    setGeneralError(false);
+                                }}/>
+
+                                <label htmlFor="password" className={"label-white"}>Password {passwordError &&
+                                    <span style={{color: 'red'}}>*</span>}
+                                    {passwordError && !password.trim() && <span
+                                        style={{color: 'red', marginLeft: '5px'}}>Password field cannot be empty</span>}
+                                </label>
+
+                                <input type="password" id="password" name="password" value={password} onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    setPasswordError(false);
+                                    setGeneralError(false);
+                                }} onBlur={() => {
+                                    setPasswordError(!password.trim());
+                                    setGeneralError(false);
+                                }}/>
+
+                                {generalError && <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>Incorrect username or password</span>}
+
+                                <button type="submit">{signingInPrompt}</button>
+
+                                <p style={{textAlign: 'center', marginTop: '10px'}}>
+                                    Don't have an account?{' '}
+                                    <Link to="/epoch/register"
+                                          style={{textDecoration: 'underline', cursor: 'pointer', color: '#ffffff'}}>
+                                        Register here
+                                    </Link>
+                                </p>
+                            </form>
+                        </div>
+                        <div className="app-description">
+                            <div className="description-box">
+                                <h2 style={{
+                                    fontSize: '32px',
+                                    marginBottom: '20px',
+                                    fontFamily: 'Futura',
+                                    fontWeight: 'bold'
+                                }}>
+                                    Epoch
+                                </h2>
+                                <p>
+                                    Epoch is a social media platform for time capsules. Write down your thoughts,
+                                    feelings, and predictions, and send them to the future. You can also read other
+                                    people's capsules and vote them up or down depending on the accuracy or likeability
+                                    of the time capsule or prediction. Create your network of followers, explore popular
+                                    hashtags, and comment and share your favorite capsules. Save your favorite capsules
+                                    to your profile and keep track of your own capsules and the capsules you've
+                                    interacted with. Epoch is a place to share your thoughts and predictions with the
+                                    world and to see what others have to say about the future.
+                                </p>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

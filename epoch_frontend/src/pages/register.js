@@ -21,6 +21,7 @@ function Register() {
     const handleProfilePicChange = async (e) => {
         const file = e.target.files[0];
         setProfilePic(file);
+        setIsLoading(false);
     };
 
     const handleSubmit = (e) => {
@@ -123,18 +124,11 @@ function Register() {
             <div className="register-container">
                 <div className="register-form">
                     <form onSubmit={handleSubmit}>
-                        <h1 style={{
-                            fontSize: '32px',
-                            marginBottom: '20px',
-                            fontFamily: 'Futura',
-                            fontWeight: 'bold',
-                            textAlign: 'left',
-                            alignSelf: 'flex-start'
-                        }}>{registeringPrompt}</h1>
+                        <h1 style={{fontSize: '32px', marginBottom: '20px', fontFamily: 'Futura', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>{registeringPrompt}</h1>
 
-                        <div className="profile-pic-upload-container">
+                        <div className="profile-pic-upload-container" >
 
-                            <div className="profile-pic-upload">
+                            <div className="profile-pic-upload" >
                                 {profilePic ? (
                                     <img
                                         src={typeof profilePic === 'string' ? profilePic : URL.createObjectURL(profilePic)}
@@ -145,7 +139,7 @@ function Register() {
                                 )}
                             </div>
 
-                            <div className="plus-sign" onClick={() => fileInputRef.current.click()}>+</div>
+                            <div className="plus-sign" onClick={() => {fileInputRef.current.click(); setIsLoading(true)}}>+</div>
 
                             <input
                                 type="file"
@@ -223,7 +217,6 @@ function Register() {
                                 style={{
                                     textDecoration: 'underline',
                                     cursor: 'pointer',
-                                    color: '#1a2a6c',
                                 }}
                             >
                                 Log in here
