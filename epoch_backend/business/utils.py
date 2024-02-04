@@ -3,13 +3,13 @@ import os
 import pytz
 import json
 import psycopg2
+import tempfile
 from google.cloud import storage
 from urllib.parse import urlparse, unquote
 
 
-
 BUCKET_NAME = "epoch_backend_cloud_storage"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "virtual-bonito-412515-fed6b41548c9.json"))
+
 
 
 def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
@@ -209,3 +209,69 @@ def is_file_in_bucket(file_path):
     blob_exists = blob.exists()
 
     return blob_exists
+
+def get_google_credentials():
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT credential_value FROM secret_files WHERE credential_type = 'google_credentials'")
+        result = cursor.fetchone()
+        cursor.close()
+        connection.close()
+
+        if result:
+            temp_file_path = tempfile.mktemp(suffix=".json")
+            with open(temp_file_path, "w") as temp_file:
+                temp_file.write(result[0])
+
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file_path
+        else:
+            raise Exception("Google Cloud credentials not found in the database.")
+
+    except Exception as e:
+        print(e)
+        raise e
+
+def get_private_key():
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT credential_value FROM secret_files WHERE credential_type = 'private_key'")
+        result = cursor.fetchone()
+        cursor.close()
+        connection.close()
+
+        if result:
+            temp_file_path = tempfile.mktemp(suffix=".txt")
+            with open(temp_file_path, "w") as temp_file:
+                temp_file.write(result[0])
+
+            return temp_file_path
+        else:
+            raise Exception("Private key not found in the database.")
+
+    except Exception as e:
+        print(e)
+        raise e
+
+def get_full_chain():
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT credential_value FROM secret_files WHERE credential_type = 'full_chain'")
+        result = cursor.fetchone()
+        cursor.close()
+        connection.close()
+
+        if result:
+            temp_file_path = tempfile.mktemp(suffix=".txt")
+            with open(temp_file_path, "w") as temp_file:
+                temp_file.write(result[0])
+
+            return temp_file_path
+        else:
+            raise Exception("Full chain not found in the database.")
+
+    except Exception as e:
+        print(e)
+        raise e

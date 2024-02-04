@@ -16,6 +16,8 @@ COPY . .
 # Expose the port your application runs on
 EXPOSE 8080
 
+ENV DEPLOYMENT_ENV=VM
+
 # Command to run your application
 CMD ["python3", "main.py"]
 
