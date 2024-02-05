@@ -86,6 +86,7 @@ function uploadFile(file, userId) {
         xhr.setRequestHeader('File-Name', file.name);
         xhr.setRequestHeader('User-Id', userId);
         xhr.withCredentials = true;
+        xhr.timeout = 100000;
 
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
@@ -99,10 +100,15 @@ function uploadFile(file, userId) {
             }
         };
 
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        };
+
         const reader = new FileReader();
 
         reader.onload = () => {
             const fileData = reader.result;
+
             xhr.send(fileData);
         };
 

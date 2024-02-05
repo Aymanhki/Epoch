@@ -137,7 +137,6 @@ function Register() {
                             .then((success) => {
                                 window.location.href = '/epoch/profile';
                                 setRegisteringPrompt('Register');
-                                setIsLoading(false);
 
                             })
                             .catch((error) => {
