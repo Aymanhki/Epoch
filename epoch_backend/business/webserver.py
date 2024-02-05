@@ -11,7 +11,7 @@ from business.api_endpoints.user_endpoints import upload_file
 class webserver:
     def __init__(self, host='0.0.0.0', port=8080, ssl_certfile='../assets/fullchain.pem', ssl_keyfile='../assets/privkey.pem'):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.host = host
         self.port = port
 
@@ -27,14 +27,13 @@ class webserver:
         self.server_socket.listen(40)
         self.active_threads = []
         self.thread_lock = threading.Lock()
-        self.running = False
+        self.running = True
 
     def run(self):
         print(f"*** Server running on {self.host}:{self.port}, serving '/epoch' ***\n")
-        self.running = True
 
-        while self.running:
-            try:
+        try:
+            while self.running:
                 conn, addr = self.server_socket.accept()
                 thread = threading.Thread(target=self.handle_request, args=(conn, addr))
 
@@ -44,22 +43,20 @@ class webserver:
                 thread.start()
                 self.cleanup_threads()
 
-            except Exception as e:
-                print(f"Error running server: {e}")
+        except KeyboardInterrupt:
+            print("\n*** Server terminated by user. ***\n")
 
-            except KeyboardInterrupt:
-                print("\n*** Server terminated by user. ***\n")
+        except Exception as e:
+            print(f"*** Server terminated unexpectedly: {e} ***\n")
 
-            finally:
-                try:
-                    os.remove('./privkey.pem')
-                    os.remove('./fullchain.pem')
-                except:
-                    pass
+        finally:
+            try:
+                os.remove('./privkey.pem')
+                os.remove('./fullchain.pem')
+            except:
+                pass
 
-                self.cleanup_threads()
-                self.server_socket.close()
-
+            self.stop()
 
     def handle_request(self, conn, addr):
         try:

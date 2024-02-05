@@ -30,7 +30,7 @@ jobs:
             docker rm \$(docker ps -aq)
             docker rmi \$(docker images -q)
             git clone https://github.com/Aymanhki/Epoch.git 
-            cd Epoch/epoch_backend/assets
+            cd Epoch/epoch_backend/assets/
             cp /etc/letsencrypt/live/aymanhkias.com/fullchain.pem ./
             cp /etc/letsencrypt/live/aymanhkias.com/privkey.pem ./
             exit
