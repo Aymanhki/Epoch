@@ -9,7 +9,7 @@ from business.api_endpoints.user_endpoints import upload_file
 
 
 class webserver:
-    def __init__(self, host='0.0.0.0', port=8080, ssl_certfile='../assets/fullchain.pem', ssl_keyfile='../assets/privkey.pem'):
+    def __init__(self, host='0.0.0.0', port=8080, ssl_certfile='./assets/fullchain.pem', ssl_keyfile='./assets/privkey.pem'):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.host = host
@@ -60,7 +60,7 @@ class webserver:
 
     def handle_request(self, conn, addr):
         try:
-            conn.settimeout(16800)
+            conn.settimeout(None)
             request_data = conn.recv(1048576)
 
             if request_data.startswith(b"POST /api/upload/"):

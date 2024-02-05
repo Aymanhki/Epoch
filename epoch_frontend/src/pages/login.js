@@ -80,7 +80,6 @@ function Login() {
                     console.log(data);
                     setSigningInPrompt('Ok');
                     window.location.href = "/epoch/home";
-                    setIsLoading(false);
                 }
             })
             .catch(error => {

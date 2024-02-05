@@ -20,6 +20,9 @@ function Router() {
                 <Route path="/epoch/register" element={<Register />} />
                 <Route path="/epoch/home" element={<Home />} />
                 <Route path="/epoch/profile" element={<Profile />} />
+
+                {/* Catch-all route for 404 */}
+                <Route path="*" element={<h1>404 Not Found</h1>} />
             </Routes>
         </BrowserRouter>
     );

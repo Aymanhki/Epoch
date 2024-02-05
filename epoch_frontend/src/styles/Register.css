@@ -30,6 +30,22 @@
     height: 90%;
 }
 
+input {
+    -webkit-appearance: none;
+    -moz-appearance:    none;
+    appearance:         none;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+    font-family: 'Futura', sans-serif;
+    font-weight: lighter;
+    font-size: 16px;
+    width: 95%;
+}
+
+
 label {
     -webkit-appearance: none;
     color: #1a2a6c;
@@ -56,6 +72,9 @@ label {
 }
 
 .bio-textarea{
+    -webkit-appearance: none;
+    -moz-appearance:    none;
+    appearance:         none;
     margin-bottom: 20px;
     padding: 10px;
     border: 0;
