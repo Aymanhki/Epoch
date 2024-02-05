@@ -2,6 +2,9 @@
 
 
 .register-container {
+    -webkit-appearance: none;
+    -moz-appearance:    none;
+    appearance:         none;
     display: flex;
     height: 100vh;
     justify-content: center;
@@ -11,12 +14,14 @@
 
 .register-form {
     -webkit-appearance: none;
+    -moz-appearance:    none;
+    appearance:         none;
     padding: 20px;
     background-color: #fff;
     border-radius: 10px;
     text-align: left;
     color: #1a2a6c;
-    -webkit-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
     justify-content: center;
