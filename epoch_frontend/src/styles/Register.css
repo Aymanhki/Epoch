@@ -10,7 +10,7 @@
 }
 
 .register-form {
-    appearance: none;
+    -webkit-appearance: none;
     padding: 20px;
     background-color: #fff;
     border-radius: 10px;
@@ -26,7 +26,7 @@
 }
 
 label {
-    appearance: none;
+    -webkit-appearance: none;
     color: #1a2a6c;
     margin-bottom: 10px;
     font-family: 'Futura', sans-serif;
@@ -116,7 +116,7 @@ label {
 }
 
 .register-button {
-    appearance: none;
+
     background-color: #1a2a6c ;
     color: #fff;
     padding: 10px;
@@ -130,7 +130,7 @@ label {
 }
 
 .register-button:hover {
-    appearance: none;
+
     background-color: #fff;
     color: #1a2a6c;
     font-family: 'Futura', sans-serif;
