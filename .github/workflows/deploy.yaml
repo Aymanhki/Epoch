@@ -30,6 +30,10 @@ jobs:
             docker rm \$(docker ps -aq)
             docker rmi \$(docker images -q)
             git clone https://github.com/Aymanhki/Epoch.git 
+            cd Epoch/epoch_backend/assets
+            cp /etc/letsencrypt/live/aymanhkias.com/fullchain.pem ./
+            cp /etc/letsencrypt/live/aymanhkias.com/privkey.pem ./
+            exit
           EOF
 
       - name: Deploying Backend (Build and Run Backend Docker Container)
@@ -40,6 +44,7 @@ jobs:
             cd Epoch/epoch_backend/
             docker build -t epoch_backend ./
             docker run -d -p 8080:8080 epoch_backend
+            exit
           EOF
 
       - name: Build and Run Frontend Docker Container

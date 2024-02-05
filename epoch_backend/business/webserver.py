@@ -9,7 +9,7 @@ from business.api_endpoints.user_endpoints import upload_file
 
 
 class webserver:
-    def __init__(self, host='0.0.0.0', port=8080, ssl_certfile=get_full_chain(), ssl_keyfile=get_private_key()):
+    def __init__(self, host='0.0.0.0', port=8080, ssl_certfile='../assets/fullchain.pem', ssl_keyfile='../assets/privkey.pem'):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
         self.host = host
@@ -60,10 +60,6 @@ class webserver:
                 self.cleanup_threads()
                 self.server_socket.close()
 
-                # Attempt to restart the server after a short delay
-                print("Restarting the server...")
-                self.__init__()
-                self.run()
 
     def handle_request(self, conn, addr):
         try:
