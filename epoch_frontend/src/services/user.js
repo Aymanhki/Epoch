@@ -15,8 +15,7 @@ function tryLogin(username, password) {
                     console.log("Login successful");
                     resolve(true);
                 } else {
-                    console.error("Error logging in user:", xhr.responseText);
-                    reject(false);
+                    reject(xhr.statusText);
                 }
             }
         };
@@ -63,7 +62,7 @@ function getUserInfo() {
 
                     resolve(userData);
                 } else {
-                    reject(`Error fetching user info: ${xhr.status} - ${xhr.statusText}`);
+                    reject(xhr.statusText);
                 }
             }
         };
@@ -95,7 +94,7 @@ function uploadFile(file, userId) {
                 }
                 else
                 {
-                    reject(xhr.responseText);
+                    reject(xhr.statusText);
                 }
             }
         };
@@ -127,7 +126,7 @@ function registerUser(userObject) {
                 if (xhr.status === 200) {
                     resolve(JSON.parse(xhr.responseText));
                 } else {
-                    reject(xhr.responseText);
+                    reject(xhr.statusText);
                 }
             }
         };
@@ -151,7 +150,7 @@ function deleteUser(userId) {
                 if (xhr.status === 200) {
                     resolve(true);
                 } else {
-                    reject(xhr.responseText);
+                    reject(xhr.statusText);
                 }
             }
         };

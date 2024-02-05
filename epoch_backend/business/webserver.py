@@ -10,14 +10,11 @@ from business.api_endpoints.user_endpoints import upload_file
 class webserver:
     def __init__(self, host='0.0.0.0', port=8080, ssl_certfile=get_full_chain(), ssl_keyfile=get_private_key()):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
         self.host = host
         self.port = port
 
-
-
         if os.environ.get('DEPLOYMENT_ENV') == 'VM' and ssl_certfile and ssl_keyfile:
-            # Wrap the socket with SSL context
             self.server_socket = ssl.wrap_socket(
                 self.server_socket,
                 keyfile=ssl_keyfile,
@@ -43,6 +40,9 @@ class webserver:
 
                 thread.start()
                 self.cleanup_threads()
+
+        except Exception as e:
+            print(f"Error running server: {e}")
 
         except KeyboardInterrupt:
             print("\n*** Server terminated by user. ***\n")

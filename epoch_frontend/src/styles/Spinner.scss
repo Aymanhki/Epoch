@@ -25,9 +25,10 @@
 }
 
 .hourglass, .hourglass:before, .hourglass:after {
-  animation-duration: 4s;
+  animation-duration: 3s;
   animation-iteration-count: infinite;
 }
+
 .hourglass {
   --polygonH: polygon(0% 0%,100% 0%,100% 5.55%,95% 5.55%,95% 28%,60% 46%,60% 54%,95% 72%,95% 94.45%,100% 94.45%,100% 100%,0% 100%,0% 94.45%,5% 94.45%,5% 72%,40% 54%,40% 46%,5% 28%,5% 5.55%,0% 5.55%);
   animation-name: flip;
@@ -41,12 +42,14 @@
   height: 9em;
   z-index: 0;
 }
+
 .hourglass:before, .hourglass:after {
   animation-timing-function: linear;
   content: "";
   display: block;
   position: absolute;
 }
+
 .hourglass:before {
   --polygonB1: polygon(0% 0%,100% 0%,100% 24%,50% 47%,50% 47%,50% 47%,50% 47%,50% 47%,50% 47%,50% 47%,50% 47%,0% 24%);
   --polygonB2: polygon(0% 4%,100% 4%,100% 24%,55% 45%,55% 100%,55% 100%,55% 100%,45% 100%,45% 100%,45% 100%,45% 45%,0% 24%);
@@ -64,6 +67,7 @@
   height: 8em;
   z-index: 1;
 }
+
 .hourglass:after {
   animation-name: glare;
   background:
@@ -77,6 +81,7 @@
   height: 100%;
   z-index: 2;
 }
+
 /* Animations */
 @keyframes fill {
   from {
@@ -100,6 +105,7 @@
     -webkit-clip-path: var(--polygonB5);
   }
 }
+
 @keyframes glare {
   from, 90% {
     transform: translateX(0);
@@ -108,6 +114,7 @@
     transform: translateX(3em);
   }
 }
+
 @keyframes flip {
   from, 90% {
     transform: rotate(0);
@@ -116,6 +123,7 @@
     transform: rotate(180deg);
   }
 }
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {

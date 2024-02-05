@@ -18,26 +18,38 @@ function Login() {
     const [passwordError, setPasswordError] = useState(false);
     const [generalError, setGeneralError] = useState(false);
 
+    const [generalErrorPrompt, setGeneralErrorPrompt] = useState('')
+    const [usernameErrorPrompt, setUsernameErrorPrompt] = useState('')
+    const [passwordErrorPrompt, setPasswordErrorPrompt] = useState('')
+
 
     // Function to handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        let wrongUsername = false;
+        let wrongPassword = false;
+
         // Validate fields
         if (!username.trim()) {
             setUsernameError(true);
+            setUsernameErrorPrompt('Username field cannot be empty');
+            wrongUsername = true;
         } else {
             setUsernameError(false);
+
         }
 
         if (!password.trim()) {
             setPasswordError(true);
+            setPasswordErrorPrompt('Password field cannot be empty');
+            wrongPassword = true;
         } else {
             setPasswordError(false);
         }
 
-        // If both fields are filled, perform login action
-        if (username && password) {
+
+        if (!wrongUsername && !wrongPassword) {
             setIsLoading(true);
             setSigningInPrompt('Signing In...');
             tryLogin(username, password)
@@ -50,6 +62,7 @@ function Login() {
                     setGeneralError(true);
                     setSigningInPrompt('Sign In');
                     setIsLoading(false);
+                    setGeneralErrorPrompt(error);
                 })
 
         }
@@ -97,7 +110,7 @@ function Login() {
 
     return (
         <div>
-            {isLoading && <Spinner/>}
+            {isLoading ? <Spinner/> :
             <div className="login-container">
 
                 {isMobile ? (
@@ -108,19 +121,19 @@ function Login() {
                             {signingInPrompt}
                         </h2>
 
-                        <label htmlFor="username" className={"label-white"}>Username {usernameError && <span style={{color: 'red'}}>*</span>}
-                            {usernameError && !username.trim() && <span style={{color: 'red', marginLeft: '5px'}}>Username field cannot be empty</span>}
+                        <label htmlFor="username" className={"label-white"}>Username {usernameError &&
+                            <span style={{color: 'red'}}>* {usernameErrorPrompt}</span>}
                         </label>
 
-                        <input type="text" id="username" name="username" value={username} onChange={(e) => {setUsername(e.target.value);setUsernameError(false);setGeneralError(false);}} onBlur={() => {setUsernameError(!username.trim());setGeneralError(false);}}/>
+                        <input type="text" id="username" name="username" value={username} onChange={(e) => {setUsername(e.target.value);setUsernameError(false);setGeneralError(false);}}/>
 
-                        <label htmlFor="password" className={"label-white"}>Password {passwordError && <span style={{color: 'red'}}>*</span>}
-                            {passwordError && !password.trim() && <span style={{color: 'red', marginLeft: '5px'}}>Password field cannot be empty</span>}
+                        <label htmlFor="password" className={"label-white"}>Password {passwordError &&
+                            <span style={{color: 'red'}}>* {passwordErrorPrompt}</span>}
                         </label>
 
-                        <input type="password" id="password" name="password" value={password} onChange={(e) => {setPassword(e.target.value);setPasswordError(false);setGeneralError(false);}} onBlur={() => {setPasswordError(!password.trim());setGeneralError(false);}}/>
+                        <input type="password" id="password" name="password" value={password} onChange={(e) => {setPassword(e.target.value);setPasswordError(false);setGeneralError(false);}} />
 
-                        {generalError && <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>Incorrect username or password</span>}
+                        {generalError && <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>{generalErrorPrompt}</span>}
 
                         <button type="submit">{signingInPrompt}</button>
 
@@ -149,36 +162,26 @@ function Login() {
                                 </h2>
 
                                 <label htmlFor="username" className={"label-white"}>Username {usernameError &&
-                                    <span style={{color: 'red'}}>*</span>}
-                                    {usernameError && !username.trim() && <span
-                                        style={{color: 'red', marginLeft: '5px'}}>Username field cannot be empty</span>}
+                                    <span style={{color: 'red'}}>* {usernameErrorPrompt}</span>}
                                 </label>
 
                                 <input type="text" id="username" name="username" value={username} onChange={(e) => {
                                     setUsername(e.target.value);
                                     setUsernameError(false);
                                     setGeneralError(false);
-                                }} onBlur={() => {
-                                    setUsernameError(!username.trim());
-                                    setGeneralError(false);
-                                }}/>
+                                }} />
 
                                 <label htmlFor="password" className={"label-white"}>Password {passwordError &&
-                                    <span style={{color: 'red'}}>*</span>}
-                                    {passwordError && !password.trim() && <span
-                                        style={{color: 'red', marginLeft: '5px'}}>Password field cannot be empty</span>}
+                                    <span style={{color: 'red'}}>* {passwordErrorPrompt}</span>}
                                 </label>
 
                                 <input type="password" id="password" name="password" value={password} onChange={(e) => {
                                     setPassword(e.target.value);
                                     setPasswordError(false);
                                     setGeneralError(false);
-                                }} onBlur={() => {
-                                    setPasswordError(!password.trim());
-                                    setGeneralError(false);
-                                }}/>
+                                }} />
 
-                                {generalError && <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>Incorrect username or password</span>}
+                                {generalError && <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>{generalErrorPrompt}</span>}
 
                                 <button type="submit">{signingInPrompt}</button>
 
@@ -216,6 +219,7 @@ function Login() {
                     </>
                 )}
             </div>
+            }
         </div>
     );
 }

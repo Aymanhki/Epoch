@@ -43,7 +43,7 @@ def post_user(conn, request_data):
 
         send_response(conn, 200, "OK", body=f"epoch_session_id={session_id}".encode('UTF-8'), headers=headers)
     else:
-        send_response(conn, 401, "Unauthorized", body=b"<h1>401 Unauthorized</h1>", headers=get_cors_headers(origin))
+        send_response(conn, 401, "Username or password does not exist", body=b"<h1>401 Unauthorized</h1>", headers=get_cors_headers(origin))
 
 def get_user(conn, request_data, session_id):
     headers, body = request_data.split("\r\n\r\n", 1)
@@ -79,11 +79,11 @@ def get_user(conn, request_data, session_id):
                 user_info_with_pic["profile_pic_data"] = profile_pic_data_base64
                 send_response(conn, 200, "OK", body=json.dumps(user_info_with_pic).encode('UTF-8'), headers=headers)
             else:
-                send_response(conn, 200, "OK", body=json.dumps(user_fetch.__dict__).encode('UTF-8'), headers=headers)
+                send_response(conn, 200, "OK, but did not find profile picture for the user", body=json.dumps(user_fetch.__dict__).encode('UTF-8'), headers=headers)
         else:
-            send_response(conn, 404, "Not Found", body=b"<h1>404 Not Found</h1>", headers=headers)
+            send_response(conn, 404, "Could not get the user information because the user was not found", body=b"<h1>404 Not Found</h1>", headers=headers)
     else:
-        send_response(conn, 401, "Unauthorized", body=b"<h1>401 Unauthorized</h1>", headers=headers)
+        send_response(conn, 401, "Could not find a valid session for the user you are trying to fetch information for", body=b"<h1>401 Unauthorized</h1>", headers=headers)
 
 def register_user(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)
@@ -112,9 +112,9 @@ def register_user(conn, request_data):
         if user_id is not None:
             send_response(conn, 200, "OK", body=json.dumps({"user_id": user_id}).encode('UTF-8'), headers=get_cors_headers(origin))
         else:
-            send_response(conn, 500, "Internal Server Error", body=b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
+            send_response(conn, 500, "Could not register user, internal Server Error", body=b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
     else:
-        send_response(conn, 409, "Conflict", body=b"<h1>409 Conflict</h1>", headers=get_cors_headers(origin))
+        send_response(conn, 409, "Username already exist", body=b"<h1>409 Conflict</h1>", headers=get_cors_headers(origin))
 
 def upload_file(conn, request_data):
     headers, body = request_data.split(b'\r\n\r\n', 1)
@@ -154,7 +154,7 @@ def upload_file(conn, request_data):
         access_user_persistence().update_user_profile_pic(user_id=user_id, profile_pic_id=media_id)
         send_response(conn, 200, "OK", body=b"<h1>200 OK</h1>", headers=get_cors_headers(origin))
     else:
-        send_response(conn, 500, "Internal Server Error", body=b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
+        send_response(conn, 500, "Could not upload profile picture, internal Server Error", body=b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
 
 
 def delete_user(conn, request_data):
@@ -177,4 +177,4 @@ def delete_user(conn, request_data):
         access_user_persistence().remove_user_by_id(user_id)
         send_response(conn, 200, "OK", body=b"<h1>200 OK</h1>", headers=get_cors_headers(origin))
     else:
-        send_response(conn, 404, "Not Found", body=b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))
+        send_response(conn, 404, "Could not find the user you are trying to delete", body=b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))

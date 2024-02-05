@@ -135,6 +135,12 @@ label {
     border: 1px solid #1a2a6c;
 }
 
+.register-link
+{
+    color: #1a2a6c;
+
+}
+
 @media (prefers-color-scheme: dark) {
     .register-container {
         background: linear-gradient(to top, #555555, #000000, #000000, #000000, #000000, #555555);
@@ -171,8 +177,17 @@ label {
         box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
     }
 
+    .register-link
+    {
+        color: #ffffff;
+    }
 
+}
 
+@media (max-width: 1366px) {
+    .register-form {
+        width: 50%;
+    }
 }
 
 
@@ -198,7 +213,7 @@ label {
         width: 30px;
         height: 30px;
         font-size: 16px;
-        bottom: 20px;
+        bottom: 5px;
         right: 20px;
     }
 
@@ -222,4 +237,5 @@ label {
         font-size: 12px;
         margin-bottom: 5px;
     }
+
 }
