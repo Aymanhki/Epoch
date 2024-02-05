@@ -26,12 +26,15 @@ class webserver:
         self.server_socket.listen(40)
         self.active_threads = []
         self.thread_lock = threading.Lock()
+        self.running = False
 
     def run(self):
         print(f"*** Server running on {self.host}:{self.port}, serving '/epoch' ***\n")
 
+        self.running = True
+
         try:
-            while True:
+            while self.running:
                 conn, addr = self.server_socket.accept()
                 thread = threading.Thread(target=self.handle_request, args=(conn, addr))
 
@@ -43,6 +46,9 @@ class webserver:
 
         except Exception as e:
             print(f"Error running server: {e}")
+            print(f"{e.__traceback__}")
+            print(f"{e.__traceback__.tb_frame}")
+            print(f"{e.__traceback__.tb_frame.f_globals}")
 
         except KeyboardInterrupt:
             print("\n*** Server terminated by user. ***\n")
@@ -81,4 +87,9 @@ class webserver:
     def cleanup_threads(self):
         with self.thread_lock:
             self.active_threads = [thread for thread in self.active_threads if thread.is_alive()]
+
+    def stop(self):
+        self.running = False
+        self.server_socket.close()
+        self.cleanup_threads()
 
