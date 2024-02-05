@@ -2,6 +2,7 @@ import socket
 import threading
 import ssl
 import os
+import time
 from business.utils import send_response, get_private_key, get_full_chain
 from business.api_endpoints.router import handle_routing
 from business.api_endpoints.user_endpoints import upload_file
@@ -30,11 +31,10 @@ class webserver:
 
     def run(self):
         print(f"*** Server running on {self.host}:{self.port}, serving '/epoch' ***\n")
-
         self.running = True
 
-        try:
-            while self.running:
+        while self.running:
+            try:
                 conn, addr = self.server_socket.accept()
                 thread = threading.Thread(target=self.handle_request, args=(conn, addr))
 
@@ -44,24 +44,26 @@ class webserver:
                 thread.start()
                 self.cleanup_threads()
 
-        except Exception as e:
-            print(f"Error running server: {e}")
-            print(f"{e.__traceback__}")
-            print(f"{e.__traceback__.tb_frame}")
-            print(f"{e.__traceback__.tb_frame.f_globals}")
+            except Exception as e:
+                print(f"Error running server: {e}")
 
-        except KeyboardInterrupt:
-            print("\n*** Server terminated by user. ***\n")
+            except KeyboardInterrupt:
+                print("\n*** Server terminated by user. ***\n")
 
-        finally:
-            try:
-                os.remove('./privkey.pem')
-                os.remove('./fullchain.pem')
-            except:
-                pass
+            finally:
+                try:
+                    os.remove('./privkey.pem')
+                    os.remove('./fullchain.pem')
+                except:
+                    pass
 
-            self.cleanup_threads()
-            self.server_socket.close()
+                self.cleanup_threads()
+                self.server_socket.close()
+
+                # Attempt to restart the server after a short delay
+                print("Restarting the server...")
+                self.__init__()
+                self.run()
 
     def handle_request(self, conn, addr):
         try:
