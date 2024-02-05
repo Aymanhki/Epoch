@@ -60,16 +60,22 @@ function Register() {
         }
 
 
-        if(password.length < 8 || password.length > 20 || !password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/) || password.includes(' ') || password.includes('password')) {
+        if(password.length < 8 || password.length > 60 || !password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,60}$/) || password.includes(' ') || password.includes('password')) {
             setPasswordError(true);
-            setPasswordErrorPrompt('Password must be between 8 and 20 characters, contain at least one uppercase letter, one lowercase letter, one number, one special character, and cannot contain spaces or the word "password"');
+            setPasswordErrorPrompt('Password must be between 8 and 60 characters, contain at least one uppercase letter, one lowercase letter, one number, one special character, and cannot contain spaces or the word "password"');
             wrongPassword = true;
         }
 
-        if(username.length < 3 || username.length > 20 || !username.match(/^[a-zA-Z0-9_]*$/ || username.includes(' '))) {
+        if(username.length < 3 || username.length > 16 || !username.match(/^[a-zA-Z0-9_]*$/ || username.includes(' '))) {
             setUsernameError(true);
-            setUsernameErrorPrompt('Username must be between 3 and 20 characters, contain only letters, numbers, and underscores, and cannot contain spaces or special characters');
+            setUsernameErrorPrompt('Username must be between 3 and 16 characters, contain only letters, numbers, and underscores, and cannot contain spaces or special characters');
             wrongUsername = true;
+        }
+
+        if(name.length < 3 || name.length > 30) {
+            setNameError(true);
+            setNameErrorPrompt('Name must be between 3 and 30 characters');
+            wrongName = true;
         }
 
 
