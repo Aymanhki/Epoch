@@ -15,8 +15,8 @@ app.get('*', (req, res) => {
 });
 
 // Read SSL certificate files
-const privateKey = fs.readFileSync('./', 'utf8');
-const certificate = fs.readFileSync('./', 'utf8');
+const privateKey = fs.readFileSync('./privkey.pem', 'utf8');
+const certificate = fs.readFileSync('./fullchain.pem', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
 // Create an HTTPS server

@@ -3,7 +3,18 @@ function tryLogin(username, password) {
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        let port = currentLocation.port;
+
+        if (currentLocation.protocol === "https:")
+        {
+            port = 8080;
+        }
+        else if (currentLocation.protocol === "http:")
+        {
+            port = 8000;
+        }
+
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:${port}`;
 
         xhr.open("POST", `${serverUrl}/api/login/`, true); // Login the user
         xhr.setRequestHeader("Content-Type", "application/json"); // Set the request header
@@ -43,7 +54,18 @@ function getUserInfo() {
 
         var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        let port = currentLocation.port;
+
+        if (currentLocation.protocol === "https:")
+        {
+            port = 8080;
+        }
+        else if (currentLocation.protocol === "http:")
+        {
+            port = 8000;
+        }
+
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:${port}`;
         xhr.open('GET', `${serverUrl}/api/login/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
@@ -79,7 +101,18 @@ function uploadFile(file, userId) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        let port = currentLocation.port;
+
+        if (currentLocation.protocol === "https:")
+        {
+            port = 8080;
+        }
+        else if (currentLocation.protocol === "http:")
+        {
+            port = 8000;
+        }
+
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:${port}`;
 
         xhr.open('POST', `${serverUrl}/api/upload/`, true);
         xhr.setRequestHeader('Content-Type', file.type);
@@ -120,7 +153,18 @@ function registerUser(userObject) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        let port = currentLocation.port;
+
+        if (currentLocation.protocol === "https:")
+        {
+            port = 8080;
+        }
+        else if (currentLocation.protocol === "http:")
+        {
+            port = 8000;
+        }
+
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:${port}`;
 
 
         xhr.open('POST', `${serverUrl}/api/register/`, true);
@@ -145,7 +189,18 @@ function deleteUser(userId) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        let port = currentLocation.port;
+
+        if (currentLocation.protocol === "https:")
+        {
+            port = 8080;
+        }
+        else if (currentLocation.protocol === "http:")
+        {
+            port = 8000;
+        }
+
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:${port}`;
 
         xhr.open('DELETE', `${serverUrl}/api/delete/user/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
