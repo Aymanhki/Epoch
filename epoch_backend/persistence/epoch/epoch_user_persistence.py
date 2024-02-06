@@ -62,6 +62,7 @@ class epoch_user_persistence(user_persistence):
         connection.commit()
         cursor.close()
         connection.close()
+        # @TODO im thinking this should update follower/following tables to remove user from there also 
 
     def update_user(self, user_to_update: user):
         pass
@@ -99,3 +100,45 @@ class epoch_user_persistence(user_persistence):
         connection.close()
 
 
+    def get_followers(self, user_id:int):
+    #get list of users that follow user_id
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT follower_id FROM followers WHERE user_id = %s", (user_id,))
+        followers = [follower[0] for follower in cursor.fetchall()]
+        connection.commit()
+        cursor.close()
+        connection.close()
+        return followers
+    
+    def get_following(self, user_id:int):
+    #get list of users that user_id follows
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT following_id FROM following WHERE user_id = %s", (user_id,))
+        following = [following_id[0] for following_id in cursor.fetchall()]
+        connection.commit()
+        cursor.close()
+        connection.close()
+        return following
+    
+    def follow_user(self, user_id:int, following_id:int):
+    #update dbs user_id is now following following_id
+    #user_id is a follower of following_id
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"INSERT INTO followers (user_id, follower_id) VALUES ('{following_id}', '{user_id}')")
+        cursor.execute(f"INSERT INTO following (user_id, follower_id) VALUES ('{user_id}', '{following_id}')")
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+    def unfollow_user(self, user_id, following_id:int):
+    #update dbs user_id is no longer following following_id
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM followers WHERE user_id = %s AND follower_id = %s", (following_id, user_id,))
+        cursor.execute("DELETE FROM following WHERE user_id = %s AND follower_id = %s"(user_id, following_id,))
+        connection.commit()
+        cursor.close()
+        connection.close()

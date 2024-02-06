@@ -36,3 +36,19 @@ class user_persistence(ABC):
 
     def remove_user_by_id(self, user_id: int):
         pass
+
+    @abstractmethod
+    def get_followers(self, user_id: int):
+        pass
+
+    @abstractmethod
+    def get_following(self, user_id: int):
+        pass
+
+    @abstractmethod
+    def follow_user(self, user_id: int, following_id: int):
+        pass
+
+    @abstractmethod
+    def unfollow_user(self, user_id: int, following_id: int):
+        pass
