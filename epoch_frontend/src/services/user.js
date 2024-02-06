@@ -3,22 +3,11 @@ function tryLogin(username, password) {
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        let port = currentLocation.port;
-
-        if (currentLocation.protocol === "https:")
-        {
-            port = 8080;
-        }
-        else if (currentLocation.protocol === "http:")
-        {
-            port = 8000;
-        }
-
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:${port}`;
-
+        const serverUrl = `http//${currentLocation.hostname}:8080`;
         xhr.open("POST", `${serverUrl}/api/login/`, true); // Login the user
         xhr.setRequestHeader("Content-Type", "application/json"); // Set the request header
         xhr.withCredentials = true;
+        xhr.timeout = 10000;
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
@@ -30,6 +19,19 @@ function tryLogin(username, password) {
                 }
             }
         };
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
 
         xhr.send(JSON.stringify({username: username, password: password})); // Send the request
     });
@@ -54,21 +56,11 @@ function getUserInfo() {
 
         var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        let port = currentLocation.port;
-
-        if (currentLocation.protocol === "https:")
-        {
-            port = 8080;
-        }
-        else if (currentLocation.protocol === "http:")
-        {
-            port = 8000;
-        }
-
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:${port}`;
+        const serverUrl = `http//${currentLocation.hostname}:8080`;
         xhr.open('GET', `${serverUrl}/api/login/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
+        xhr.timeout = 10000;
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
@@ -89,6 +81,18 @@ function getUserInfo() {
             }
         };
 
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
         xhr.send(JSON.stringify({session_id: session_id}));
     });
 }
@@ -101,19 +105,7 @@ function uploadFile(file, userId) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        let port = currentLocation.port;
-
-        if (currentLocation.protocol === "https:")
-        {
-            port = 8080;
-        }
-        else if (currentLocation.protocol === "http:")
-        {
-            port = 8000;
-        }
-
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:${port}`;
-
+        const serverUrl = `http//${currentLocation.hostname}:8080`;
         xhr.open('POST', `${serverUrl}/api/upload/`, true);
         xhr.setRequestHeader('Content-Type', file.type);
         xhr.setRequestHeader('File-Name', file.name);
@@ -137,6 +129,14 @@ function uploadFile(file, userId) {
             reject("Request timed out");
         };
 
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
         const reader = new FileReader();
 
         reader.onload = () => {
@@ -153,23 +153,11 @@ function registerUser(userObject) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        let port = currentLocation.port;
-
-        if (currentLocation.protocol === "https:")
-        {
-            port = 8080;
-        }
-        else if (currentLocation.protocol === "http:")
-        {
-            port = 8000;
-        }
-
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:${port}`;
-
-
+        const serverUrl = `http//${currentLocation.hostname}:8080`;
         xhr.open('POST', `${serverUrl}/api/register/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
+        xhr.timeout = 10000;
 
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
@@ -181,6 +169,18 @@ function registerUser(userObject) {
             }
         };
 
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
         xhr.send(JSON.stringify(userObject));
     });
 }
@@ -189,22 +189,11 @@ function deleteUser(userId) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        let port = currentLocation.port;
-
-        if (currentLocation.protocol === "https:")
-        {
-            port = 8080;
-        }
-        else if (currentLocation.protocol === "http:")
-        {
-            port = 8000;
-        }
-
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:${port}`;
-
+        const serverUrl = `http//${currentLocation.hostname}:8080`;
         xhr.open('DELETE', `${serverUrl}/api/delete/user/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
+        xhr.timeout = 10000;
 
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
@@ -215,6 +204,19 @@ function deleteUser(userId) {
                 }
             }
         };
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
 
         xhr.send(JSON.stringify({userId: userId}));
     });
