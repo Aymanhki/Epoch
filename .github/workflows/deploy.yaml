@@ -26,6 +26,8 @@ jobs:
             rm -rf Epoch
             sudo fuser -k -n tcp 443
             sudo fuser -k -n tcp 8080
+            sudo fuser -k -n tcp 80
+            sudo fuser -k -n tcp 8000
             docker stop \$(docker ps -q)
             docker rm \$(docker ps -aq)
             docker rmi \$(docker images -q)
