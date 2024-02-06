@@ -37,16 +37,24 @@ class webserver:
             while self.running:
                 conn, addr = self.server_socket.accept()
 
-                if self.use_ssl:
-                    conn = self.ssl_context.wrap_socket(conn, server_side=True)
+                try:
+                    if self.use_ssl:
+                        conn = self.ssl_context.wrap_socket(conn, server_side=True)
 
-                thread = threading.Thread(target=self.handle_request, args=(conn, addr))
+                    thread = threading.Thread(target=self.handle_request, args=(conn, addr))
 
-                with self.thread_lock:
-                    self.active_threads.append(thread)
+                    with self.thread_lock:
+                        self.active_threads.append(thread)
 
-                thread.start()
-                self.cleanup_threads()
+                    thread.start()
+                    self.cleanup_threads()
+                except Exception as e:
+                    print(f"Error handling request from {addr}: {e}")
+                    request_data = conn.recv(1048576)
+                    print(f"Heard:\n{request_data}\n")
+                    send_response(conn, 500, "Internal Server Error", body=b"<h1>500 Internal Server Error</h1>")
+                    conn.close()
+
 
         except KeyboardInterrupt:
             print("\n*** Server terminated by user. ***\n")
