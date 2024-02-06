@@ -7,14 +7,10 @@ from business.api_endpoints.router import handle_routing
 from business.api_endpoints.user_endpoints import upload_file
 
 
-
-ssl._create_default_https_context = ssl._create_unverified_context
-
-
 class webserver:
     def __init__(self, host='0.0.0.0', port=8080, ssl_certfile='./assets/fullchain.pem', ssl_keyfile='./assets/privkey.pem'):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
         self.host = host
         self.port = port
 
@@ -95,7 +91,7 @@ class webserver:
 class http_server:
     def __init__(self, host='0.0.0.0', port=8000):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
 
         self.host = host
         self.port = port
