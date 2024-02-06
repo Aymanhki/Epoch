@@ -52,7 +52,7 @@ class webserver:
         try:
             conn.settimeout(None)
             request_data = conn.recv(1048576)
-            print(f"Heard:\n{request_data}\non https server\n")
+            print(f"Heard:\n{request_data}\n")
 
             if request_data.startswith(b"POST /api/upload/"):
                 upload_file(conn, request_data)
