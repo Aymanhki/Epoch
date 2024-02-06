@@ -15,9 +15,9 @@ COPY . .
 
 # Expose the port your application runs on
 EXPOSE 8080
-EXPOSE 8000
 
 ENV DEPLOYMENT_ENV=VM
+ENV DEPLOYED=true
 ENV PYTHONUNBUFFERED=1
 
 
