@@ -18,6 +18,8 @@ EXPOSE 8080
 EXPOSE 8000
 
 ENV DEPLOYMENT_ENV=VM
+ENV PYTHONUNBUFFERED=1
+
 
 # Command to run your application
 CMD ["python3", "main.py"]
