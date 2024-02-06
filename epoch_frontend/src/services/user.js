@@ -3,7 +3,7 @@ function tryLogin(username, password) {
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        const serverUrl = `http//${currentLocation.hostname}:8080`;
+        const serverUrl = `http://${currentLocation.hostname}:8080`;
         xhr.open("POST", `${serverUrl}/api/login/`, true); // Login the user
         xhr.setRequestHeader("Content-Type", "application/json"); // Set the request header
         xhr.withCredentials = true;
@@ -56,7 +56,7 @@ function getUserInfo() {
 
         var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        const serverUrl = `http//${currentLocation.hostname}:8080`;
+        const serverUrl = `http://${currentLocation.hostname}:8080`;
         xhr.open('GET', `${serverUrl}/api/login/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
@@ -105,7 +105,7 @@ function uploadFile(file, userId) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        const serverUrl = `http//${currentLocation.hostname}:8080`;
+        const serverUrl = `http://${currentLocation.hostname}:8080`;
         xhr.open('POST', `${serverUrl}/api/upload/`, true);
         xhr.setRequestHeader('Content-Type', file.type);
         xhr.setRequestHeader('File-Name', file.name);
@@ -153,7 +153,7 @@ function registerUser(userObject) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        const serverUrl = `http//${currentLocation.hostname}:8080`;
+        const serverUrl = `http://${currentLocation.hostname}:8080`;
         xhr.open('POST', `${serverUrl}/api/register/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
@@ -189,7 +189,7 @@ function deleteUser(userId) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
-        const serverUrl = `http//${currentLocation.hostname}:8080`;
+        const serverUrl = `http://${currentLocation.hostname}:8080`;
         xhr.open('DELETE', `${serverUrl}/api/delete/user/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
