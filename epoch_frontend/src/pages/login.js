@@ -55,7 +55,7 @@ function Login() {
             tryLogin(username, password)
                 .then(success => {
                     window.location.href = "/epoch/home";
-                    setSigningInPrompt('Ok');
+                    setSigningInPrompt('Sign In');
                     setIsLoading(false);
                 })
                 .catch(error => {
@@ -78,7 +78,7 @@ function Login() {
             .then(data => {
                 if (isMounted) {
                     console.log(data);
-                    setSigningInPrompt('Ok');
+                    setSigningInPrompt('Sing In');
                     window.location.href = "/epoch/home";
                 }
             })
