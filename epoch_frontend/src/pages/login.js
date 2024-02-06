@@ -67,6 +67,7 @@ function Login() {
 
         }
 
+        setIsLoading(false);
 
     };
 
@@ -80,6 +81,7 @@ function Login() {
                     console.log(data);
                     setSigningInPrompt('Sing In');
                     window.location.href = "/epoch/home";
+                    setIsLoading(false);
                 }
             })
             .catch(error => {
