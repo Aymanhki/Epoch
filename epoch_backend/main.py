@@ -5,10 +5,12 @@ import threading
 def main():
     start_db_tables()
     get_google_credentials()
+    web_server_instance = webserver()
+    http_server_instance = http_server()
 
     while True:
-        web_server_thread = threading.Thread(target=webserver().run)
-        http_server_thread = threading.Thread(target=http_server().run)
+        web_server_thread = threading.Thread(target=web_server_instance.run)
+        http_server_thread = threading.Thread(target=http_server_instance.run)
 
         try:
             web_server_thread.start()
@@ -20,7 +22,7 @@ def main():
         except KeyboardInterrupt:
             webserver().stop()
             http_server().stop()
-            break  # Exit the loop on keyboard interrupt
+            break
 
         except Exception as e:
             print(f"Exception: {e}")

@@ -144,6 +144,8 @@ class http_server:
             print(f"Error handling request from {addr}: {e}")
             send_response(conn, 500, "Internal Server Error", body=b"<h1>500 Internal Server Error</h1>")
             return
+        finally:
+            conn.close()
 
     def cleanup_threads(self):
         with self.thread_lock:
