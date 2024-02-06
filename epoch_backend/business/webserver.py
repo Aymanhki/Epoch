@@ -157,6 +157,3 @@ class http_server:
         self.running = False
         self.server_socket.close()
         self.cleanup_threads()
-
-
-
