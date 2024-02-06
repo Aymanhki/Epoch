@@ -57,3 +57,4 @@ CREATE TABLE IF NOT EXISTS following (
 
 
 -- INSERT INTO  media_content (content_type, file_name, path) VALUES ('image/png', 'default_pfp.png', '../epoch_backend/assets/epoch_media/default_pfp.png');
+

@@ -1,13 +1,24 @@
 import socket
 import threading
 import os
+import ssl
 from business.utils import send_response
 from business.api_endpoints.router import handle_routing
 from business.api_endpoints.user_endpoints import upload_file
 
 
+keyPath = './assets/privkey.pem'
+certPath = './assets/fullchain.pem'
+
 class webserver:
     def __init__(self, host='0.0.0.0', port=8080):
+
+        self.use_ssl = os.environ.get("DEPLOYED") == "true"  # Set DEPLOYED environment variable when deploying
+
+        if self.use_ssl:
+            self.ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+            self.ssl_context.load_cert_chain(certfile=certPath, keyfile=keyPath)
+
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.host = host
@@ -25,13 +36,25 @@ class webserver:
         try:
             while self.running:
                 conn, addr = self.server_socket.accept()
-                thread = threading.Thread(target=self.handle_request, args=(conn, addr))
 
-                with self.thread_lock:
-                    self.active_threads.append(thread)
+                try:
+                    if self.use_ssl:
+                        conn = self.ssl_context.wrap_socket(conn, server_side=True)
 
-                thread.start()
-                self.cleanup_threads()
+                    thread = threading.Thread(target=self.handle_request, args=(conn, addr))
+
+                    with self.thread_lock:
+                        self.active_threads.append(thread)
+
+                    thread.start()
+                    self.cleanup_threads()
+                except Exception as e:
+                    print(f"Error handling request from {addr}: {e}")
+                    request_data = conn.recv(1048576)
+                    print(f"Heard:\n{request_data}\n")
+                    send_response(conn, 500, "Internal Server Error", body=b"<h1>500 Internal Server Error</h1>")
+                    conn.close()
+
 
         except KeyboardInterrupt:
             print("\n*** Server terminated by user. ***\n")
@@ -40,12 +63,6 @@ class webserver:
             print(f"*** Server terminated unexpectedly: {e} ***\n")
 
         finally:
-            try:
-                os.remove('./privkey.pem')
-                os.remove('./fullchain.pem')
-            except:
-                pass
-
             self.stop()
 
     def handle_request(self, conn, addr):
