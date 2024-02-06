@@ -9,11 +9,15 @@ def main():
     web_server_thread = threading.Thread(target=webserver().run)
     http_server_thread = threading.Thread(target=http_server().run)
 
-    web_server_thread.start()
-    http_server_thread.start()
+    try:
+        web_server_thread.start()
+        http_server_thread.start()
 
-    web_server_thread.join()
-    http_server_thread.join()
+        web_server_thread.join()
+        http_server_thread.join()
+    except KeyboardInterrupt:
+        webserver().stop()
+        http_server().stop()
 
 if __name__ == "__main__":
     main()
