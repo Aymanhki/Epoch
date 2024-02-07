@@ -65,7 +65,7 @@ class webserver_tests(unittest.TestCase):
         response = requests.delete('http://localhost:8080/api/delete/user/', json={'userId': self.get_user_id()}, cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
         response = requests.get('http://localhost:8080/api/login', json={'username': self.username, 'password': self.password})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
         print("User deleted.")
 
 
