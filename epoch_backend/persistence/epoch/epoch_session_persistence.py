@@ -58,3 +58,11 @@ class epoch_session_persistence(session_persistence):
             sessions.append(session(row[0], row[1]))
 
         return sessions
+
+    def remove_by_user_id(self, user_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"DELETE FROM sessions WHERE user_id = {user_id}")
+        connection.commit()
+        cursor.close()
+        connection.close()

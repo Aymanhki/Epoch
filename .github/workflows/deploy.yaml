@@ -5,8 +5,13 @@ on:
     branches:
       - main
 
+defaults:
+  run:
+    shell: bash
+    working-directory: Epoch
+
 jobs:
-  deploy:
+  clean:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,8 +25,8 @@ jobs:
 
       - name: SSH into Google Cloud VM for cleanup
         run: |
-          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
-            echo "Current directory path: $(pwd)"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} << EOF
+            echo "Current directory path: \$(pwd)"
             cd 
             rm -rf Epoch
             sudo fuser -k -n tcp 443
@@ -32,7 +37,6 @@ jobs:
             docker rm \$(docker ps -aq)
             docker rmi \$(docker images -q)
             git clone https://github.com/Aymanhki/Epoch.git 
-            cd
             cd Epoch/epoch_backend/assets/
             cp /etc/letsencrypt/live/aymanhkias.com/fullchain.pem ./
             cp /etc/letsencrypt/live/aymanhkias.com/privkey.pem ./
@@ -40,28 +44,59 @@ jobs:
             cd Epoch/epoch_frontend/
             cp /etc/letsencrypt/live/aymanhkias.com/fullchain.pem ./
             cp /etc/letsencrypt/live/aymanhkias.com/privkey.pem ./
-            cd
             exit
           EOF
 
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: SSH into Google Cloud VM for testing
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} << EOF
+            echo "Current directory path: \$(pwd)"
+            cd Epoch/epoch_backend/
+            nohup python3 main.py > main.log 2>&1 &
+            python3 -m venv venv
+            source venv/bin/activate
+            pip install -r requirements.txt
+            python -m pytest tests/webserver_tests.py 
+            EXIT_STATUS=$?
+            deactivate
+            rm -rf venv
+            pkill -f "python3 main.py"
+            exit $EXIT_STATUS
+          EOF
+
+  deploy:
+    needs: [clean, test]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
       - name: Deploying Backend (Build and Run Backend Docker Container)
         run: |
-          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
-            echo "Current directory path: $(pwd)"
-            cd
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} << EOF
+            echo "Current directory path: \$(pwd)"
             cd Epoch/epoch_backend/
             docker build -t epoch_backend ./
             docker run -d -p 8080:8080 epoch_backend
             exit
           EOF
+        if: success()
 
-      - name: Build and Run Frontend Docker Container
+      - name: Deploying Frontend (Build and Run Frontend Docker Container)
         run: |
-          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
-            echo "Current directory path: $(pwd)"
-            cd
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} << EOF
+            echo "Current directory path: \$(pwd)"
             cd Epoch/epoch_frontend/
             docker build -t epoch_frontend ./
             docker run -d -p 80:80 -p 443:443 epoch_frontend
             exit
           EOF
+        if: success()
