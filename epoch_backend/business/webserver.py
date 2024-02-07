@@ -96,6 +96,11 @@ class webserver:
 
     def stop(self):
         self.running = False
+
+        for thread in self.active_threads:
+            thread.join()
+
+        self.active_threads.clear()
         self.server_socket.close()
-        self.cleanup_threads()
+
 
