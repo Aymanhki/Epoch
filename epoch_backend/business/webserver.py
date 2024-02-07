@@ -101,6 +101,5 @@ class webserver:
 
         self.active_threads.clear()
         self.server_socket.close()
-        exit(0)
 
 
