@@ -1,6 +1,7 @@
 import os
 from business.utils import send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
 from business.api_endpoints.user_endpoints import post_user, get_user, register_user, delete_user
+#from business.api_endpoints.following_endpoints import get_account_list
 from business.db_controller.access_session_persistence import access_session_persistence
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
@@ -56,6 +57,15 @@ def handle_api_request(method, path, request_data, conn):
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
+#    elif path == "/api/accountList/":
+#        if method == "OPTIONS":  # Handle CORS preflight request
+#            send_cors_options_response(request_data, conn)
+#            return
+#        if method == "GET":
+#            get_account_list(conn, request_data)
+#        else:
+#            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+    
     else:
         send_response(conn, 404, "Not Found", body=b"<h1>404 Not Found</h1>")
 

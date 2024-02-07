@@ -62,13 +62,20 @@ class epoch_user_persistence(user_persistence):
         connection.commit()
         cursor.close()
         connection.close()
-        # @TODO im thinking this should update follower/following tables to remove user from there also 
+        # im thinking this should update follower/following tables to remove user from there also 
 
     def update_user(self, user_to_update: user):
         pass
 
-    def get_all_users(self):
-        pass
+    def get_all_users(self, user_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"SELECT username, user_id FROM users WHERE NOT user_id = '{user_id}'")
+        result = cursor.fetchall()
+        cursor.close()
+        connection.close()
+
+        return result
 
     def validate_login(self, username: str, password: str):
         connection = get_db_connection()
@@ -128,7 +135,7 @@ class epoch_user_persistence(user_persistence):
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute(f"INSERT INTO followers (user_id, follower_id) VALUES ('{following_id}', '{user_id}')")
-        cursor.execute(f"INSERT INTO following (user_id, follower_id) VALUES ('{user_id}', '{following_id}')")
+        cursor.execute(f"INSERT INTO following (user_id, following_id) VALUES ('{user_id}', '{following_id}')")
         connection.commit()
         cursor.close()
         connection.close()
@@ -138,7 +145,7 @@ class epoch_user_persistence(user_persistence):
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute("DELETE FROM followers WHERE user_id = %s AND follower_id = %s", (following_id, user_id,))
-        cursor.execute("DELETE FROM following WHERE user_id = %s AND follower_id = %s"(user_id, following_id,))
+        cursor.execute("DELETE FROM following WHERE user_id = %s AND following_id = %s", (user_id, following_id,))
         connection.commit()
         cursor.close()
         connection.close()

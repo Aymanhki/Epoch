@@ -5,6 +5,7 @@ import Login from '../pages/login';
 import Register from '../pages/register';
 import Home from '../pages/home';
 import Profile from '../pages/profile';
+import Userlist from '../pages/userlist';
 
 function Router() {
     return (
@@ -20,6 +21,7 @@ function Router() {
                 <Route path="/epoch/register" element={<Register />} />
                 <Route path="/epoch/home" element={<Home />} />
                 <Route path="/epoch/profile" element={<Profile />} />
+                <Route path="/epoch/userlist" element={<Userlist/>} />
 
                 {/* Catch-all route for 404 */}
                 <Route path="*" element={<h1>404 Not Found</h1>} />
