@@ -57,7 +57,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y openssh-client sshpass
           sudo apt-get install -y python3-pip
-          pip3 install pytest pytest-cov
+          
 
       - name: SSH into Google Cloud VM for testing
         run: |
@@ -66,6 +66,7 @@ jobs:
             echo "Current directory path: $(pwd)"
             cd
             cd Epoch/
+            pip3 install pytest pytest-cov
             if ! pytest --cov=epoch_backend -rA -vv --color=yes ./epoch_backend/tests/webserver_tests.py; then
               echo "Test(s) failed. Exiting with status 1."
               exit 1
