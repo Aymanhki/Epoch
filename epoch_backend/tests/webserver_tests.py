@@ -258,6 +258,8 @@ class webserver_tests(unittest.TestCase):
         for i in range(EXTREME_TEST_RANGE):
             threads[i].join()
 
+        threads.clear()
+
 
 if __name__ == '__main__':
     unittest.main()
