@@ -6,9 +6,9 @@ from business.utils import send_response
 from business.api_endpoints.router import handle_routing
 from business.api_endpoints.user_endpoints import upload_file
 
-
 keyPath = './assets/privkey.pem'
 certPath = './assets/fullchain.pem'
+
 
 class webserver:
     def __init__(self, host='0.0.0.0', port=8080):
@@ -35,9 +35,9 @@ class webserver:
 
         try:
             while self.running:
-                conn, addr = self.server_socket.accept()
 
                 try:
+                    conn, addr = self.server_socket.accept()
                     if self.use_ssl:
                         conn = self.ssl_context.wrap_socket(conn, server_side=True)
 
@@ -49,11 +49,8 @@ class webserver:
                     thread.start()
                     self.cleanup_threads()
                 except Exception as e:
-                    print(f"Error handling request from {addr}: {e}")
-                    request_data = conn.recv(1048576)
-                    print(f"Heard:\n{request_data}\n")
-                    send_response(conn, 500, "Internal Server Error", body=b"<h1>500 Internal Server Error</h1>")
-                    conn.close()
+                    print(f"Error handling request: {e}")
+
 
 
         except KeyboardInterrupt:

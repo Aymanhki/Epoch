@@ -60,22 +60,41 @@ function Register() {
         }
 
 
-        if(password.length < 8 || password.length > 60 || !password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,60}$/) || password.includes(' ') || password.includes('password')) {
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$/;
+        const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
+
+
+        if(!password.match(passwordRegex)) {
             setPasswordError(true);
-            setPasswordErrorPrompt('Password must be between 8 and 60 characters, contain at least one uppercase letter, one lowercase letter, one number, one special character, and cannot contain spaces or the word "password"');
+            setPasswordErrorPrompt('Password must contain at least 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character');
             wrongPassword = true;
         }
-
-        if(username.length < 3 || username.length > 16 || !username.match(/^[a-zA-Z0-9_]*$/ || username.includes(' '))) {
-            setUsernameError(true);
-            setUsernameErrorPrompt('Username must be between 3 and 16 characters, contain only letters, numbers, and underscores, and cannot contain spaces or special characters');
-            wrongUsername = true;
+        else
+        {
+            setPasswordError(false);
+            wrongPassword = false;
         }
 
-        if(name.length < 3 || name.length > 30) {
+        if(!username.match(usernameRegex)) {
+            setUsernameError(true);
+            setUsernameErrorPrompt('Username must be between 1 and 50 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -');
+            wrongUsername = true;
+        }
+        else
+        {
+            setUsernameError(false);
+            wrongUsername = false;
+        }
+
+        if(name.length <= 0 || name.length > 255) {
             setNameError(true);
-            setNameErrorPrompt('Name must be between 3 and 30 characters');
+            setNameErrorPrompt('Name must be between 1 and 255 characters');
             wrongName = true;
+        }
+        else
+        {
+            setNameError(false);
+            wrongName = false;
         }
 
 
@@ -100,9 +119,9 @@ function Register() {
                             .then((success) => {
                                 tryLogin(username, password)
                                     .then((success) => {
+                                        setIsLoading(false);
                                         window.location.href = '/epoch/profile';
                                         setRegisteringPrompt('Register');
-                                        setIsLoading(false);
                                     })
                                     .catch((error) => {
                                         setGeneralError(true);
@@ -135,24 +154,24 @@ function Register() {
                     } else {
                         tryLogin(username, password)
                             .then((success) => {
-                                window.location.href = '/epoch/profile';
                                 setRegisteringPrompt('Register');
-
+                                setIsLoading(false);
+                                window.location.href = '/epoch/profile';
                             })
                             .catch((error) => {
                                 setGeneralError(true);
-                                setRegisteringPrompt('Register');
                                 setIsLoading(false);
                                 setGeneralErrorPrompt(error);
+                                setRegisteringPrompt('Register');
                             });
                     }
 
                 })
                 .catch((error) => {
                     setGeneralError(true);
-                    setRegisteringPrompt('Register');
                     setIsLoading(false);
                     setGeneralErrorPrompt(error);
+                    setRegisteringPrompt('Register');
                 });
         }
     };

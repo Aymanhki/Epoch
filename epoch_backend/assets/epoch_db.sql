@@ -1,3 +1,8 @@
+-- #######################################################################################################
+-- The following script runs every time the server starts,                                               #
+-- DO NOT ADD ANYTHING TO THIS SCRIPT THAT YOU DO NOT WANT TO RUN EVERY TIME THE SERVER STARTS           #
+-- #######################################################################################################
+
 CREATE TABLE IF NOT EXISTS media_content (
     media_id SERIAL PRIMARY KEY,
     content_type VARCHAR(20) NOT NULL,
