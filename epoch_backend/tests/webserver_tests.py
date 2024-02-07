@@ -19,30 +19,29 @@ os.chdir(script_dir)
 from epoch_backend.business.webserver import webserver
 from epoch_backend.business.utils import start_db_tables, get_google_credentials
 
+web_server = webserver()
+server_thread = threading.Thread(target=web_server.run, daemon=True)
+
+
 class webserver_tests(unittest.TestCase):
-    server_thread = None
-    web_server = None
+
     username = str(uuid.uuid4())
     password = str(uuid.uuid4())
     name = str(uuid.uuid4())
     bio = str(uuid.uuid4())
 
-
-
     @classmethod
     def setUpClass(cls):
         start_db_tables()
         get_google_credentials()
-        cls.web_server = webserver()
-        cls.server_thread = threading.Thread(target=cls.web_server.run)
-        cls.server_thread.daemon = True
-        cls.server_thread.start()
+        global server_thread
+        server_thread.start()
 
     @classmethod
     def tearDownClass(cls):
-        cls.web_server.stop()
-        cls.server_thread.join()
-        time.sleep(5)
+        global web_server
+        web_server.running = False
+        server_thread.join()
 
 
     def set_session_id(self, value: str):
