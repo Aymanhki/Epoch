@@ -66,7 +66,8 @@ jobs:
             cd Epoch/epoch_backend/
             nohup python3 main.py > main.log 2>&1 &
             pip install -r requirements.txt
-            python -m pytest -rA -vv --color=yes tests/webserver_tests.py
+            pip install pytest
+            python3 -m pytest -rA -vv --color=yes tests/webserver_tests.py
             EXIT_STATUS=$?
             pkill -f "python3 main.py"
             exit $EXIT_STATUS
