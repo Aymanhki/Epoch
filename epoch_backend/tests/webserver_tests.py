@@ -6,6 +6,7 @@ import json
 import threading
 from pathlib import Path
 import os
+import time
 
 session_id: str = None
 user_id: int = None
@@ -19,10 +20,14 @@ from epoch_backend.business.webserver import webserver
 from epoch_backend.business.utils import start_db_tables, get_google_credentials
 
 class webserver_tests(unittest.TestCase):
+    server_thread = None
+    web_server = None
     username = str(uuid.uuid4())
     password = str(uuid.uuid4())
     name = str(uuid.uuid4())
     bio = str(uuid.uuid4())
+
+
 
     @classmethod
     def setUpClass(cls):
@@ -30,13 +35,14 @@ class webserver_tests(unittest.TestCase):
         get_google_credentials()
         cls.web_server = webserver()
         cls.server_thread = threading.Thread(target=cls.web_server.run)
+        cls.server_thread.daemon = True
         cls.server_thread.start()
 
     @classmethod
     def tearDownClass(cls):
         cls.web_server.stop()
         cls.server_thread.join()
-        exit(0)
+        time.sleep(5)
 
 
     def set_session_id(self, value: str):
@@ -266,7 +272,7 @@ class webserver_tests(unittest.TestCase):
 
         threads.clear()
 
-        exit(0)
+
 
 
 if __name__ == '__main__':
