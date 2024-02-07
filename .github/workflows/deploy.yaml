@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  clean:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,6 +44,49 @@ jobs:
             exit
           EOF
 
+  test:
+    needs: clean
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install SSH Client and sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client sshpass
+          sudo apt-get install -y python3-pip
+
+      - name: SSH into Google Cloud VM for testing
+        run: |
+          set -e 
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+            echo "Current directory path: $(pwd)"
+            cd
+            cd Epoch/epoch_backend/
+            nohup python3 main.py > main.log 2>&1 &
+            if ! python3 -m pytest -rA -vv --color=yes tests/webserver_tests.py; then
+              echo "Test(s) failed. Exiting with status 1."
+              exit 1
+            fi
+            pkill -f "python3 main.py"
+            exit 0
+          EOF
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install SSH Client and sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client sshpass
+
       - name: Deploying Backend (Build and Run Backend Docker Container)
         run: |
           sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
@@ -54,8 +97,9 @@ jobs:
             docker run -d -p 8080:8080 epoch_backend
             exit
           EOF
+        if: success()
 
-      - name: Build and Run Frontend Docker Container
+      - name: Deploying Frontend (Build and Run Frontend Docker Container)
         run: |
           sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
             echo "Current directory path: $(pwd)"
@@ -65,3 +109,4 @@ jobs:
             docker run -d -p 80:80 -p 443:443 epoch_frontend
             exit
           EOF
+        if: success()

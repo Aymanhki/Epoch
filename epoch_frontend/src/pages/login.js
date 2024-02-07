@@ -54,9 +54,9 @@ function Login() {
             setSigningInPrompt('Signing In...');
             tryLogin(username, password)
                 .then(success => {
+                    setIsLoading(false);
                     window.location.href = "/epoch/home";
                     setSigningInPrompt('Sign In');
-                    setIsLoading(false);
                 })
                 .catch(error => {
                     setGeneralError(true);
@@ -80,8 +80,9 @@ function Login() {
                 if (isMounted) {
                     console.log(data);
                     setSigningInPrompt('Sing In');
-                    window.location.href = "/epoch/home";
                     setIsLoading(false);
+                    window.location.href = "/epoch/home";
+
                 }
             })
             .catch(error => {

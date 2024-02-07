@@ -20,3 +20,6 @@ class access_session_persistence(session_persistence):
 
     def get_all_sessions(self):
         return self.session_persistence.get_all_sessions()
+
+    def remove_session_by_user_id(self, user_id: int):
+        self.session_persistence.remove_by_user_id(user_id)
