@@ -56,7 +56,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y openssh-client sshpass
-          sudo apt-get install -y python3-venv
           sudo apt-get install -y python3-pip
 
       - name: SSH into Google Cloud VM for testing
@@ -66,13 +65,9 @@ jobs:
             cd
             cd Epoch/epoch_backend/
             nohup python3 main.py > main.log 2>&1 &
-            python3 -m venv venv
-            source venv/bin/activate
             pip install -r requirements.txt
-            python -m pytest tests/webserver_tests.py 
+            python -m pytest -rA -vv --color=yes tests/webserver_tests.py
             EXIT_STATUS=$?
-            deactivate
-            rm -rf venv
             pkill -f "python3 main.py"
             exit $EXIT_STATUS
           EOF
