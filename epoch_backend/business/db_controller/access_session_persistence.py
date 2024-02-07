@@ -1,6 +1,6 @@
-from persistence.interfaces.session_persistence import session_persistence
-from objects.session import session
-from business.services import services
+from epoch_backend.persistence.interfaces.session_persistence import session_persistence
+from epoch_backend.objects.session import session
+from epoch_backend.business.services import services
 
 class access_session_persistence(session_persistence):
     def __init__(self):

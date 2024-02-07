@@ -1,6 +1,6 @@
-from persistence.interfaces.media_persistence import media_persistence
-from objects.media import media
-from business.utils import get_db_connection
+from ..interfaces.media_persistence import media_persistence
+from ...objects.media import media
+from ...business.utils import get_db_connection
 
 class epoch_media_persistence(media_persistence):
     def __init__(self):

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import '../styles/Register.css';
-import {removeSessionCookie, uploadFile, registerUser, tryLogin, deleteUser} from '../services/user';
+import {removeSessionCookie, uploadProfilePic, registerUser, tryLogin, deleteUser} from '../services/user';
 import {Spinner} from '../modules/Spinner';
 
 function Register() {
@@ -66,7 +66,7 @@ function Register() {
 
         if(!password.match(passwordRegex)) {
             setPasswordError(true);
-            setPasswordErrorPrompt('Password must contain at least 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character');
+            setPasswordErrorPrompt('Password must be between 1 and 254 characters, at least one uppercase letter, one lowercase letter, one number, and one special character');
             wrongPassword = true;
         }
         else
@@ -88,7 +88,7 @@ function Register() {
 
         if(name.length <= 0 || name.length > 255) {
             setNameError(true);
-            setNameErrorPrompt('Name must be between 1 and 255 characters');
+            setNameErrorPrompt('Name must be between 1 and 254 characters');
             wrongName = true;
         }
         else
@@ -115,7 +115,7 @@ function Register() {
             registerUser(userObject)
                 .then((success) => {
                     if (profilePic) {
-                        uploadFile(profilePic, success.user_id)
+                        uploadProfilePic(profilePic, success.user_id)
                             .then((success) => {
                                 tryLogin(username, password)
                                     .then((success) => {

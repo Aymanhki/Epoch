@@ -1,5 +1,6 @@
 import datetime
 import os
+import sys
 import pytz
 import json
 import psycopg2
@@ -10,7 +11,11 @@ from urllib.parse import urlparse, unquote
 
 BUCKET_NAME = "epoch_backend_cloud_storage"
 
+# Set the current working directory to the root of your project
+assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets'))
 
+db_params_path = os.path.join(assets_dir, "db_params.json")
+epoch_db_path = os.path.join(assets_dir, "epoch_db.sql")
 
 def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
     try:
@@ -96,7 +101,7 @@ def get_session_id_from_request( request_data):
 
 def get_db_connection():
     try:
-        with open("./assets/db_params.json", "r") as f:
+        with open(db_params_path, "r") as f:
             db_params = json.load(f)
             f.close()
 
@@ -117,7 +122,7 @@ def get_db_connection():
 
 def start_db_tables():
     try:
-        with open("./assets/epoch_db.sql", "r") as f:
+        with open(epoch_db_path, "r") as f:
             epoch_tables = f.read()
             f.close()
 
@@ -208,6 +213,16 @@ def is_file_in_bucket(file_path):
     blob_exists = blob.exists()
 
     return blob_exists
+
+def delete_file_from_bucket(file_path):
+    client = storage.Client()
+    bucket = client.get_bucket(BUCKET_NAME)
+    parsed_url = urlparse(file_path)
+    object_path = unquote(parsed_url.path.lstrip('/'))
+    object_path = object_path.replace(f"{BUCKET_NAME}/", "")
+
+    blob = bucket.blob(object_path)
+    blob.delete()
 
 def get_google_credentials():
     try:

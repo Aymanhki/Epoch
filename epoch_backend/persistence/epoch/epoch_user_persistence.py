@@ -1,7 +1,7 @@
 
-from persistence.interfaces.user_persistence import user_persistence
-from objects.user import user
-from business.utils import get_db_connection
+from ..interfaces.user_persistence import user_persistence
+from epoch_backend.objects.user import user
+from ...business.utils import get_db_connection, delete_file_from_bucket, is_file_in_bucket
 
 class epoch_user_persistence(user_persistence):
     def __init__(self):
@@ -95,6 +95,23 @@ class epoch_user_persistence(user_persistence):
         cursor = connection.cursor()
         cursor.execute(f"DELETE FROM users WHERE user_id = {user_id}")
         connection.commit()
+        cursor.execute(f"Select path FROM media_content WHERE associated_user = {user_id}")
+        result = cursor.fetchall()
+
+        for row in result:
+            delete_file_from_bucket(row[0])
+
+            if is_file_in_bucket(row[0]):
+                raise Exception("Failed to delete file from bucket")
+
+        cursor.execute(f"DELETE FROM media_content WHERE associated_user = {user_id}")
+        connection.commit()
+        cursor.execute(f"Select path FROM media_content WHERE associated_user = {user_id}")
+        result = cursor.fetchall()
+
+        if len(result) > 0:
+            raise Exception("Failed to delete user")
+
         cursor.close()
         connection.close()
 
