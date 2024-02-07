@@ -36,6 +36,7 @@ class webserver_tests(unittest.TestCase):
     def tearDownClass(cls):
         cls.web_server.stop()
         cls.server_thread.join()
+        exit(0)
 
 
     def set_session_id(self, value: str):
@@ -221,6 +222,7 @@ class webserver_tests(unittest.TestCase):
         threads = []
         for i in range(EXTREME_TEST_RANGE):
             threads.append(threading.Thread(target=self.register_user, args=(i, usernames, passwords, names, bios, session_ids, user_ids, media_ids)))
+            threads[i].daemon = True
             threads[i].start()
 
         for i in range(EXTREME_TEST_RANGE):
@@ -229,6 +231,7 @@ class webserver_tests(unittest.TestCase):
         threads = []
         for i in range(EXTREME_TEST_RANGE):
             threads.append(threading.Thread(target=self.upload_profile_pic, args=(i, usernames, user_ids, media_ids)))
+            threads[i].daemon = True
             threads[i].start()
 
         for i in range(EXTREME_TEST_RANGE):
@@ -237,6 +240,7 @@ class webserver_tests(unittest.TestCase):
         threads = []
         for i in range(EXTREME_TEST_RANGE):
             threads.append(threading.Thread(target=self.login_user, args=(i, usernames, passwords, session_ids)))
+            threads[i].daemon = True
             threads[i].start()
 
         for i in range(EXTREME_TEST_RANGE):
@@ -245,6 +249,7 @@ class webserver_tests(unittest.TestCase):
         threads = []
         for i in range(EXTREME_TEST_RANGE):
             threads.append(threading.Thread(target=self.get_user_info, args=(i, usernames, names, bios, user_ids, media_ids, session_ids)))
+            threads[i].daemon = True
             threads[i].start()
 
         for i in range(EXTREME_TEST_RANGE):
@@ -253,12 +258,15 @@ class webserver_tests(unittest.TestCase):
         threads = []
         for i in range(EXTREME_TEST_RANGE):
             threads.append(threading.Thread(target=self.delete_user, args=(i, user_ids, session_ids)))
+            threads[i].daemon = True
             threads[i].start()
 
         for i in range(EXTREME_TEST_RANGE):
             threads[i].join()
 
         threads.clear()
+
+        exit(0)
 
 
 if __name__ == '__main__':
