@@ -42,6 +42,7 @@ class webserver:
                         conn = self.ssl_context.wrap_socket(conn, server_side=True)
 
                     thread = threading.Thread(target=self.handle_request, args=(conn, addr))
+                    thread.daemon = True
 
                     with self.thread_lock:
                         self.active_threads.append(thread)
@@ -102,5 +103,6 @@ class webserver:
 
         self.active_threads.clear()
         self.server_socket.close()
+        exit(0)
 
 
