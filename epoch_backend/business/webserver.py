@@ -2,9 +2,9 @@ import socket
 import threading
 import os
 import ssl
-from business.utils import send_response
-from business.api_endpoints.router import handle_routing
-from business.api_endpoints.user_endpoints import upload_file
+from .utils import send_response
+from .api_endpoints.router import handle_routing
+from .api_endpoints.user_endpoints import upload_profile_pic
 
 keyPath = './assets/privkey.pem'
 certPath = './assets/fullchain.pem'
@@ -24,7 +24,7 @@ class webserver:
         self.host = host
         self.port = port
         self.server_socket.bind((host, port))
-        self.server_socket.listen(40)
+        self.server_socket.listen(1000)
         self.active_threads = []
         self.thread_lock = threading.Lock()
         self.http_thread_lock = threading.Lock()
@@ -66,15 +66,15 @@ class webserver:
         try:
             conn.settimeout(None)
             request_data = conn.recv(1048576)
-            print(f"Heard:\n{request_data}\n")
 
-            if request_data.startswith(b"POST /api/upload/"):
-                upload_file(conn, request_data)
+            if request_data.startswith(b"POST /api/upload/profile/1/"):
+                upload_profile_pic(conn, request_data)
             else:
                 request_data = request_data.decode('UTF-8')
                 request_lines = request_data.split('\r\n')
                 request_line = request_lines[0]
                 method, relative_path, _ = request_line.split(' ')
+                print(f"Heard:\n{request_data}\n")
                 handle_routing(relative_path, request_data, conn, method)
 
         except Exception as e:
@@ -84,7 +84,15 @@ class webserver:
 
     def cleanup_threads(self):
         with self.thread_lock:
+            num_threads_before_cleanup = len(self.active_threads)
             self.active_threads = [thread for thread in self.active_threads if thread.is_alive()]
+            num_threads_after_cleanup = len(self.active_threads)
+
+            # Print information about closed thread and total alive threads
+            closed_thread_position = num_threads_before_cleanup - num_threads_after_cleanup
+            if closed_thread_position > 0:
+                print(f"Closed thread at position {closed_thread_position}.")
+            print(f"Total alive threads: {num_threads_after_cleanup}")
 
     def stop(self):
         self.running = False

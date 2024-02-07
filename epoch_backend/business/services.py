@@ -1,6 +1,6 @@
-from persistence.epoch.epoch_user_persistence import epoch_user_persistence
-from persistence.epoch.epoch_session_persistence import epoch_session_persistence
-from persistence.epoch.epoch_media_persistence import epoch_media_persistence
+from ..persistence.epoch.epoch_user_persistence import epoch_user_persistence
+from ..persistence.epoch.epoch_session_persistence import epoch_session_persistence
+from ..persistence.epoch.epoch_media_persistence import epoch_media_persistence
 
 class services:
     @staticmethod

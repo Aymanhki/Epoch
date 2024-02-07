@@ -1,14 +1,14 @@
 import os
-from business.utils import send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
-from business.api_endpoints.user_endpoints import post_user, get_user, register_user, delete_user
-from business.db_controller.access_session_persistence import access_session_persistence
+from ..utils import send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
+from ..api_endpoints.user_endpoints import post_user, get_user, register_user, delete_user
+from ..db_controller.access_session_persistence import access_session_persistence
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')
 
 def handle_routing(relative_path, request_data, conn, method):
     if relative_path.startswith('/api/'):
-        if relative_path.startswith('/api/') and relative_path != '/api/login/' and relative_path != '/api/register/' and relative_path != '/api/upload/':
+        if relative_path.startswith('/api/') and relative_path != '/api/login/' and relative_path != '/api/register/' and relative_path != '/api/upload/profile/1/':
             session_id = get_session_id_from_request(request_data)
             if access_session_persistence().get_session(session_id) is None:
                 send_response(conn, 401, "Unauthorized", body=b"<h1>401 Unauthorized</h1>")

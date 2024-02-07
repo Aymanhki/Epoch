@@ -1,12 +1,12 @@
 import datetime
 import json
-from business.utils import send_response, get_cors_headers, get_origin_from_headers, upload_file_to_cloud, download_file_to_cloud, is_file_in_bucket
-from business.db_controller.access_user_persistence import access_user_persistence
-from business.db_controller.access_media_persistence import access_media_persistence
-from business.db_controller.access_session_persistence import access_session_persistence
-from objects.session import session
-from objects.media import media
-from objects.user import user
+from ..utils import send_response, get_cors_headers, get_origin_from_headers, upload_file_to_cloud, download_file_to_cloud, is_file_in_bucket
+from ..db_controller.access_user_persistence import access_user_persistence
+from ..db_controller.access_media_persistence import access_media_persistence
+from ..db_controller.access_session_persistence import access_session_persistence
+from epoch_backend.objects.session import session
+from epoch_backend.objects.media import media
+from epoch_backend.objects.user import user
 import uuid
 import base64
 
@@ -116,19 +116,16 @@ def register_user(conn, request_data):
     else:
         send_response(conn, 409, "Username already exist", body=b"<h1>409 Conflict</h1>", headers=get_cors_headers(origin))
 
-def upload_file(conn, request_data):
+def upload_profile_pic(conn, request_data):
     headers, body = request_data.split(b'\r\n\r\n', 1)
-
-    # Convert headers to a list of strings
+    print(f"Heard:\n{headers}\n")
     header_lines = headers.decode('UTF-8').split('\r\n')
 
-    # Initialize variables to store extracted values
     content_length = None
     user_id = None
     content_type = None
     file_name = None
 
-    # Iterate through header lines to find the desired strings
     for line in header_lines:
         if line.startswith('Content-Length:'):
             content_length = int(line.split(': ')[1])
@@ -141,18 +138,18 @@ def upload_file(conn, request_data):
 
     origin = get_origin_from_headers(headers.decode('UTF-8'))
 
-    print(f"Heard:\n{headers.decode('UTF-8')}\n")
-
     while len(body) < content_length:
         body += conn.recv(1048576)
 
     path = upload_file_to_cloud(user_id, file_name, file=body, content_type=content_type)
     media_file = media(content_type, file_name, user_id, path)
     media_id = access_media_persistence().add_media(media_file)
+    file_uploaded = is_file_in_bucket(path)
 
-    if media_id is not None:
+    if media_id is not None and file_uploaded:
         access_user_persistence().update_user_profile_pic(user_id=user_id, profile_pic_id=media_id)
-        send_response(conn, 200, "OK", body=b"<h1>200 OK</h1>", headers=get_cors_headers(origin))
+        print(f"*************** File uploaded, media_id: {media_id}, path: {path}")
+        send_response(conn, 200, "OK", body=json.dumps({"media_id": media_id}).encode('UTF-8'), headers=get_cors_headers(origin))
     else:
         send_response(conn, 500, "Could not upload profile picture, internal Server Error", body=b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
 
