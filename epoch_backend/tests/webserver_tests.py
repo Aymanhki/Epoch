@@ -3,10 +3,11 @@ import requests
 import uuid
 import base64
 import json
-import threading
 from pathlib import Path
 import os
 import time
+import multiprocessing
+
 
 session_id: str = None
 user_id: int = None
@@ -19,12 +20,10 @@ os.chdir(script_dir)
 from epoch_backend.business.webserver import webserver
 from epoch_backend.business.utils import start_db_tables, get_google_credentials
 
-web_server = webserver()
-server_thread = threading.Thread(target=web_server.run, daemon=True)
+
 
 
 class webserver_tests(unittest.TestCase):
-
     username = str(uuid.uuid4())
     password = str(uuid.uuid4())
     name = str(uuid.uuid4())
@@ -34,15 +33,16 @@ class webserver_tests(unittest.TestCase):
     def setUpClass(cls):
         start_db_tables()
         get_google_credentials()
-        global server_thread
-        server_thread.start()
+        cls.web_server = webserver()
+        cls.server_process = multiprocessing.Process(target=cls.web_server.run)
+        cls.server_process.start()
+        time.sleep(1)
 
     @classmethod
     def tearDownClass(cls):
-        global web_server
-        web_server.running = False
-        server_thread.join()
-
+        cls.web_server.stop()
+        cls.server_process.terminate()
+        cls.server_process.join()
 
     def set_session_id(self, value: str):
         global session_id
@@ -144,9 +144,6 @@ class webserver_tests(unittest.TestCase):
         response_json = response.json()
         self.assertTrue('user_id' in response_json)
         self.set_user_id(response_json['user_id'])
-
-
-
         response = requests.post('http://localhost:8080/api/upload/profile/1/', data=TEST_PROFILE_PIC_BINARY, headers={'File-Name': 'test.jpg', 'Content-Type': 'image/jpeg', 'User-Id': str(self.get_user_id())})
         assert (response.status_code == 200)
         response = requests.post('http://localhost:8080/api/login/', json={'username': self.username, 'password': self.password})
@@ -194,7 +191,6 @@ class webserver_tests(unittest.TestCase):
         session_ids[i] = response.text.split('=')[1]
         print(session_ids[i])
         print(f"User {i} logged in.")
-
 
     def get_user_info(self, i, usernames, names, bios, user_ids, media_ids, session_ids):
         print(f"Getting user info for user {i}...")
@@ -270,7 +266,6 @@ class webserver_tests(unittest.TestCase):
             threads[i].join()
 
         threads.clear()
-
 
 
 

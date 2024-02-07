@@ -2,6 +2,7 @@ import socket
 import threading
 import os
 import ssl
+import signal
 from .utils import send_response
 from .api_endpoints.router import handle_routing
 from .api_endpoints.user_endpoints import upload_profile_pic
@@ -94,12 +95,17 @@ class webserver:
             print(f"Total alive threads: {num_threads_after_cleanup}")
 
     def stop(self):
-        self.running = False
+        try:
+            self.running = False
 
-        for thread in self.active_threads:
-            thread.join()
+            for thread in self.active_threads:
+                thread.join()
 
-        self.active_threads.clear()
-        self.server_socket.close()
+            self.active_threads.clear()
+            self.server_socket.close()
+
+
+        except Exception as e:
+            print(f"Error while stopping the server: {e}")
 
 
