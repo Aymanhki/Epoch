@@ -20,8 +20,8 @@ jobs:
 
       - name: SSH into Google Cloud VM for cleanup
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} << EOF
-            echo "Current directory path: \$(pwd)"
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+            echo "Current directory path: $(pwd)"
             cd 
             rm -rf Epoch
             sudo fuser -k -n tcp 443
@@ -32,6 +32,7 @@ jobs:
             docker rm \$(docker ps -aq)
             docker rmi \$(docker images -q)
             git clone https://github.com/Aymanhki/Epoch.git 
+            cd
             cd Epoch/epoch_backend/assets/
             cp /etc/letsencrypt/live/aymanhkias.com/fullchain.pem ./
             cp /etc/letsencrypt/live/aymanhkias.com/privkey.pem ./
@@ -39,6 +40,7 @@ jobs:
             cd Epoch/epoch_frontend/
             cp /etc/letsencrypt/live/aymanhkias.com/fullchain.pem ./
             cp /etc/letsencrypt/live/aymanhkias.com/privkey.pem ./
+            cd
             exit
           EOF
 
@@ -49,10 +51,16 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Install SSH Client and sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client sshpass
+
       - name: SSH into Google Cloud VM for testing
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} << EOF
-            echo "Current directory path: \$(pwd)"
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+            echo "Current directory path: $(pwd)"
+            cd
             cd Epoch/epoch_backend/
             nohup python3 main.py > main.log 2>&1 &
             python3 -m venv venv
@@ -74,10 +82,16 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Install SSH Client and sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client sshpass
+
       - name: Deploying Backend (Build and Run Backend Docker Container)
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} << EOF
-            echo "Current directory path: \$(pwd)"
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+            echo "Current directory path: $(pwd)"
+            cd
             cd Epoch/epoch_backend/
             docker build -t epoch_backend ./
             docker run -d -p 8080:8080 epoch_backend
@@ -87,8 +101,9 @@ jobs:
 
       - name: Deploying Frontend (Build and Run Frontend Docker Container)
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SERVER_IP }} << EOF
-            echo "Current directory path: \$(pwd)"
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+            echo "Current directory path: $(pwd)"
+            cd
             cd Epoch/epoch_frontend/
             docker build -t epoch_frontend ./
             docker run -d -p 80:80 -p 443:443 epoch_frontend
