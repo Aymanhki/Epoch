@@ -36,14 +36,6 @@ jobs:
             docker rmi \$(docker images -q)
             git clone https://github.com/Aymanhki/Epoch.git 
             cd
-            cd Epoch/epoch_backend/assets/
-            cp /etc/letsencrypt/live/aymanhkias.com/fullchain.pem ./
-            cp /etc/letsencrypt/live/aymanhkias.com/privkey.pem ./
-            cd
-            cd Epoch/epoch_frontend/
-            cp /etc/letsencrypt/live/aymanhkias.com/fullchain.pem ./
-            cp /etc/letsencrypt/live/aymanhkias.com/privkey.pem ./
-            cd
             cd Epoch/
             if ! pytest --cov=epoch_backend -rA -vv --color=yes ./epoch_backend/tests/webserver_tests.py; then
               echo "Test(s) failed. Exiting with status 1."
