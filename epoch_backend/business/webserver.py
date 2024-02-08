@@ -2,7 +2,6 @@ import socket
 import threading
 import os
 import ssl
-import signal
 from .utils import send_response
 from .api_endpoints.router import handle_routing
 from .api_endpoints.user_endpoints import upload_profile_pic
@@ -84,12 +83,15 @@ class webserver:
 
     def cleanup_threads(self):
         with self.thread_lock:
+            for thread in self.active_threads:
+                if not thread.is_alive():
+                    thread.join()
+
             num_threads_before_cleanup = len(self.active_threads)
             self.active_threads = [thread for thread in self.active_threads if thread.is_alive()]
             num_threads_after_cleanup = len(self.active_threads)
-
-            # Print information about closed thread and total alive threads
             closed_thread_position = num_threads_before_cleanup - num_threads_after_cleanup
+
             if closed_thread_position > 0:
                 print(f"Closed thread at position {closed_thread_position}.")
             print(f"Total alive threads: {num_threads_after_cleanup}")
@@ -97,10 +99,8 @@ class webserver:
     def stop(self):
         try:
             self.running = False
-
-            for thread in self.active_threads:
-                thread.join()
-
+            self.cleanup_threads();
+            self.server_socket.shutdown(socket.SHUT_RDWR)
             self.active_threads.clear()
             self.server_socket.close()
 
