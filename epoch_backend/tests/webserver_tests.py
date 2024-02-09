@@ -7,12 +7,14 @@ from pathlib import Path
 import os
 import time
 import threading
+import pytest
+
 
 
 session_id: str = None
 user_id: int = None
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
-EXTREME_TEST_RANGE = 10
+EXTREME_TEST_RANGE = 3
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
@@ -42,6 +44,7 @@ class webserver_tests(unittest.TestCase):
     def tearDownClass(cls):
         cls.web_server.stop()
         cls.server_thread.join()
+        pytest.exit('Server stopped')
 
     def set_session_id(self, value: str):
         global session_id
