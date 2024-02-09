@@ -100,7 +100,6 @@ class webserver:
         try:
             self.running = False
             self.cleanup_threads();
-            self.server_socket.shutdown(socket.SHUT_RDWR)
             self.active_threads.clear()
             self.server_socket.close()
 
