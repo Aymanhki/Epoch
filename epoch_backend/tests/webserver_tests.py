@@ -21,12 +21,9 @@ from epoch_backend.business.webserver import webserver
 from epoch_backend.business.utils import start_db_tables, get_google_credentials
 
 
-
-
 class webserver_tests(unittest.TestCase):
     server_thread = None
     web_server = None
-
     username = str(uuid.uuid4())
     password = str(uuid.uuid4())
     name = str(uuid.uuid4())
@@ -46,7 +43,6 @@ class webserver_tests(unittest.TestCase):
         cls.web_server.stop()
         cls.server_thread.join()
 
-
     def set_session_id(self, value: str):
         global session_id
         session_id = value
@@ -62,10 +58,6 @@ class webserver_tests(unittest.TestCase):
     def get_user_id(self):
         global user_id
         return user_id
-
-    def parallel_request(self, method, url, data=None, cookies=None):
-        response = requests.request(method, url, json=data, cookies=cookies)
-        return response
 
     def test_0_register_user(self):
         print("Registering user...")
@@ -267,9 +259,6 @@ class webserver_tests(unittest.TestCase):
 
         for i in range(EXTREME_TEST_RANGE):
             threads[i].join()
-
-        threads.clear()
-
 
 
 if __name__ == '__main__':

@@ -13,7 +13,7 @@ certPath = './assets/fullchain.pem'
 class webserver:
     def __init__(self, host='0.0.0.0', port=8080):
 
-        self.use_ssl = os.environ.get("DEPLOYED") == "true"  # Set DEPLOYED environment variable when deploying
+        self.use_ssl = os.environ.get("DEPLOYED") == "true"
 
         if self.use_ssl:
             self.ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
@@ -100,6 +100,7 @@ class webserver:
         try:
             self.running = False
             self.cleanup_threads();
+            self.cleanup_threads()
             self.active_threads.clear()
             self.server_socket.close()
 
