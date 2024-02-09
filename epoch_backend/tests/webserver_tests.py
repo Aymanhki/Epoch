@@ -7,6 +7,8 @@ from pathlib import Path
 import os
 import time
 import threading
+import pytest
+
 
 
 session_id: str = None
@@ -42,6 +44,7 @@ class webserver_tests(unittest.TestCase):
     def tearDownClass(cls):
         cls.web_server.stop()
         cls.server_thread.join()
+        pytest.exit('Server stopped')
 
     def set_session_id(self, value: str):
         global session_id
