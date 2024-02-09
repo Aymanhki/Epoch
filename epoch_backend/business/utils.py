@@ -1,6 +1,5 @@
 import datetime
 import os
-import sys
 import pytz
 import json
 import psycopg2
