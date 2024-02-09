@@ -101,8 +101,9 @@ class webserver:
             print("Stopping webserver...")
             self.running = False
             self.cleanup_threads()
-            self.active_threads.clear()
             self.server_socket.close()
+            self.active_threads.clear()
+
 
         except Exception as e:
             print(f"Error while stopping the server: {e}")
