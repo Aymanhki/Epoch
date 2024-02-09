@@ -101,12 +101,12 @@ function removeSessionCookie() {
     document.cookie = "epoch_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
-function uploadFile(file, userId) {
+function uploadProfilePic(file, userId) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('POST', `${serverUrl}/api/upload/`, true);
+        xhr.open('POST', `${serverUrl}/api/upload/profile/1/`, true);
         xhr.setRequestHeader('Content-Type', file.type);
         xhr.setRequestHeader('File-Name', file.name);
         xhr.setRequestHeader('User-Id', userId);
@@ -223,4 +223,4 @@ function deleteUser(userId) {
 }
 
 
-module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadFile, registerUser, deleteUser};
+module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadProfilePic, registerUser, deleteUser};
