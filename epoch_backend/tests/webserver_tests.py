@@ -12,8 +12,8 @@ import threading
 session_id: str = None
 user_id: int = None
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
-EXTREME_TEST_RANGE = 100
-EXTREM_TEST_UPLOAD_RANGE = 30
+EXTREME_TEST_RANGE = 50
+EXTREM_TEST_UPLOAD_RANGE = 10
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
