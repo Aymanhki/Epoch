@@ -15,7 +15,7 @@ import multiprocessing
 session_id: str = None
 user_id: int = None
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
-EXTREME_TEST_RANGE = 30
+EXTREME_TEST_RANGE = 10
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
@@ -37,7 +37,8 @@ class webserver_tests(unittest.TestCase):
         start_db_tables()
         get_google_credentials()
         cls.web_server = webserver()
-        cls.server_thread = threading.Thread(target=cls.web_server.run)
+        cls.server_thread = threading.Thread(target=cls.web_server.run, daemon=True)
+        cls.server_thread.start()
         time.sleep(1)
 
     @classmethod

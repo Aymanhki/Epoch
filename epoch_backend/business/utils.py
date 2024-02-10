@@ -197,7 +197,7 @@ def download_file_to_cloud(file_url):
     object_path = object_path.replace(f"{BUCKET_NAME}/", "")
 
     blob = bucket.blob(object_path)
-    file = blob.download_as_string()
+    file = blob.download_as_bytes()
 
     return file
 
