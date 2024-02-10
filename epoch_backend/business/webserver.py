@@ -26,8 +26,6 @@ class webserver:
         self.server_socket.bind((host, port))
         self.server_socket.listen(1000)
         self.active_threads = []
-        self.thread_lock = threading.Lock()
-        self.http_thread_lock = threading.Lock()
         self.running = True
 
     def run(self):
@@ -44,8 +42,7 @@ class webserver:
                     thread = threading.Thread(target=self.handle_request, args=(conn, addr))
                     thread.daemon = True
 
-                    with self.thread_lock:
-                        self.active_threads.append(thread)
+                    self.active_threads.append(thread)
 
                     thread.start()
                     self.cleanup_threads()
@@ -82,19 +79,18 @@ class webserver:
             return
 
     def cleanup_threads(self):
-        with self.thread_lock:
-            for thread in self.active_threads:
-                if not thread.is_alive():
-                    thread.join()
+        for thread in self.active_threads:
+            if not thread.is_alive():
+                thread.join()
 
-            num_threads_before_cleanup = len(self.active_threads)
-            self.active_threads = [thread for thread in self.active_threads if thread.is_alive()]
-            num_threads_after_cleanup = len(self.active_threads)
-            closed_thread_position = num_threads_before_cleanup - num_threads_after_cleanup
+        num_threads_before_cleanup = len(self.active_threads)
+        self.active_threads = [thread for thread in self.active_threads if thread.is_alive()]
+        num_threads_after_cleanup = len(self.active_threads)
+        closed_thread_position = num_threads_before_cleanup - num_threads_after_cleanup
 
-            if closed_thread_position > 0:
-                print(f"Closed thread at position {closed_thread_position}.")
-            print(f"Total alive threads: {num_threads_after_cleanup}")
+        if closed_thread_position > 0:
+            print(f"Closed thread at position {closed_thread_position}.")
+        print(f"Total alive threads: {num_threads_after_cleanup}")
 
     def stop(self):
         try:
