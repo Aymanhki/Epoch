@@ -37,7 +37,7 @@ jobs:
             git clone https://github.com/Aymanhki/Epoch.git 
             cd
             cd Epoch/
-            if ! pytest -nauto 4 -s --cov=epoch_backend -rA -vv --color=yes ./epoch_backend/tests/webserver_tests.py; then
+            if ! pytest -nauto -s --cov=epoch_backend -rA -vv --color=yes ./epoch_backend/tests/webserver_tests.py; then
               echo "Test(s) failed. Exiting with status 1."
               exit 1
             fi
