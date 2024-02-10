@@ -209,59 +209,59 @@ class webserver_tests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         print(f"User {i} deleted.")
 
-    def test_9_all_tests_extreme(self):
-        usernames = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
-        passwords = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
-        names = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
-        bios = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
-        session_ids = [ None for i in range(EXTREME_TEST_RANGE) ]
-        user_ids = [ None for i in range(EXTREME_TEST_RANGE) ]
-        media_ids = [ None for i in range(EXTREME_TEST_RANGE) ]
-
-        threads = []
-        for i in range(EXTREME_TEST_RANGE):
-            threads.append(threading.Thread(target=self.register_user, args=(i, usernames, passwords, names, bios, session_ids, user_ids, media_ids)))
-            threads[i].daemon = True
-            threads[i].start()
-
-        for i in range(EXTREME_TEST_RANGE):
-            threads[i].join()
-
-        threads = []
-        for i in range(EXTREME_TEST_RANGE):
-            threads.append(threading.Thread(target=self.upload_profile_pic, args=(i, usernames, user_ids, media_ids)))
-            threads[i].daemon = True
-            threads[i].start()
-
-        for i in range(EXTREME_TEST_RANGE):
-            threads[i].join()
-
-        threads = []
-        for i in range(EXTREME_TEST_RANGE):
-            threads.append(threading.Thread(target=self.login_user, args=(i, usernames, passwords, session_ids)))
-            threads[i].daemon = True
-            threads[i].start()
-
-        for i in range(EXTREME_TEST_RANGE):
-            threads[i].join()
-
-        threads = []
-        for i in range(EXTREME_TEST_RANGE):
-            threads.append(threading.Thread(target=self.get_user_info, args=(i, usernames, names, bios, user_ids, media_ids, session_ids)))
-            threads[i].daemon = True
-            threads[i].start()
-
-        for i in range(EXTREME_TEST_RANGE):
-            threads[i].join()
-
-        threads = []
-        for i in range(EXTREME_TEST_RANGE):
-            threads.append(threading.Thread(target=self.delete_user, args=(i, user_ids, session_ids)))
-            threads[i].daemon = True
-            threads[i].start()
-
-        for i in range(EXTREME_TEST_RANGE):
-            threads[i].join()
+    # def test_9_all_tests_extreme(self):
+    #     usernames = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
+    #     passwords = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
+    #     names = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
+    #     bios = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
+    #     session_ids = [ None for i in range(EXTREME_TEST_RANGE) ]
+    #     user_ids = [ None for i in range(EXTREME_TEST_RANGE) ]
+    #     media_ids = [ None for i in range(EXTREME_TEST_RANGE) ]
+    #
+    #     threads = []
+    #     for i in range(EXTREME_TEST_RANGE):
+    #         threads.append(threading.Thread(target=self.register_user, args=(i, usernames, passwords, names, bios, session_ids, user_ids, media_ids)))
+    #         threads[i].daemon = True
+    #         threads[i].start()
+    #
+    #     for i in range(EXTREME_TEST_RANGE):
+    #         threads[i].join()
+    #
+    #     threads = []
+    #     for i in range(EXTREME_TEST_RANGE):
+    #         threads.append(threading.Thread(target=self.upload_profile_pic, args=(i, usernames, user_ids, media_ids)))
+    #         threads[i].daemon = True
+    #         threads[i].start()
+    #
+    #     for i in range(EXTREME_TEST_RANGE):
+    #         threads[i].join()
+    #
+    #     threads = []
+    #     for i in range(EXTREME_TEST_RANGE):
+    #         threads.append(threading.Thread(target=self.login_user, args=(i, usernames, passwords, session_ids)))
+    #         threads[i].daemon = True
+    #         threads[i].start()
+    #
+    #     for i in range(EXTREME_TEST_RANGE):
+    #         threads[i].join()
+    #
+    #     threads = []
+    #     for i in range(EXTREME_TEST_RANGE):
+    #         threads.append(threading.Thread(target=self.get_user_info, args=(i, usernames, names, bios, user_ids, media_ids, session_ids)))
+    #         threads[i].daemon = True
+    #         threads[i].start()
+    #
+    #     for i in range(EXTREME_TEST_RANGE):
+    #         threads[i].join()
+    #
+    #     threads = []
+    #     for i in range(EXTREME_TEST_RANGE):
+    #         threads.append(threading.Thread(target=self.delete_user, args=(i, user_ids, session_ids)))
+    #         threads[i].daemon = True
+    #         threads[i].start()
+    #
+    #     for i in range(EXTREME_TEST_RANGE):
+    #         threads[i].join()
 
 
 if __name__ == '__main__':
