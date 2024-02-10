@@ -49,6 +49,7 @@ class webserver:
 
                 except Exception as e:
                     print(f"Error handling request: {e}")
+                    conn.close()
 
         except KeyboardInterrupt:
             print("\n*** Server terminated by user. ***\n")
