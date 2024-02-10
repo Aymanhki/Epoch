@@ -25,9 +25,9 @@ class webserver:
         self.host = host
         self.port = port
         self.server_socket.bind((host, port))
-        self.lock = threading.Lock()
+        self.executor = ThreadPoolExecutor(max_workers=100)
         self.server_socket.listen(1000)
-        self.active_threads = []
+
         self.running = True
 
     def run(self):
@@ -41,12 +41,7 @@ class webserver:
                     if self.use_ssl:
                         conn = self.ssl_context.wrap_socket(conn, server_side=True)
 
-
-                    new_thread = threading.Thread(target=self.handle_request, args=(conn, addr), daemon=True)
-                    new_thread.start()
-                    self.active_threads.append(new_thread)
-
-                    self.cleanup_threads()
+                    thread = self.executor.submit(self.handle_request, conn, addr)
 
                 except Exception as e:
                     print(f"Error handling request: {e}")
@@ -83,31 +78,30 @@ class webserver:
             conn.close()
             return
 
-    def cleanup_threads(self):
-        num_threads_stopped = 0
-
-        try:
-            with self.lock:
-                for thread in self.active_threads:
-                    if not thread.is_alive():
-                        thread.join()
-                        num_threads_stopped += 1
-
-                self.active_threads = [thread for thread in self.active_threads if thread.is_alive()]
-                num_threads_running = len(self.active_threads)
-
-                print(f"Threads running: {num_threads_running}, threads stopped: {num_threads_stopped}")
-        except Exception as e:
-            print(f"Error in cleanup_threads: {e}")
+    # def cleanup_threads(self):
+    #     num_threads_stopped = 0
+    #
+    #     try:
+    #         with self.lock:
+    #             for thread in self.active_threads:
+    #                 if not thread.is_alive():
+    #                     thread.join()
+    #                     num_threads_stopped += 1
+    #
+    #             self.active_threads = [thread for thread in self.active_threads if thread.is_alive()]
+    #             num_threads_running = len(self.active_threads)
+    #
+    #             print(f"Threads running: {num_threads_running}, threads stopped: {num_threads_stopped}")
+    #     except Exception as e:
+    #         print(f"Error in cleanup_threads: {e}")
 
 
     def stop(self):
         try:
             print("Stopping webserver...")
             self.running = False
-            self.cleanup_threads()
+            self.executor.shutdown(wait=False)
             self.server_socket.shutdown(socket.SHUT_RDWR)
-            self.active_threads = []
             print("Server stopped.")
 
         except Exception as e:
