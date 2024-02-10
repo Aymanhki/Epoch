@@ -22,6 +22,7 @@ jobs:
 
       - name: SSH into Google Cloud VM for testing
         run: |
+          set -e 
           sshpass -p ${{ secrets.TESTER_SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.TESTER_SSH_USERNAME }} << EOF
             echo "Current directory path: $(pwd)"
             cd 
@@ -36,11 +37,9 @@ jobs:
             git clone https://github.com/Aymanhki/Epoch.git 
             cd
             cd Epoch/
-            pytest -s --cov=epoch_backend -rA -vv --color=yes ./epoch_backend/tests/webserver_tests.py --full-trace
-            PYTEST_EXIT_STATUS=$?
-            if [ $PYTEST_EXIT_STATUS -ne 0 ]; then
-              echo "Test(s) failed. Exiting with status $PYTEST_EXIT_STATUS."
-              exit $PYTEST_EXIT_STATUS
+            if ! pytest -s --cov=epoch_backend -rA -vv --color=yes ./epoch_backend/tests/webserver_tests.py --full-trace; then
+              echo "Test(s) failed. Exiting with status 1."
+              exit 1
             fi
             if ! docker build -t epoch_backend ./epoch_backend/; then
               echo "Docker build failed. Exiting with status 1."
