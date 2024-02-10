@@ -25,6 +25,7 @@ class webserver:
         self.host = host
         self.port = port
         self.server_socket.bind((host, port))
+        self.lock = threading.Lock()
         self.server_socket.listen(1000)
         self.active_threads = []
         self.running = True
@@ -86,15 +87,16 @@ class webserver:
         num_threads_stopped = 0
 
         try:
-            for thread in self.active_threads:
-                if not thread.is_alive():
-                    thread.join()
-                    num_threads_stopped += 1
+            with self.lock:
+                for thread in self.active_threads:
+                    if not thread.is_alive():
+                        thread.join()
+                        num_threads_stopped += 1
 
-            self.active_threads = [thread for thread in self.active_threads if thread.is_alive()]
-            num_threads_running = len(self.active_threads)
+                self.active_threads = [thread for thread in self.active_threads if thread.is_alive()]
+                num_threads_running = len(self.active_threads)
 
-            print(f"Threads running: {num_threads_running}, threads stopped: {num_threads_stopped}")
+                print(f"Threads running: {num_threads_running}, threads stopped: {num_threads_stopped}")
         except Exception as e:
             print(f"Error in cleanup_threads: {e}")
 
