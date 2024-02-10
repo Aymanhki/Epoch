@@ -22,7 +22,6 @@ jobs:
 
       - name: SSH into Google Cloud VM for testing
         run: |
-          set -e 
           sshpass -p ${{ secrets.TESTER_SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.TESTER_SSH_USERNAME }} << EOF
             echo "Current directory path: $(pwd)"
             cd 
