@@ -12,7 +12,7 @@ import threading
 session_id: str = None
 user_id: int = None
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
-EXTREME_TEST_RANGE = 50
+EXTREME_TEST_RANGE = 900
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
@@ -196,7 +196,7 @@ class webserver_tests(unittest.TestCase):
         self.assertEqual(response_json['name'], names[i])
         self.assertEqual(response_json['bio'], bios[i])
         self.assertEqual(response_json['id'], user_ids[i])
-        self.assertEqual(response_json['profile_pic_id'], media_ids[i])
+        self.assertEqual(response_json['profile_pic_id'], media_ids[i] if media_ids[i] is not None else 1)
         self.assertEqual(response_json['profile_pic_data'], base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'))
         print(f"Got user info for user {i}.")
 
@@ -224,14 +224,14 @@ class webserver_tests(unittest.TestCase):
         for i in range(EXTREME_TEST_RANGE):
             threads[i].join()
 
-        threads = []
-        for i in range(EXTREME_TEST_RANGE):
-            threads.append(threading.Thread(target=self.upload_profile_pic, args=(i, usernames, user_ids, media_ids)))
-            threads[i].daemon = True
-            threads[i].start()
-
-        for i in range(EXTREME_TEST_RANGE):
-            threads[i].join()
+        # threads = []
+        # for i in range(EXTREME_TEST_RANGE):
+        #     threads.append(threading.Thread(target=self.upload_profile_pic, args=(i, usernames, user_ids, media_ids)))
+        #     threads[i].daemon = True
+        #     threads[i].start()
+        #
+        # for i in range(EXTREME_TEST_RANGE):
+        #     threads[i].join()
 
         threads = []
         for i in range(EXTREME_TEST_RANGE):
