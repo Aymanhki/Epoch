@@ -8,7 +8,7 @@ import os
 import time
 import threading
 import pytest
-from concurrent.futures import ThreadPoolExecutor
+import multiprocessing
 
 
 
@@ -37,14 +37,14 @@ class webserver_tests(unittest.TestCase):
         start_db_tables()
         get_google_credentials()
         cls.web_server = webserver()
-        cls.server_executor = ThreadPoolExecutor(max_workers=1)
-        cls.server_executor.submit(cls.web_server.run)
+        cls.server_process = multiprocessing.Process(target=cls.web_server.run)
+        cls.server_process.start()
         time.sleep(1)
 
     @classmethod
     def tearDownClass(cls):
-        cls.server_executor.submit(cls.web_server.stop)
-        cls.server_executor.shutdown(wait=True)
+        cls.server_process.terminate()
+        cls.server_process.join(timeout=5)
         pytest.exit('Server stopped')
 
     def set_session_id(self, value: str):
