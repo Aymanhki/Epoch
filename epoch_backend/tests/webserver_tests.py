@@ -37,14 +37,13 @@ class webserver_tests(unittest.TestCase):
         start_db_tables()
         get_google_credentials()
         cls.web_server = webserver()
-        cls.server_process = multiprocessing.Process(target=cls.web_server.run)
-        cls.server_process.start()
+        cls.server_thread = threading.Thread(target=cls.web_server.run)
         time.sleep(1)
 
     @classmethod
     def tearDownClass(cls):
-        cls.server_process.terminate()
-        cls.server_process.join(timeout=5)
+        cls.web_server.stop()
+        cls.server_thread.join()
         pytest.exit('Server stopped')
 
     def set_session_id(self, value: str):
