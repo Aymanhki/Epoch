@@ -5,6 +5,8 @@ import ssl
 from .utils import send_response
 from .api_endpoints.router import handle_routing
 from .api_endpoints.user_endpoints import upload_profile_pic
+from concurrent.futures import ThreadPoolExecutor
+
 
 keyPath = './assets/privkey.pem'
 certPath = './assets/fullchain.pem'
@@ -25,7 +27,7 @@ class webserver:
         self.port = port
         self.server_socket.bind((host, port))
         self.server_socket.listen(1000)
-        self.active_threads = []
+        self.executor = ThreadPoolExecutor(max_workers=10)
         self.running = True
 
     def run(self):
@@ -39,13 +41,7 @@ class webserver:
                     if self.use_ssl:
                         conn = self.ssl_context.wrap_socket(conn, server_side=True)
 
-                    thread = threading.Thread(target=self.handle_request, args=(conn, addr))
-                    thread.daemon = True
-
-                    self.active_threads.append(thread)
-
-                    thread.start()
-                    self.cleanup_threads()
+                    self.executor.submit(self.handle_request, conn, addr)
                 except Exception as e:
                     print(f"Error handling request: {e}")
 
@@ -78,28 +74,12 @@ class webserver:
             send_response(conn, 500, "Internal Server Error", body=b"<h1>500 Internal Server Error</h1>")
             return
 
-    def cleanup_threads(self):
-        for thread in self.active_threads:
-            if not thread.is_alive():
-                thread.join()
-
-        num_threads_before_cleanup = len(self.active_threads)
-        self.active_threads = [thread for thread in self.active_threads if thread.is_alive()]
-        num_threads_after_cleanup = len(self.active_threads)
-        closed_thread_position = num_threads_before_cleanup - num_threads_after_cleanup
-
-        if closed_thread_position > 0:
-            print(f"Closed thread at position {closed_thread_position}.")
-        print(f"Total alive threads: {num_threads_after_cleanup}")
-
     def stop(self):
         try:
             print("Stopping webserver...")
             self.running = False
-            self.cleanup_threads()
+            self.executor.shutdown(wait=True)
             self.server_socket.close()
-            self.active_threads.clear()
-
 
         except Exception as e:
             print(f"Error while stopping the server: {e}")
