@@ -7,15 +7,12 @@ from pathlib import Path
 import os
 import time
 import threading
-import pytest
-import multiprocessing
-
 
 
 session_id: str = None
 user_id: int = None
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
-EXTREME_TEST_RANGE = 10
+EXTREME_TEST_RANGE = 100
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
