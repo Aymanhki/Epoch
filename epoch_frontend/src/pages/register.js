@@ -40,26 +40,6 @@ function Register() {
         let wrongPassword = false;
         let wrongName = false;
 
-
-        if (!name.trim()) {
-            setNameError(true);
-            setNameErrorPrompt('Name field cannot be empty');
-            wrongName = true;
-        }
-
-        if (!username.trim()) {
-            setUsernameError(true);
-            setUsernameErrorPrompt('Username field cannot be empty');
-            wrongUsername = true;
-        }
-
-        if (!password.trim()) {
-            setPasswordError(true);
-            setPasswordErrorPrompt('Password field cannot be empty');
-            wrongPassword = true;
-        }
-
-
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$/;
         const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
 
@@ -181,7 +161,7 @@ function Register() {
             {isLoading ? <Spinner/> :
                 <div className="register-container">
                 <div className="register-form">
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} data-testid="register-form">
                         <h1 style={{fontSize: '32px', marginBottom: '10px', fontFamily: 'Futura', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>{registeringPrompt}</h1>
 
                         <div className="profile-pic-upload-container" >
@@ -215,7 +195,7 @@ function Register() {
                         <label htmlFor="name">Name {nameError && <span style={{color: 'red'}}>* {nameErrorPrompt}</span>}
                         </label>
 
-                        <input type="text" id="name" name="name" value={name} onChange={(e) => {
+                        <input type="text" id="name" name="name" data-testid="name-input-field" value={name} onChange={(e) => {
                             setName(e.target.value);
                             setNameError(false);
                             setGeneralError(false);
@@ -228,7 +208,7 @@ function Register() {
                         <label htmlFor="username">Username {usernameError && <span style={{color: 'red'}}>* {usernameErrorPrompt}</span>}
                         </label>
 
-                        <input type="text" id="username" name="username" value={username} onChange={(e) => {
+                        <input type="text" id="username" name="username" data-testid="username-input-field" value={username} onChange={(e) => {
                             setUsername(e.target.value);
                             setUsernameError(false);
                             setGeneralError(false);
@@ -237,7 +217,7 @@ function Register() {
                         <label htmlFor="password">Password {passwordError && <span style={{color: 'red'}}>* {passwordErrorPrompt}</span>}
                         </label>
 
-                        <input type="password" id="password" name="password" value={password} onChange={(e) => {
+                        <input type="password" id="password" name="password" data-testid="password-input-field" value={password} onChange={(e) => {
                             setPassword(e.target.value);
                             setPasswordError(false);
                             setGeneralError(false);
@@ -250,7 +230,7 @@ function Register() {
                                 marginBottom: '5px'
                             }}>{generalErrorPrompt}</span>}
 
-                        <button type="submit" className={"register-button"}>{registeringPrompt}</button>
+                        <button type="submit" className={"register-button"} data-testid="register-button">{registeringPrompt}</button>
 
                         <p style={{textAlign: 'center', marginTop: '10px'}}>
                             Already have an account?{' '}

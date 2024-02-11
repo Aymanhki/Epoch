@@ -15,7 +15,11 @@ function tryLogin(username, password) {
                     console.log("Login successful");
                     resolve(true);
                 } else {
-                    reject(xhr.statusText);
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
                 }
             }
         };
@@ -76,7 +80,11 @@ function getUserInfo() {
 
                     resolve(userData);
                 } else {
-                    reject(xhr.statusText);
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
                 }
             }
         };
@@ -120,7 +128,13 @@ function uploadProfilePic(file, userId) {
                 }
                 else
                 {
-                    reject(xhr.statusText);
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    }
+                    else
+                    {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
                 }
             }
         };
@@ -154,6 +168,7 @@ function registerUser(userObject) {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        console.log(serverUrl)
         xhr.open('POST', `${serverUrl}/api/register/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
@@ -164,7 +179,11 @@ function registerUser(userObject) {
                 if (xhr.status === 200) {
                     resolve(JSON.parse(xhr.responseText));
                 } else {
-                    reject(xhr.statusText);
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
                 }
             }
         };
@@ -200,7 +219,11 @@ function deleteUser(userId) {
                 if (xhr.status === 200) {
                     resolve(true);
                 } else {
-                    reject(xhr.statusText);
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
                 }
             }
         };
