@@ -5,6 +5,7 @@ import Router from "../modules/Router";
 import { v4 } from 'uuid';
 import { spawn } from 'child_process';
 
+
 const DEFAULT_ELEMENT_WAIT_TIME = 5000;
 
 
@@ -154,53 +155,52 @@ describe('Input Field Validation', () => {
         });
 
         console.error = originalError;
-
     });
 });
 
-describe('Registration and Login functionality', () => {
-    let serverProcess;
-
-    it('Starts the backend server', async () => {
-        const serverPath = require('path').resolve(__dirname, '..', '../../epoch_backend/main.py');
-        serverProcess = spawn('python3', [serverPath]);
-
-        serverProcess.stdout.on('data', data => {
-            console.log(`Server Log: ${data}`);
-        });
-
-    });
-
-    // test('User can register', async () => {
-    //     await act(async () => {
-    //         const {app} = render(<Router/>);
-    //     });
-    //
-    //     const name = v4();
-    //     const username = v4();
-    //     const password = v4() + "A1!";
-    //
-    //     const nameInput = screen.getByTestId("name-input-field");
-    //     fireEvent.change(nameInput, { target: { value: name } });
-    //
-    //     const usernameInput = screen.getByTestId("username-input-field");
-    //     fireEvent.change(usernameInput, { target: { value: username } });
-    //
-    //     const passwordInput = screen.getByTestId("password-input-field");
-    //     fireEvent.change(passwordInput, { target: { value: password } });
-    //
-    //     const submitButton = screen.getByTestId("register-button");
-    //     fireEvent.click(submitButton);
-    //
-    //     await waitFor(() => {
-    //         expect(screen.getByText(name)).toBeInTheDocument();
-    //     });
-    // });
-
-    it('Shuts down the backend server', async () => {
-        serverProcess.kill();
-    });
-});
+// describe('Registration and Login functionality', () => {
+//     let serverProcess;
+//
+//     it('Starts the backend server', async () => {
+//         const serverPath = require('path').resolve(__dirname, '..', '../../epoch_backend/main.py');
+//         serverProcess = spawn('python3', [serverPath]);
+//
+//         serverProcess.stdout.on('data', data => {
+//             console.log(`Server Log: ${data}`);
+//         });
+//
+//     });
+//
+//     test('User can register', async () => {
+//         await act(async () => {
+//             const {app} = render(<Router/>);
+//         });
+//
+//         const name = v4();
+//         const username = v4();
+//         const password = v4() + "A1!";
+//
+//         const nameInput = screen.getByTestId("name-input-field");
+//         fireEvent.change(nameInput, { target: { value: name } });
+//
+//         const usernameInput = screen.getByTestId("username-input-field");
+//         fireEvent.change(usernameInput, { target: { value: username } });
+//
+//         const passwordInput = screen.getByTestId("password-input-field");
+//         fireEvent.change(passwordInput, { target: { value: password } });
+//
+//         const submitButton = screen.getByTestId("register-button");
+//         fireEvent.click(submitButton);
+//
+//         await waitFor(() => {
+//             expect(screen.getByText(name)).toBeInTheDocument();
+//         });
+//     });
+//
+//     it('Shuts down the backend server', async () => {
+//         serverProcess.kill();
+//     });
+// });
 
 // const {Builder} = require('selenium-webdriver');
 // const express = require('express');
