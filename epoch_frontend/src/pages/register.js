@@ -3,6 +3,9 @@ import {Link} from 'react-router-dom';
 import '../styles/Register.css';
 import {removeSessionCookie, uploadProfilePic, registerUser, tryLogin, deleteUser} from '../services/user';
 import {Spinner} from '../modules/Spinner';
+import {useNavigate} from 'react-router-dom';
+
+
 
 function Register() {
     const [name, setName] = useState('');
@@ -21,6 +24,7 @@ function Register() {
     const [nameErrorPrompt, setNameErrorPrompt] = useState('');
     const [generalErrorPrompt, setGeneralErrorPrompt] = useState('');
     const fileInputRef = React.createRef();
+    const navigate = useNavigate();
 
     const handleProfilePicChange = async (e) => {
         const file = e.target.files[0];
@@ -100,7 +104,9 @@ function Register() {
                                 tryLogin(username, password)
                                     .then((success) => {
                                         setIsLoading(false);
-                                        window.location.href = '/epoch/profile';
+                                        //window.location.href = '/epoch/profile';
+                                        //window.location.assign('/epoch/profile');
+                                        navigate('/epoch/profile');
                                         setRegisteringPrompt('Register');
                                     })
                                     .catch((error) => {
@@ -136,7 +142,9 @@ function Register() {
                             .then((success) => {
                                 setRegisteringPrompt('Register');
                                 setIsLoading(false);
-                                window.location.href = '/epoch/profile';
+                                //window.location.href = '/epoch/profile';
+                                //window.location.assign('/epoch/profile');
+                                navigate('/epoch/profile');
                             })
                             .catch((error) => {
                                 setGeneralError(true);

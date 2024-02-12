@@ -69,7 +69,7 @@ def get_user(conn, request_data, session_id):
             profile_pic_data = access_media_persistence().get_media(user_fetch.profile_pic_id)
 
             if profile_pic_data is not None:
-                if  is_file_in_bucket(profile_pic_data.path):
+                if is_file_in_bucket(profile_pic_data.path):
                     profile_pic_data = download_file_to_cloud(profile_pic_data.path)
                 else:
                     profile_pic_data = download_file_to_cloud(access_media_persistence().get_media(1).path)

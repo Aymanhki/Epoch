@@ -30,6 +30,9 @@ epoch_backend/assets/really_secret_files.txt
 epoch_backend/privkey.pem
 epoch_backend/fullchain.pem
 epoch_backend/main.log
+epoch_backend/nohup.out
+epoch_frontend/main.log
+epoch_frontend/nohup.out
 .coverage
 
 

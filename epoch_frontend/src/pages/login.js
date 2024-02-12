@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom';
 import '../styles/Login.css';
 import {tryLogin, getUserInfo} from '../services/user'
 import {Spinner} from '../modules/Spinner'
+import {useNavigate} from "react-router-dom";
 
 function Login() {
     // State variables for username and password
@@ -21,6 +22,8 @@ function Login() {
     const [generalErrorPrompt, setGeneralErrorPrompt] = useState('')
     const [usernameErrorPrompt, setUsernameErrorPrompt] = useState('')
     const [passwordErrorPrompt, setPasswordErrorPrompt] = useState('')
+
+    const navigate = useNavigate();
 
 
     // Function to handle form submission
@@ -55,7 +58,8 @@ function Login() {
             tryLogin(username, password)
                 .then(success => {
                     setIsLoading(false);
-                    window.location.href = "/epoch/home";
+                    //window.location.href = "/epoch/home";
+                    navigate('/epoch/home');
                     setSigningInPrompt('Sign In');
                 })
                 .catch(error => {
@@ -78,11 +82,10 @@ function Login() {
         getUserInfo()
             .then(data => {
                 if (isMounted) {
-                    console.log(data);
                     setSigningInPrompt('Sing In');
                     setIsLoading(false);
-                    window.location.href = "/epoch/home";
-
+                    //window.location.href = "/epoch/home";
+                    navigate('/epoch/home');
                 }
             })
             .catch(error => {
@@ -95,7 +98,7 @@ function Login() {
         return () => {
             isMounted = false;
         };
-    }, [setIsLoading]);
+    }, [setIsLoading, setSigningInPrompt]);
 
       useEffect(() => {
         const handleResize = () => {

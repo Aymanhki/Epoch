@@ -5,22 +5,54 @@
   "dependencies": {
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "express": "^4.18.2",
     "pg": "^8.11.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.3",
     "react-scripts": "5.0.1",
     "sass": "^1.70.0",
+    "sinon": "^17.0.1",
     "uuid": "^9.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --watchAll=false --coverage --color=yes",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test": "npm run test-sequence",
+    "test-sequence": "npm run frontend-tests && npm run start-web-server && npm run integration-tests && npm run combine-coverage",
+    "posttest": "npm run stop-web-server",
+    "frontend-tests": "react-scripts test ./src/__tests__/frontend.tests.js --coverage --color=yes --watchAll=false --verbose",
+    "start-web-server": "nohup python3 ../epoch_backend/main.py > main.log 2>&1 &",
+    "integration-tests": "react-scripts test ./src/__tests__/integration.tests.js --coverage --color=yes --watchAll=false --verbose",
+    "stop-web-server": "pkill -f \"python3 ../epoch_backend/main.py\"",
+    "combine-coverage": "nyc merge coverage/frontend-tests/ coverage/integration-tests/ > coverage/"
   },
-
+  "jest": {
+    "projects": [
+      {
+        "displayName": "frontend-tests",
+        "testMatch": ["<rootDir>/src/__tests__/frontend.tests.js"],
+        "coverageDirectory": "./coverage/frontend-tests",
+        "collectCoverageFrom": [
+          "src/**/*.js",
+          "!src/index.js",
+          "!src/serviceWorker.js"
+        ]
+      },
+      {
+        "displayName": "integration-tests",
+        "testMatch": ["<rootDir>/src/__tests__/integration.tests.js"],
+        "coverageDirectory": "./coverage/integration-tests",
+        "collectCoverageFrom": [
+          "src/**/*.js",
+          "!src/index.js",
+          "!src/serviceWorker.js"
+        ]
+      }
+    ]
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -40,8 +72,12 @@
     ]
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@testing-library/jest-dom": "^6.4.2",
     "history": "^5.3.0",
+    "istanbul": "^0.4.5",
+    "nyc": "^15.1.0",
+    "selenium-webdriver": "^4.17.0",
     "uuidv4": "^6.2.13"
   }
 }
