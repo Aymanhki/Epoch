@@ -1,6 +1,6 @@
 import os
 from ..utils import send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
-from ..api_endpoints.user_endpoints import post_user, get_user, register_user, delete_user
+from ..api_endpoints.user_endpoints import post_user, get_user, register_user, delete_user, get_user_from_name
 from ..db_controller.access_session_persistence import access_session_persistence
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
@@ -55,7 +55,12 @@ def handle_api_request(method, path, request_data, conn):
 
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
-
+    elif path == "/api/user":
+        if method == "GET":
+            username = "" #get from request body
+            get_user_from_name(conn, request_data, username)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
     else:
         send_response(conn, 404, "Not Found", body=b"<h1>404 Not Found</h1>")
 

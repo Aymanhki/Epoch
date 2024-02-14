@@ -105,6 +105,18 @@ function getUserInfo() {
     });
 }
 
+function getUsernameInfo() {
+    //make api request for user
+    var xhr = new XMLHttpRequest();
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        xhr.open('GET', `${serverUrl}/api/users/`, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.withCredentials = true;
+        xhr.timeout = 10000;
+
+}
+
 function removeSessionCookie() {
     document.cookie = "epoch_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }

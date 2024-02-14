@@ -85,6 +85,20 @@ def get_user(conn, request_data, session_id):
     else:
         send_response(conn, 401, "Could not find a valid session for the user you are trying to fetch information for", body=b"<h1>401 Unauthorized</h1>", headers=headers)
 
+def get_user_from_name(conn, request_data, username):
+    headers, body = request_data.split("\r\n\r\n", 1)
+
+    content_length = 0
+
+    for line in headers.split("\r\n"):
+        if "Content-Length" in line:
+            content_length = int(line.split(" ")[1])
+
+    while len(body) < content_length:
+        body += conn.recv(1024).decode('UTF-8')
+    return access_user_persistence().get_user(username)
+
+
 def register_user(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)
 
