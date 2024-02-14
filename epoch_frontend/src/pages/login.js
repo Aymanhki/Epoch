@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom';
 import '../styles/Login.css';
 import {tryLogin, getUserInfo} from '../services/user'
 import {Spinner} from '../modules/Spinner'
+import {useNavigate} from "react-router-dom";
 
 function Login() {
     // State variables for username and password
@@ -21,6 +22,8 @@ function Login() {
     const [generalErrorPrompt, setGeneralErrorPrompt] = useState('')
     const [usernameErrorPrompt, setUsernameErrorPrompt] = useState('')
     const [passwordErrorPrompt, setPasswordErrorPrompt] = useState('')
+
+    const navigate = useNavigate();
 
 
     // Function to handle form submission
@@ -55,7 +58,8 @@ function Login() {
             tryLogin(username, password)
                 .then(success => {
                     setIsLoading(false);
-                    window.location.href = "/epoch/home";
+                    //window.location.href = "/epoch/home";
+                    navigate('/epoch/home');
                     setSigningInPrompt('Sign In');
                 })
                 .catch(error => {
@@ -78,17 +82,15 @@ function Login() {
         getUserInfo()
             .then(data => {
                 if (isMounted) {
-                    console.log(data);
                     setSigningInPrompt('Sing In');
                     setIsLoading(false);
-                    window.location.href = "/epoch/home";
-
+                    //window.location.href = "/epoch/home";
+                    navigate('/epoch/home');
                 }
             })
             .catch(error => {
                 if (isMounted) {
-                    console.error(error);
-                    setSigningInPrompt('Sign in');
+                    setSigningInPrompt('Sign In');
                     setIsLoading(false);
                 }
             });
@@ -96,7 +98,7 @@ function Login() {
         return () => {
             isMounted = false;
         };
-    }, [setIsLoading]);
+    }, [setIsLoading, setSigningInPrompt]);
 
       useEffect(() => {
         const handleResize = () => {
@@ -117,7 +119,7 @@ function Login() {
 
                 {isMobile ? (
                 <div className="login-form">
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} data-testid="login-form">
 
                         <h2 style={{fontSize: '32px', marginBottom: '20px', fontFamily: 'Futura', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>
                             {signingInPrompt}
@@ -127,17 +129,17 @@ function Login() {
                             <span style={{color: 'red'}}>* {usernameErrorPrompt}</span>}
                         </label>
 
-                        <input type="text" id="username" name="username" value={username} onChange={(e) => {setUsername(e.target.value);setUsernameError(false);setGeneralError(false);}}/>
+                        <input type="text" id="username" name="username" data-testid="username-input-field" value={username} onChange={(e) => {setUsername(e.target.value);setUsernameError(false);setGeneralError(false);}}/>
 
                         <label htmlFor="password" className={"label-white"}>Password {passwordError &&
                             <span style={{color: 'red'}}>* {passwordErrorPrompt}</span>}
                         </label>
 
-                        <input type="password" id="password" name="password" value={password} onChange={(e) => {setPassword(e.target.value);setPasswordError(false);setGeneralError(false);}} />
+                        <input type="password" id="password" name="password" data-testid="password-input-field" value={password} onChange={(e) => {setPassword(e.target.value);setPasswordError(false);setGeneralError(false);}} />
 
                         {generalError && <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>{generalErrorPrompt}</span>}
 
-                        <button type="submit">{signingInPrompt}</button>
+                        <button type="submit" data-testid="login-button" id="login-button">{signingInPrompt}</button>
 
                         <p style={{textAlign: 'center', marginTop: '10px'}}>
                             Don't have an account?{' '}
@@ -150,7 +152,7 @@ function Login() {
                     ) : (
                     <>
                         <div className="login-form">
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSubmit} data-testid="login-form">
 
                                 <h2 style={{
                                     fontSize: '32px',
@@ -167,7 +169,7 @@ function Login() {
                                     <span style={{color: 'red'}}>* {usernameErrorPrompt}</span>}
                                 </label>
 
-                                <input type="text" id="username" name="username" value={username} onChange={(e) => {
+                                <input type="text" id="username" name="username" data-testid="username-input-field" value={username} onChange={(e) => {
                                     setUsername(e.target.value);
                                     setUsernameError(false);
                                     setGeneralError(false);
@@ -177,7 +179,7 @@ function Login() {
                                     <span style={{color: 'red'}}>* {passwordErrorPrompt}</span>}
                                 </label>
 
-                                <input type="password" id="password" name="password" value={password} onChange={(e) => {
+                                <input type="password" id="password" name="password" data-testid="password-input-field" value={password} onChange={(e) => {
                                     setPassword(e.target.value);
                                     setPasswordError(false);
                                     setGeneralError(false);
@@ -185,7 +187,7 @@ function Login() {
 
                                 {generalError && <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>{generalErrorPrompt}</span>}
 
-                                <button type="submit">{signingInPrompt}</button>
+                                <button type="submit" data-testid="login-button" id="login-button">{signingInPrompt}</button>
 
                                 <p style={{textAlign: 'center', marginTop: '10px'}}>
                                     Don't have an account?{' '}

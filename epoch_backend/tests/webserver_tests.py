@@ -7,14 +7,13 @@ from pathlib import Path
 import os
 import time
 import threading
-import pytest
-
 
 
 session_id: str = None
 user_id: int = None
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
-EXTREME_TEST_RANGE = 3
+EXTREME_TEST_RANGE = 50
+EXTREM_TEST_UPLOAD_RANGE = 10
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
@@ -44,7 +43,6 @@ class webserver_tests(unittest.TestCase):
     def tearDownClass(cls):
         cls.web_server.stop()
         cls.server_thread.join()
-        pytest.exit('Server stopped')
 
     def set_session_id(self, value: str):
         global session_id
@@ -107,7 +105,7 @@ class webserver_tests(unittest.TestCase):
 
     def test_4_delete_user(self):
         print("Deleting user...")
-        response = requests.delete('http://localhost:8080/api/delete/user/', json={'userId': self.get_user_id()},
+        response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()},
                                    cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
         print("User deleted.")
@@ -129,7 +127,7 @@ class webserver_tests(unittest.TestCase):
 
     def test_7_delete_nonexistent_user(self):
         print("Deleting nonexistent user...")
-        response = requests.delete('http://localhost:8080/api/delete/user/', json={'userId': self.get_user_id()},
+        response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()},
                                    cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 401)
         print(response.text)
@@ -159,7 +157,7 @@ class webserver_tests(unittest.TestCase):
         profile_pic_binary = base64.b64decode(profile_pic_base64)
         original_pic_base64 = base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8')
         assert (original_pic_base64 == profile_pic_base64)
-        response = requests.delete('http://localhost:8080/api/delete/user/', json={'userId': self.get_user_id()}, cookies={'epoch_session_id': self.get_session_id()})
+        response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()}, cookies={'epoch_session_id': self.get_session_id()})
         assert (response.status_code == 200)
         print("User with picture registered and deleted.")
 
@@ -205,7 +203,7 @@ class webserver_tests(unittest.TestCase):
 
     def delete_user(self, i, user_ids, session_ids):
         print(f"Deleting user {i}...")
-        response = requests.delete('http://localhost:8080/api/delete/user/', json={'userId': user_ids[i]}, cookies={'epoch_session_id': session_ids[i]})
+        response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': user_ids[i]}, cookies={'epoch_session_id': session_ids[i]})
         self.assertEqual(response.status_code, 200)
         print(f"User {i} deleted.")
 
@@ -228,13 +226,20 @@ class webserver_tests(unittest.TestCase):
             threads[i].join()
 
         threads = []
-        for i in range(EXTREME_TEST_RANGE):
+        for i in range(EXTREM_TEST_UPLOAD_RANGE):
             threads.append(threading.Thread(target=self.upload_profile_pic, args=(i, usernames, user_ids, media_ids)))
             threads[i].daemon = True
             threads[i].start()
 
-        for i in range(EXTREME_TEST_RANGE):
+        for i in range(EXTREM_TEST_UPLOAD_RANGE):
             threads[i].join()
+
+        if EXTREME_TEST_RANGE > EXTREM_TEST_UPLOAD_RANGE:
+            start_index = EXTREM_TEST_UPLOAD_RANGE
+
+            for i in range(start_index, EXTREME_TEST_RANGE):
+                media_ids[i] = 1
+
 
         threads = []
         for i in range(EXTREME_TEST_RANGE):

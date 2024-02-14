@@ -22,7 +22,7 @@ function getAccountList() {
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
         xhr.open('GET', `${serverUrl}/api/accountList/`, true);
-        xhr.setRequestHeader('Content-Type', 'plain/text');
+        xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
         xhr.timeout = 10000;
 
@@ -53,4 +53,92 @@ function getAccountList() {
     });
 }
 
-module.exports = {getAccountList}
+function followAccount(userToFollow) {
+    return new Promise((resolve, reject) => {
+
+        const session_id = getCookie('epoch_session_id');
+
+        if (!session_id) {
+            reject('No session cookie found');
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        xhr.open('POST', `${serverUrl}/api/follow/`, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.withCredentials = true;
+        xhr.timeout = 10000;
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    resolve(true);
+                } else {
+                    reject(xhr.statusText);
+                }
+            }
+        };
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
+        xhr.send(JSON.stringify({session_id: session_id, userToFollow: userToFollow}));
+    });
+}
+
+function unfollowAccount(userToUnfollow) {
+    return new Promise((resolve, reject) => {
+
+        const session_id = getCookie('epoch_session_id');
+
+        if (!session_id) {
+            reject('No session cookie found');
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        xhr.open('POST', `${serverUrl}/api/unfollow/`, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.withCredentials = true;
+        xhr.timeout = 10000;
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    resolve(true);
+                } else {
+                    reject(xhr.statusText);
+                }
+            }
+        };
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
+        xhr.send(JSON.stringify({session_id: session_id, userToUnfollow: userToUnfollow }));
+    });
+}
+
+module.exports = {getAccountList, followAccount, unfollowAccount}
