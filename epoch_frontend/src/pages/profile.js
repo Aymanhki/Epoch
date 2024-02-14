@@ -1,6 +1,7 @@
 import {getUserInfo} from "../services/user";
 import React, {useState, useEffect} from 'react';
 import {Spinner} from '../modules/Spinner'
+import {useNavigate} from "react-router-dom";
 
 
 function Profile() {
@@ -9,6 +10,7 @@ function Profile() {
     const [redirectToLogin, setRedirectToLogin] = useState(false);
     const [userInfo, setUserInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
 
     // Check for valid session cookie on component mount
@@ -24,11 +26,12 @@ function Profile() {
                 setRedirectToLogin(true);
                 setIsLoading(false);
             });
-    }, []);
+    }, [setIsLoading, setUserInfo, setRedirectToLogin]);
 
     // Redirect to home if redirectToHome is true
     if (redirectToLogin) {
-        window.location.href = "/epoch/login";
+        //window.location.href = "/epoch/login";
+        navigate('/epoch/login');
         return <div><h2>User Not Signed In</h2></div>;
     }
 

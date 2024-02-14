@@ -12,7 +12,6 @@ function tryLogin(username, password) {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    console.log("Login successful");
                     resolve(true);
                 } else {
                     if (xhr.status !== 0) {
@@ -71,9 +70,7 @@ function getUserInfo() {
                 if (xhr.status === 200) {
                     const userData = JSON.parse(xhr.responseText);
 
-                    // Check if profile picture data is available
-                    if (userData.profile_pic_data) {
-                        // Assuming profile_pic_data is a base64 encoded string
+                   if (userData.profile_pic_data) {
                         const profilePicData = userData.profile_pic_data;
                         userData.profile_pic_data = `data:image/png;base64,${profilePicData}`;
                     }
@@ -168,7 +165,6 @@ function registerUser(userObject) {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        console.log(serverUrl)
         xhr.open('POST', `${serverUrl}/api/register/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
@@ -209,10 +205,12 @@ function deleteUser(userId) {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('DELETE', `${serverUrl}/api/delete/user/`, true);
+        xhr.open('DELETE', `${serverUrl}/api/delete/userId/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
         xhr.timeout = 10000;
+
+
 
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
