@@ -1,66 +1,85 @@
-import {act, fireEvent, render, screen, waitFor} from "@testing-library/react";
-import Router from "../modules/Router.js";
-import {v4} from "uuid";
+import {getUserInfo, tryLogin, registerUser, deleteUser, uploadProfilePic} from "../services/user";
+import {act, render, screen, waitFor} from "@testing-library/react";
+import {BrowserRouter} from "react-router-dom";
+import Profile from "../pages/profile";
+import Home from "../pages/home";
+import App from "../App";
 import React from "react";
-import { beforeAll, afterAll } from '@jest/globals';
-const DEFAULT_WAIT_TIME = 100000;
-const WAITING_FOR_SERVER = 5000;
+import '@testing-library/jest-dom';
+import {v4} from "uuid";
 
-describe('Registration and Login functionality', () => {
+jest.mock("../services/user");
 
-    beforeAll(async () => {
-        await new Promise(resolve => setTimeout(resolve, WAITING_FOR_SERVER));
-    }, DEFAULT_WAIT_TIME);
+const mockUser = {
+  name: "Test User",
+  id: "123",
+  username: "testuser",
+  password: "password",
+  created_at: "2022-01-01",
+  bio: "This is a test user",
+  profile_pic_id: "456",
+};
+const username = v4();
+const password = v4() + "A1!";
 
-    test('User can register', async () => {
+describe('Render Pages', () => {
+
+    test("displays user information on profile page", async () => {
+        getUserInfo.mockResolvedValue(mockUser);
+
         await act(async () => {
-            render(<Router/>);
+          render(
+            <BrowserRouter>
+              <Profile />
+            </BrowserRouter>
+          );
         });
 
-        const name = v4();
-        const username = v4();
-        const password = v4() + "A1!";
+        await waitFor(() => {
+            const allNameElements = screen.getAllByText(new RegExp(mockUser.name, 'i'));
+            allNameElements.forEach((element) => {
+              expect(element).toBeInTheDocument();
+            });
+        });
+    });
 
-        const registerHereLink = screen.getByText("Register here");
-        fireEvent.click(registerHereLink);
+    test("displays user information on home page", async () => {
+        getUserInfo.mockResolvedValue(mockUser);
 
-        const nameInput = screen.getByTestId("name-input-field");
-        fireEvent.change(nameInput, {target: {value: name}});
-
-        const usernameInput = screen.getByTestId("username-input-field");
-        fireEvent.change(usernameInput, {target: {value: username}});
-
-        const passwordInput = screen.getByTestId("password-input-field");
-        fireEvent.change(passwordInput, {target: {value: password}});
-
-        const submitButton = screen.getByTestId("register-button");
-        fireEvent.click(submitButton);
-
-        const waitForNameOrSpinner = async () => {
-            const nameOnProfile = screen.queryByText(new RegExp(name, 'i'));
-            const spinner = screen.queryByTestId('loading-spinner');
-
-            if (nameOnProfile) {
-                return true;
-            }
-
-            if (!spinner) {
-                return true;
-            }
-
-            return false;
-        };
-
-
-        const shouldRenderProfile = await waitFor(() => {
-            expect(waitForNameOrSpinner()).toBeTruthy();
+        await act(async () => {
+          render(
+            <BrowserRouter>
+              <Home />
+            </BrowserRouter>
+          );
         });
 
+        await waitFor(() => {
+            const allNameElements = screen.getAllByText(new RegExp(mockUser.name, 'i'));
+            allNameElements.forEach((element) => {
+              expect(element).toBeInTheDocument();
+            });
+        });
+    });
 
-    }, DEFAULT_WAIT_TIME);
+    test("App lands on login home page", async () => {
+        getUserInfo.mockResolvedValue(mockUser);
+
+        await act(async () => {
+            render(<App />);
+        });
+
+        await waitFor(() => {
+            const allNameElements = screen.getAllByText(new RegExp(mockUser.name, 'i'));
+            allNameElements.forEach((element) => {
+                expect(element).toBeInTheDocument();
+            });
+        });
+    });
+});
 
 
-}, DEFAULT_WAIT_TIME);
+
 
 // import {Builder} from 'selenium-webdriver';
 // import  express  from 'express';

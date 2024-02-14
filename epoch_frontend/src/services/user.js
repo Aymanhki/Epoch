@@ -205,10 +205,12 @@ function deleteUser(userId) {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('DELETE', `${serverUrl}/api/delete/user/`, true);
+        xhr.open('DELETE', `${serverUrl}/api/delete/userId/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
         xhr.timeout = 10000;
+
+
 
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {

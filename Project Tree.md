@@ -1,6 +1,5 @@
 ```
 epoch
-├── .coverage
 ├── .github
 │   └── workflows
 │       └── deploy.yaml
@@ -11,7 +10,6 @@ epoch
 ├── Project Tree.md
 ├── ReadMe.md
 ├── epoch_backend
-│   ├── .coverage
 │   ├── .pytest_cache
 │   ├── .venv
 │   ├── Dockerfile
@@ -58,6 +56,7 @@ epoch
 │   └── tests
 │       ├── .pytest_cache
 │       ├── __init__.py
+│       ├── integration_tests.py
 │       ├── test.jpg
 │       └── webserver_tests.py
 ├── epoch_frontend
@@ -65,7 +64,6 @@ epoch
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── public
-│   │   ├── fonts
 │   │   ├── images
 │   │   │   ├── default_pfp.png
 │   │   │   ├── epoch-logo-400.jpeg
@@ -76,29 +74,30 @@ epoch
 │   │   └── vendor
 │   │       └── bootstrap.min.css
 │   ├── server.js
-│   ├── src
-│   │   ├── App.js
-│   │   ├── index.js
-│   │   ├── modules
-│   │   │   ├── NavBar.js
-│   │   │   ├── Post.js
-│   │   │   ├── Router.js
-│   │   │   └── Spinner.js
-│   │   ├── pages
-│   │   │   ├── home.js
-│   │   │   ├── login.js
-│   │   │   ├── profile.js
-│   │   │   └── register.js
-│   │   ├── services
-│   │   │   └── user.js
-│   │   ├── styles
-│   │   │   ├── Login.css
-│   │   │   ├── Register.css
-│   │   │   ├── Spinner.scss
-│   │   │   └── bootstrap.min.css
-│   │   └── utils
-│   │       └── LoadingContext.js
-│   └── tests
+│   └── src
+│       ├── App.js
+│       ├── __tests__
+│       │   ├── frontend.tests.js
+│       │   ├── mock.render.tests.js
+│       │   └── mock.server.tests.js
+│       ├── index.js
+│       ├── modules
+│       │   ├── NavBar.js
+│       │   ├── Post.js
+│       │   ├── Router.js
+│       │   └── Spinner.js
+│       ├── pages
+│       │   ├── home.js
+│       │   ├── login.js
+│       │   ├── profile.js
+│       │   └── register.js
+│       ├── services
+│       │   └── user.js
+│       └── styles
+│           ├── Login.css
+│           ├── Register.css
+│           ├── Spinner.scss
+│           └── bootstrap.min.css
 └── meetingMinutes
     ├── Jan18Minutes.md
     ├── Jan23Minutes.md

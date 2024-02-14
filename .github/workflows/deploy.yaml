@@ -17,8 +17,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y openssh-client sshpass
-          sudo apt-get install -y python3-pip
-
 
       - name: SSH into Google Cloud VM for testing
         run: |
@@ -38,17 +36,20 @@ jobs:
             cd
             cd Epoch/
             if ! pytest -s --cov=epoch_backend -rA -vv --color=yes ./epoch_backend/tests/webserver_tests.py --full-trace; then
-              echo "Test(s) failed. Exiting with status 1."
+              echo "Webserver Backend Test(s) failed. Exiting with status 1."
               exit 1
             fi
             cd epoch_frontend/
             npm install
             if ! npm test; then
-              echo "Test(s) failed. Exiting with status 1."
+              echo "Frontend server Test(s) failed. Exiting with status 1."
               exit 1
             fi
-            npm run posttest
             cd ..
+            if ! pytest --color=yes ./epoch_backend/tests/integration_tests.py; then
+              echo "Integration Test(s) failed. Exiting with status 1."
+              exit 1
+            fi
             if ! docker build -t epoch_backend ./epoch_backend/; then
               echo "Docker build failed. Exiting with status 1."
               exit 1

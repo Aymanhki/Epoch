@@ -139,7 +139,7 @@ function Login() {
 
                         {generalError && <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>{generalErrorPrompt}</span>}
 
-                        <button type="submit" data-testid="login-button">{signingInPrompt}</button>
+                        <button type="submit" data-testid="login-button" id="login-button">{signingInPrompt}</button>
 
                         <p style={{textAlign: 'center', marginTop: '10px'}}>
                             Don't have an account?{' '}
@@ -187,7 +187,7 @@ function Login() {
 
                                 {generalError && <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>{generalErrorPrompt}</span>}
 
-                                <button type="submit" data-testid="login-button">{signingInPrompt}</button>
+                                <button type="submit" data-testid="login-button" id="login-button">{signingInPrompt}</button>
 
                                 <p style={{textAlign: 'center', marginTop: '10px'}}>
                                     Don't have an account?{' '}

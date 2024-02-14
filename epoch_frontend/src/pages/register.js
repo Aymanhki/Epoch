@@ -238,7 +238,7 @@ function Register() {
                                 marginBottom: '5px'
                             }}>{generalErrorPrompt}</span>}
 
-                        <button type="submit" className={"register-button"} data-testid="register-button">{registeringPrompt}</button>
+                        <button type="submit" className={"register-button"} id={"register-button"} data-testid="register-button">{registeringPrompt}</button>
 
                         <p style={{textAlign: 'center', marginTop: '10px'}}>
                             Already have an account?{' '}

@@ -3,7 +3,6 @@ import { screen, act, render, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom';
 import Router from "../modules/Router.js";
 import { v4 } from 'uuid';
-import { spawn } from 'child_process';
 
 
 const DEFAULT_WAIT_TIME = 5000;
