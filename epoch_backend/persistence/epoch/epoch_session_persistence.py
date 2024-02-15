@@ -66,3 +66,12 @@ class epoch_session_persistence(session_persistence):
         connection.commit()
         cursor.close()
         connection.close()
+
+    def get_user_by_session_id(self, session_id: str):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"SELECT user_id FROM sessions WHERE session_id = '{session_id}'")
+        result = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return result

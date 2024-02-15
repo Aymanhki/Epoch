@@ -1,4 +1,4 @@
-
+import json
 from ..interfaces.user_persistence import user_persistence
 from epoch_backend.objects.user import user
 from ...business.utils import get_db_connection, delete_file_from_bucket, is_file_in_bucket
@@ -75,7 +75,12 @@ class epoch_user_persistence(user_persistence):
         cursor.close()
         connection.close()
 
-        return result
+        rowHeaders = [name[0] for name in cursor.description]
+        json_data = []
+        for value in result:
+            json_data.append(dict(zip(rowHeaders, value)))
+
+        return json.dumps(json_data)
 
     def validate_login(self, username: str, password: str):
         connection = get_db_connection()
@@ -129,22 +134,30 @@ class epoch_user_persistence(user_persistence):
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute("SELECT follower_id FROM followers WHERE user_id = %s", (user_id,))
-        followers = [follower[0] for follower in cursor.fetchall()]
+        result = cursor.fetchall()
         connection.commit()
         cursor.close()
         connection.close()
-        return followers
+        rowHeaders = [name[0] for name in cursor.description]
+        json_data = []
+        for value in result:
+            json_data.append(dict(zip(rowHeaders, value)))
+        return json.dumps(json_data)
     
     def get_following(self, user_id:int):
     #get list of users that user_id follows
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute("SELECT following_id FROM following WHERE user_id = %s", (user_id,))
-        following = [following_id[0] for following_id in cursor.fetchall()]
+        result = cursor.fetchall()
         connection.commit()
         cursor.close()
         connection.close()
-        return following
+        rowHeaders = [name[0] for name in cursor.description]
+        json_data = []
+        for value in result:
+            json_data.append(dict(zip(rowHeaders, value)))
+        return json.dumps(json_data)
     
     def follow_user(self, user_id:int, following_id:int):
     #update dbs user_id is now following following_id

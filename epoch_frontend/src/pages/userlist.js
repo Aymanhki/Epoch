@@ -1,16 +1,18 @@
 import {getUserInfo} from "../services/user";
-import {getAccountList} from "../services/following"
+import {getAccountList, followAccount, unfollowAccount, getFollowingList} from "../services/following"
 import React, {useState, useEffect, map} from 'react';
 import {Spinner} from '../modules/Spinner'
 
 function follow(id, target) {
     console.log(id + " followed " + target);
     //create follow request and reload page?
+    followAccount(target);
 }
 
 function unfollow(id, target) {
     console.log(id + " unfollowed " + target);
     //create unfollow request and reload page?
+    unfollowAccount(target);
 }
 
 function Userlist() {
@@ -20,10 +22,16 @@ function Userlist() {
     const [isLoading, setIsLoading] = useState(false);
     //const [followingList, setFollowingList] = useState({});
     //const [accountList, setAccountList] = useState({});
+    const [userList, setUserLists] = useState({});
 
     //on load get these lists from backend
     //my userId
     const userId = 69;
+
+    getAccountList();
+    getFollowingList();
+
+
 
     var followingList = [
         {id:1, username:'John123'},

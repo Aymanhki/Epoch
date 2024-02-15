@@ -153,7 +153,6 @@ def upload_profile_pic(conn, request_data):
     else:
         send_response(conn, 500, "Could not upload profile picture, internal Server Error", body=b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
 
-
 def delete_by_user_id(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)
 

@@ -4,141 +4,73 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-function removeSessionCookie() {
-    document.cookie = "epoch_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+function getAccountList() {
+    const session_id = getCookie('epoch_session_id');
+    if (!session_id) {
+        return;
+    }
+    console.log(session_id)
+    const currentLocation = window.location;
+    const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+    const url = `${serverUrl}/api/follow/accountList/`;
+    const headers = {credentials: 'include'}
+
+    fetch(url, headers)
+        .then(response => response.json());
 }
 
-function getAccountList() {
-    return new Promise((resolve, reject) => {
+function getFollowingList() {
+    const session_id = getCookie('epoch_session_id');
+    if (!session_id) {
+        return;
+    }
+    console.log(session_id)
+    const currentLocation = window.location;
+    const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+    const url = `${serverUrl}/api/follow/followingList/`;
+    const headers = {credentials: 'include'}
 
-        const session_id = getCookie('epoch_session_id');
-
-        if (!session_id) {
-            reject('No session cookie found');
-            return;
-        }
-
-        var xhr = new XMLHttpRequest();
-        const currentLocation = window.location;
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('GET', `${serverUrl}/api/accountList/`, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.withCredentials = true;
-        xhr.timeout = 10000;
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    const accountData = JSON.parse(xhr.responseText);
-                    resolve(accountData);
-                } else {
-                    reject(xhr.statusText);
-                }
-            }
-        };
-
-        xhr.ontimeout = function () {
-            reject("Request timed out");
-        }
-
-        xhr.onerror = function () {
-            reject("An error occurred");
-        }
-
-        xhr.onabort = function () {
-            reject("Request aborted");
-        }
-
-        xhr.send(JSON.stringify({session_id: session_id}));
-    });
+    fetch(url, headers)
+        .then(response => response.json());
 }
 
 function followAccount(userToFollow) {
-    return new Promise((resolve, reject) => {
+    const session_id = getCookie('epoch_session_id');
+    if (!session_id) {
+        return;
+    }
+    var params = {
+        session_id: session_id,
+        userToFollow: userToFollow
+    }
+    const currentLocation = window.location;
+    const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+    const url = `${serverUrl}/api/follow/follow/`;
 
-        const session_id = getCookie('epoch_session_id');
-
-        if (!session_id) {
-            reject('No session cookie found');
-            return;
-        }
-
-        var xhr = new XMLHttpRequest();
-        const currentLocation = window.location;
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('POST', `${serverUrl}/api/follow/`, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.withCredentials = true;
-        xhr.timeout = 10000;
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    resolve(true);
-                } else {
-                    reject(xhr.statusText);
-                }
-            }
-        };
-
-        xhr.ontimeout = function () {
-            reject("Request timed out");
-        }
-
-        xhr.onerror = function () {
-            reject("An error occurred");
-        }
-
-        xhr.onabort = function () {
-            reject("Request aborted");
-        }
-
-        xhr.send(JSON.stringify({session_id: session_id, userToFollow: userToFollow}));
-    });
+    fetch(url,{
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify(params)
+    })
 }
 
 function unfollowAccount(userToUnfollow) {
-    return new Promise((resolve, reject) => {
-
-        const session_id = getCookie('epoch_session_id');
-
-        if (!session_id) {
-            reject('No session cookie found');
-            return;
-        }
-
-        var xhr = new XMLHttpRequest();
-        const currentLocation = window.location;
-        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('POST', `${serverUrl}/api/unfollow/`, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.withCredentials = true;
-        xhr.timeout = 10000;
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    resolve(true);
-                } else {
-                    reject(xhr.statusText);
-                }
-            }
-        };
-
-        xhr.ontimeout = function () {
-            reject("Request timed out");
-        }
-
-        xhr.onerror = function () {
-            reject("An error occurred");
-        }
-
-        xhr.onabort = function () {
-            reject("Request aborted");
-        }
-
-        xhr.send(JSON.stringify({session_id: session_id, userToUnfollow: userToUnfollow }));
-    });
+    const session_id = getCookie('epoch_session_id');
+    if (!session_id) {
+        return;
+    }
+    var params = {
+        session_id: session_id,
+        userToUnfollow: userToUnfollow
+    }
+    const currentLocation = window.location;
+    const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+    const url = `${serverUrl}/api/follow/unfollow/`;
+    fetch(url,{
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify(params)
+    })
 }
 
-module.exports = {getAccountList, followAccount, unfollowAccount}
+module.exports = {getAccountList, getFollowingList, followAccount, unfollowAccount}
