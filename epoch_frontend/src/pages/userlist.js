@@ -1,25 +1,23 @@
 import {getAccountList, followAccount, unfollowAccount, getFollowingList} from "../services/following"
-import React, {useState, useEffect, map} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Spinner} from '../modules/Spinner'
+import {useNavigate} from "react-router-dom";
 
-function follow(id, target) {
-    console.log(id + " followed " + target);
-    //create follow request and reload page?
+function follow(target) {
+    console.log("followed " + target);
     followAccount(target);
 }
 
-function unfollow(id, target) {
-    console.log(id + " unfollowed " + target);
-    //create unfollow request and reload page?
+function unfollow(target) {
+    console.log("unfollowed " + target);
     unfollowAccount(target);
 }
 
 function Userlist() {
-    // State variable for redirect
     const [isLoading, setIsLoading] = useState(false);
     const [followingIds, setFollowingList] = useState({});
     const [userList, setUserList] = useState({});
-    const userId = 1;
+    const navigate = useNavigate();
 
     //on load get these lists from backend
     useEffect(()=>{
@@ -38,7 +36,7 @@ function Userlist() {
 
             for(var i in following_data){
                 for(var j in user_data){
-                    if(following_data[i].following_id == temp[j].user_id){
+                    if(following_data[i].following_id === temp[j].user_id){
                         following_data[i].username = temp[j].username;
                         user_data.splice(j,1);
                     }
@@ -48,27 +46,8 @@ function Userlist() {
             setUserList(user_data);
             setFollowingList(following_data);
         } catch (error) {
-            console.error('Error fetching data', error);
-        }
-    }
-
-    var followingList = [
-        {id:1, username:'John123'},
-        {id:2, username:'Bob234'},
-        {id:5, username:'xXBilly42069Xx'}];
-    var accountList = [
-        {id:1, username:'John123'},
-        {id:2, username:'Bob234'},
-        {id:3, username:'Kate909'},
-        {id:4, username:'Obama23'},
-        {id:5, username:'xXBilly42069Xx'}];
-
-    //remove followed accounts from account list
-    for(let i = 0; i < followingList.length; i++) {
-        for(let j =0; j< accountList.length; j++){
-            if(accountList[j].id == followingList[i].id){
-                accountList.splice(j,1);
-            }
+            console.error('Error fetching data ... returning to profile page: ', error);
+            navigate('/epoch/profile');
         }
     }
 
@@ -87,7 +66,7 @@ function Userlist() {
                                     &emsp; following 
                                 </p>
                                 <div>
-                                    <button type="button" onClick = {unfollow.bind(this, userId, following.following_id)}>unfollow</button>
+                                    <button type="button" onClick = {unfollow.bind(this, following.following_id)}>unfollow</button>
                                 </div>
                             </li>
                             )}
@@ -101,7 +80,7 @@ function Userlist() {
                                     &emsp; not following 
                                 </p>
                                 <div>
-                                    <button type="button" onClick = {follow.bind(this, userId, account.user_id)}>follow</button>
+                                    <button type="button" onClick = {follow.bind(this, account.user_id)}>follow</button>
                                 </div>
                             </li>
                             )}

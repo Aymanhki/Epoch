@@ -66,12 +66,6 @@ class webserver:
 
             if request_data.startswith(b"POST /api/upload/profile/1/"):
                 upload_profile_pic(conn, request_data)
-            elif request_data.startswith(b"POST /api/follow/"):
-                request_data = request_data.decode('UTF-8')
-                request_lines = request_data.split('\r\n')
-                request_line = request_lines[0]
-                method, relative_path, _ = request_line.split(' ')
-                handle_api_request(method, relative_path, request_data, conn)
 
             else:
                 request_data = request_data.decode('UTF-8')

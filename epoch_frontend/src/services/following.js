@@ -15,7 +15,12 @@ function getAccountList() {
     const headers = {credentials: 'include'}
 
     const data = fetch(url, headers)
-        .then(response => response.json());
+        .then(response => response.json())
+        .catch(error => {
+            this.setState({ errorMessage: error.toString() });
+            console.error('There was an error getting users lists!', error);
+            return false;
+        });
 
     return(data)
 }
@@ -31,7 +36,12 @@ function getFollowingList() {
     const headers = {credentials: 'include'}
 
     const data = fetch(url, headers)
-        .then(response => response.json());
+        .then(response => response.json())
+        .catch(error => {
+            this.setState({ errorMessage: error.toString() });
+            console.error('There was an error getting following lists!', error);
+            return false;
+        });
 
     return(data)    
 }
@@ -52,8 +62,15 @@ function followAccount(userToFollow) {
     fetch(url,{
         method: 'POST',
         mode: 'cors',
+        credentials:'include',
         body: JSON.stringify(params)
     })
+        .then(window.location.reload(true))
+        .catch(error => {
+            this.setState({ errorMessage: error.toString() });
+            console.error('There was an error following an account!', error);
+            return false;
+        });
 }
 
 function unfollowAccount(userToUnfollow) {
@@ -71,11 +88,16 @@ function unfollowAccount(userToUnfollow) {
     fetch(url,{
         method: 'POST',
         mode: 'cors',
+        credentials:'include',
         body: JSON.stringify(params)
     })
-        .then(response=>response.json());
+        .then(window.location.reload(true))
+        .catch(error => {
+            this.setState({ errorMessage: error.toString() });
+            console.error('There was an error unfollowing an account!', error);
+            return false;
+        });
 
-    return false;
 }
 
 module.exports = {getAccountList, getFollowingList, followAccount, unfollowAccount}
