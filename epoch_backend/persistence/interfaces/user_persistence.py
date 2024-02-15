@@ -52,3 +52,7 @@ class user_persistence(ABC):
     @abstractmethod
     def unfollow_user(self, user_id: int, following_id: int):
         pass
+
+    @abstractmethod
+    def get_username(self, user_id: int):
+        pass

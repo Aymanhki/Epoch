@@ -10,19 +10,15 @@ from ..db_controller.access_session_persistence import access_session_persistenc
 def get_account_list(conn, request_data, session_id):
     origin = get_origin_from_headers(request_data)
     user_id_l = access_session_persistence().get_user_by_session_id(session_id)
-    user_id = [int(l[0]) for l in user_id_l][0]
-
+    user_id = [int(l[0]) for l in user_id_l][0] #convert what is returned to an int
     accountList = access_user_persistence().get_all_users(user_id)
-
     send_response(conn, 200, "OK", body=accountList.encode('UTF-8'), headers=get_cors_headers(origin))
 
 def get_following_list(conn, request_data, session_id):
     origin = get_origin_from_headers(request_data)
     user_id_l = access_session_persistence().get_user_by_session_id(session_id)
-    user_id = [int(l[0]) for l in user_id_l][0]
-
+    user_id = [int(l[0]) for l in user_id_l][0] #convert what is returned to an int
     followingList = access_user_persistence().get_following(user_id)
-
     send_response(conn, 200, "OK", body=followingList.encode('UTF-8'), headers=get_cors_headers(origin))
 
 def follow_user(conn, request_data, session_id):

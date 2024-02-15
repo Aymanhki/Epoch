@@ -78,7 +78,8 @@ class epoch_user_persistence(user_persistence):
         rowHeaders = [name[0] for name in cursor.description]
         json_data = []
         for value in result:
-            json_data.append(dict(zip(rowHeaders, value)))
+            if(len(value[0]) < 25): # there are session ids in the database :(
+                json_data.append(dict(zip(rowHeaders, value)))
 
         return json.dumps(json_data)
 
@@ -115,7 +116,7 @@ class epoch_user_persistence(user_persistence):
             delete_file_from_bucket(row[0])
 
             if is_file_in_bucket(row[0]):
-                raise Exception("Failed to delete file from bucket")
+               raise Exception("Failed to delete file from bucket")
 
         cursor.execute(f"DELETE FROM media_content WHERE associated_user = {user_id}")
         connection.commit()
@@ -154,8 +155,10 @@ class epoch_user_persistence(user_persistence):
         cursor.close()
         connection.close()
         rowHeaders = [name[0] for name in cursor.description]
+        rowHeaders.append("username")
         json_data = []
         for value in result:
+            value = value + ("loading...",)
             json_data.append(dict(zip(rowHeaders, value)))
         return json.dumps(json_data)
     
@@ -179,3 +182,15 @@ class epoch_user_persistence(user_persistence):
         connection.commit()
         cursor.close()
         connection.close()
+
+    def get_username(self, user_id: int):
+        #get list of users that user_id follows
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT username FROM users WHERE user_id = %s", (user_id,))
+        result = cursor.fetchall()
+        connection.commit()
+        cursor.close()
+        connection.close()
+        print(result)
+        return result

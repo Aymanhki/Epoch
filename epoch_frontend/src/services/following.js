@@ -9,14 +9,15 @@ function getAccountList() {
     if (!session_id) {
         return;
     }
-    console.log(session_id)
     const currentLocation = window.location;
     const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
     const url = `${serverUrl}/api/follow/accountList/`;
     const headers = {credentials: 'include'}
 
-    fetch(url, headers)
+    const data = fetch(url, headers)
         .then(response => response.json());
+
+    return(data)
 }
 
 function getFollowingList() {
@@ -24,14 +25,15 @@ function getFollowingList() {
     if (!session_id) {
         return;
     }
-    console.log(session_id)
     const currentLocation = window.location;
     const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
     const url = `${serverUrl}/api/follow/followingList/`;
     const headers = {credentials: 'include'}
 
-    fetch(url, headers)
+    const data = fetch(url, headers)
         .then(response => response.json());
+
+    return(data)    
 }
 
 function followAccount(userToFollow) {
@@ -71,6 +73,9 @@ function unfollowAccount(userToUnfollow) {
         mode: 'cors',
         body: JSON.stringify(params)
     })
+        .then(response=>response.json());
+
+    return false;
 }
 
 module.exports = {getAccountList, getFollowingList, followAccount, unfollowAccount}

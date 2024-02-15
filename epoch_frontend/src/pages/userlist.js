@@ -1,4 +1,3 @@
-import {getUserInfo} from "../services/user";
 import {getAccountList, followAccount, unfollowAccount, getFollowingList} from "../services/following"
 import React, {useState, useEffect, map} from 'react';
 import {Spinner} from '../modules/Spinner'
@@ -17,21 +16,41 @@ function unfollow(id, target) {
 
 function Userlist() {
     // State variable for redirect
-    //const [redirectToLogin, setRedirectToLogin] = useState(false);
-    //const [userInfo, setUserInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    //const [followingList, setFollowingList] = useState({});
-    //const [accountList, setAccountList] = useState({});
-    const [userList, setUserLists] = useState({});
+    const [followingIds, setFollowingList] = useState({});
+    const [userList, setUserList] = useState({});
+    const userId = 1;
 
     //on load get these lists from backend
-    //my userId
-    const userId = 69;
+    useEffect(()=>{
+        (async ()=>{
+            setIsLoading(true);
+            await fetchData();
+            setIsLoading(false);
+        })();
+    }, []);
 
-    getAccountList();
-    getFollowingList();
+    const fetchData = async () => {
+        try{
+            var user_data = await getAccountList();
+            var following_data = await getFollowingList();
+            let temp = user_data;
 
+            for(var i in following_data){
+                for(var j in user_data){
+                    if(following_data[i].following_id == temp[j].user_id){
+                        following_data[i].username = temp[j].username;
+                        user_data.splice(j,1);
+                    }
+                }
+            }
 
+            setUserList(user_data);
+            setFollowingList(following_data);
+        } catch (error) {
+            console.error('Error fetching data', error);
+        }
+    }
 
     var followingList = [
         {id:1, username:'John123'},
@@ -55,34 +74,34 @@ function Userlist() {
 
     return (
         <div>
-            {isLoading ? <Spinner/>: (
+            {isLoading && followingIds ? <Spinner/>: (
                 <>
                     <h1>Userlist Page</h1>
                     <h2>userInfo.name you are following</h2>
                     <h2>list accounts im following</h2>
                     <ul>
-                        {followingList.map(following =>
-                            <li key = {following.id}>
+                        {followingIds && followingIds.map && followingIds.map(following =>
+                            <li key = {following.following_id}>
                                 <p>
                                     <b>{following.username}: </b>
                                     &emsp; following 
                                 </p>
                                 <div>
-                                    <button type="button" onClick = {unfollow.bind(this, userId, following.id)}>unfollow</button>
+                                    <button type="button" onClick = {unfollow.bind(this, userId, following.following_id)}>unfollow</button>
                                 </div>
                             </li>
                             )}
                     </ul>
                     <h2>list all other accounts</h2>
                     <ul>
-                        {accountList.map(account =>
-                            <li key = {account.id}>
+                        {userList && userList.map && userList.map(account =>
+                            <li key = {account.user_id}>
                                 <p>
                                     <b>{account.username}: </b>
                                     &emsp; not following 
                                 </p>
                                 <div>
-                                    <button type="button" onClick = {follow.bind(this, userId, account.id)}>follow</button>
+                                    <button type="button" onClick = {follow.bind(this, userId, account.user_id)}>follow</button>
                                 </div>
                             </li>
                             )}

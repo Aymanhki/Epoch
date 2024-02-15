@@ -44,3 +44,6 @@ class access_user_persistence(user_persistence):
 
     def unfollow_user(self, user_id: int, following_id: int):
         self.user_persistence.unfollow_user(user_id, following_id)
+
+    def get_username(self, user_id: int):
+        return self.get_username(user_id)
