@@ -11,7 +11,7 @@ INDEX_HTML_PATH = os.path.normpath('/index.html')
 
 def handle_routing(relative_path, request_data, conn, method):
     if relative_path.startswith('/api/'):
-        if relative_path.startswith('/api/') and relative_path != '/api/login/' and relative_path != '/api/register/' and relative_path != '/api/upload/profile/1/' and relative_path!='/api/follow/accountList/':
+        if relative_path.startswith('/api/') and relative_path != '/api/login/' and relative_path != '/api/register/' and relative_path != '/api/upload/profile/1/':
             session_id = get_session_id_from_request(request_data)
             if access_session_persistence().get_session(session_id) is None:
                 print("\n* Unauthorized request rejected *\n")

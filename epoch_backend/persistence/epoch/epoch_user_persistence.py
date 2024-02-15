@@ -192,5 +192,4 @@ class epoch_user_persistence(user_persistence):
         connection.commit()
         cursor.close()
         connection.close()
-        print(result)
         return result

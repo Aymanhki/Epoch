@@ -59,7 +59,7 @@ function Profile() {
                         follow someone?{' '}
                         <Link to="/epoch/userlist"
                             style={{textDecoration: 'underline', cursor: 'pointer', color: '#ffffff'}}>
-                                click hehere
+                                click here
                         </Link>
                     </p>
                 </>
