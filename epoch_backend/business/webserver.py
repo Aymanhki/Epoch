@@ -3,8 +3,8 @@ import threading
 import os
 import ssl
 from .utils import send_response
-from .api_endpoints.router import handle_routing, handle_api_request
-from .api_endpoints.user_endpoints import upload_profile_pic
+from .api_endpoints.router import handle_routing
+#from .api_endpoints.user_endpoints import upload_profile_pic
 
 keyPath = './assets/privkey.pem'
 certPath = './assets/fullchain.pem'
@@ -65,7 +65,8 @@ class webserver:
             print(f"Heard:\n{request_data}\n")
 
             if request_data.startswith(b"POST /api/upload/profile/1/"):
-                upload_profile_pic(conn, request_data)
+                #upload_profile_pic(conn, request_data)
+                pass
 
             else:
                 request_data = request_data.decode('UTF-8')

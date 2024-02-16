@@ -1,7 +1,7 @@
 import json
 from ..interfaces.user_persistence import user_persistence
 from epoch_backend.objects.user import user
-from ...business.utils import get_db_connection, delete_file_from_bucket, is_file_in_bucket
+from ...business.utils import get_db_connection#, delete_file_from_bucket, is_file_in_bucket
 
 class epoch_user_persistence(user_persistence):
     def __init__(self):
@@ -15,7 +15,7 @@ class epoch_user_persistence(user_persistence):
         cursor.close()
         connection.close()
 
-        if len(result) == 0 or len(result) > 1:
+        if len(result) == 0 :#or len(result) > 1:
             return None
         else:
             return user(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4], result[0][5], str(result[0][6]))
@@ -109,18 +109,18 @@ class epoch_user_persistence(user_persistence):
         cursor = connection.cursor()
         cursor.execute(f"DELETE FROM users WHERE user_id = {user_id}")
         connection.commit()
-        cursor.execute(f"Select path FROM media_content WHERE associated_user = {user_id}")
+        #cursor.execute(f"Select path FROM media_content WHERE associated_user = {user_id}")
         result = cursor.fetchall()
 
-        for row in result:
-            delete_file_from_bucket(row[0])
+        #for row in result:
+        #    delete_file_from_bucket(row[0])
 
-            if is_file_in_bucket(row[0]):
-               raise Exception("Failed to delete file from bucket")
+        #    if is_file_in_bucket(row[0]):
+        #       raise Exception("Failed to delete file from bucket")
 
-        cursor.execute(f"DELETE FROM media_content WHERE associated_user = {user_id}")
-        connection.commit()
-        cursor.execute(f"Select path FROM media_content WHERE associated_user = {user_id}")
+        #cursor.execute(f"DELETE FROM media_content WHERE associated_user = {user_id}")
+        #connection.commit()
+        #cursor.execute(f"Select path FROM media_content WHERE associated_user = {user_id}")
         result = cursor.fetchall()
 
         if len(result) > 0:

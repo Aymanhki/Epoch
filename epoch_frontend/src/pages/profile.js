@@ -1,9 +1,13 @@
-import {getUserInfo} from "../services/user";
+import {getUserInfo, removeSessionCookie} from "../services/user";
 import React, {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {Spinner} from '../modules/Spinner'
 import {useNavigate} from "react-router-dom";
 
+function logout() {
+    removeSessionCookie();
+    window.location.reload(true);
+}
 
 function Profile() {
 
@@ -61,7 +65,11 @@ function Profile() {
                             style={{textDecoration: 'underline', cursor: 'pointer', color: '#ffffff'}}>
                                 click here
                         </Link>
+                        <div>
+                            <button type="button" onClick = {logout.bind(this)}>logout</button>
+                        </div>
                     </p>
+                    
                 </>
             )}
 
