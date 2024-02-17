@@ -32,3 +32,11 @@ class access_user_persistence(user_persistence):
 
     def remove_user_by_id(self, user_id: int):
         self.user_persistence.remove_user_by_id(user_id)
+
+    def get_user_fake(self, username: str):
+        #REMOVE THIS AFTER THE SERVER GOES BACK UP
+        return {
+            'username': 'aUser',
+            'user_id': '1001',
+            'bio': 'this is my bio',
+        }

@@ -105,15 +105,51 @@ function getUserInfo() {
     });
 }
 
-function getUsernameInfo() {
+function getUsernameInfo(username) {
     //make api request for user
-    var xhr = new XMLHttpRequest();
+    return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('GET', `${serverUrl}/api/users/`, true);
+        xhr.open('GET', `${serverUrl}/api/user/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
         xhr.timeout = 10000;
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    const userData = JSON.parse(xhr.responseText);
+
+                    // Check if profile picture data is available
+                    if (userData.profile_pic_data) {
+                        // Assuming profile_pic_data is a base64 encoded string
+                        const profilePicData = userData.profile_pic_data;
+                        userData.profile_pic_data = `data:image/png;base64,${profilePicData}`;
+                    }
+
+                    resolve(userData);
+                } else {
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
+                }
+            }
+        };
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+        xhr.send(JSON.stringify({username: username}));
+    });
 
 }
 
@@ -258,4 +294,4 @@ function deleteUser(userId) {
 }
 
 
-module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadProfilePic, registerUser, deleteUser};
+module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadProfilePic, registerUser, deleteUser, getUsernameInfo};
