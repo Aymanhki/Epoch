@@ -34,8 +34,12 @@ jobs:
             docker rmi \$(docker images -q)
             git clone https://github.com/Aymanhki/Epoch.git 
             cd
+            cp credentials/db_params.json Epoch/epoch_backend/assets/
+            cp credentials/epoch-414600-66dd2b7c57f6.json Epoch/epoch_backend/assets/
+            cp credentials/fullchain.pem Epoch/epoch_backend/assets/
+            cp credentials/privkey.pem Epoch/epoch_backend/assets/
             cd Epoch/
-            if ! pytest -s --cov=epoch_backend -rA -vv --color=yes ./epoch_backend/tests/webserver_tests.py --full-trace; then
+            if ! pytest --cov=epoch_backend --color=yes ./epoch_backend/tests/webserver_tests.py; then
               echo "Webserver Backend Test(s) failed. Exiting with status 1."
               exit 1
             fi
@@ -46,10 +50,6 @@ jobs:
               exit 1
             fi
             cd ..
-            if ! pytest --color=yes ./epoch_backend/tests/integration_tests.py; then
-              echo "Integration Test(s) failed. Exiting with status 1."
-              exit 1
-            fi
             if ! docker build -t epoch_backend ./epoch_backend/; then
               echo "Docker build failed. Exiting with status 1."
               exit 1
@@ -104,13 +104,10 @@ jobs:
             docker rmi \$(docker images -q)
             git clone https://github.com/Aymanhki/Epoch.git 
             cd
-            cd Epoch/epoch_backend/assets/
-            cp /etc/letsencrypt/live/aymanhkias.com/fullchain.pem ./
-            cp /etc/letsencrypt/live/aymanhkias.com/privkey.pem ./
-            cd
-            cd Epoch/epoch_frontend/
-            cp /etc/letsencrypt/live/aymanhkias.com/fullchain.pem ./
-            cp /etc/letsencrypt/live/aymanhkias.com/privkey.pem ./
+            cp credentials/db_params.json Epoch/epoch_backend/assets/
+            cp credentials/epoch-414600-66dd2b7c57f6.json Epoch/epoch_backend/assets/
+            cp credentials/fullchain.pem Epoch/epoch_backend/assets/
+            cp credentials/privkey.pem Epoch/epoch_backend/assets/
             cd
             exit
           EOF

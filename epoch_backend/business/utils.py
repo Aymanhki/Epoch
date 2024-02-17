@@ -3,18 +3,17 @@ import os
 import pytz
 import json
 import psycopg2
-import tempfile
 from google.cloud import storage
 from urllib.parse import urlparse, unquote
 
 
-BUCKET_NAME = "epoch_backend_cloud_storage"
+BUCKET_NAME = "epoch-cloud"
 
 # Set the current working directory to the root of your project
 assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets'))
-
 db_params_path = os.path.join(assets_dir, "db_params.json")
 epoch_db_path = os.path.join(assets_dir, "epoch_db.sql")
+
 
 def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
     try:
@@ -24,14 +23,17 @@ def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
         response_headers_str = "\r\n".join([f"{header}: {value}" for header, value in response_headers.items()])
         response = f"{response_line}{response_headers_str}\r\n\r\n".encode('utf-8') + body
         conn.sendall(response)
+        print(f"Sent:\n{response_line}{response_headers_str}\n{body[:100]}...")
     finally:
         conn.close()
+
 
 def get_last_modified(file_path):
     last_updated_pattern = "%a, %d %b %Y %H:%M:%S %Z"
     modified_timestamp = os.path.getmtime(file_path)
     modified_time = datetime.datetime.fromtimestamp(modified_timestamp, tz=pytz.timezone("America/Winnipeg"))
     return modified_time.strftime(last_updated_pattern)
+
 
 def guess_file_type(file_extension):
     extension_to_type = {
@@ -86,6 +88,7 @@ def guess_file_type(file_extension):
     file_extension = file_extension.lower()
     return extension_to_type.get(file_extension, "text/text"), file_extension
 
+
 def get_session_id_from_request( request_data):
     headers = request_data.split('\r\n\r\n')[0]
 
@@ -97,6 +100,7 @@ def get_session_id_from_request( request_data):
                     session_id = cookie.split('=')[1]
                     return session_id
     return None
+
 
 def get_db_connection():
     try:
@@ -119,6 +123,7 @@ def get_db_connection():
         print(e)
         raise e
 
+
 def start_db_tables():
     try:
         with open(epoch_db_path, "r") as f:
@@ -132,15 +137,16 @@ def start_db_tables():
         cursor.close()
         connection.close()
 
-
     except Exception as e:
         print(e)
         raise e
+
 
 def send_cors_options_response(request_data, conn):
     headers, body = request_data.split("\r\n\r\n", 1)
     origin = get_origin_from_headers(headers)
     send_response(conn, 204, "No Content", body=b"", headers=get_cors_headers(origin))
+
 
 def get_cors_headers(origin="*"):
     return {
@@ -151,10 +157,9 @@ def get_cors_headers(origin="*"):
         "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks",
     }
 
+
 def get_origin_from_headers(headers):
     headers_list = headers.split("\r\n")
-
-    # Find the element with 'Origin: '
     origin_line = None
 
     for line in headers_list:
@@ -173,9 +178,9 @@ def upload_file_to_cloud(user_id, file_name, file, content_type):
     path = ''
 
     if user_id is not None:
-        path = f"epoch_media/users/{user_id}/{file_name}"
+        path = f"epoch-media/users/{user_id}/{file_name}"
     else:
-        path = f"epoch_media/{file_name}"
+        path = f"epoch-media/{file_name}"
 
     client = storage.Client()
     bucket = client.get_bucket(BUCKET_NAME)
@@ -184,6 +189,7 @@ def upload_file_to_cloud(user_id, file_name, file, content_type):
     blob.upload_from_string(file, content_type=content_type)
 
     file_url = f"https://storage.googleapis.com/{BUCKET_NAME}/{path}"
+    client.close()
 
     return file_url
 
@@ -197,8 +203,10 @@ def download_file_to_cloud(file_url):
 
     blob = bucket.blob(object_path)
     file = blob.download_as_bytes()
+    client.close()
 
     return file
+
 
 def is_file_in_bucket(file_path):
     client = storage.Client()
@@ -209,8 +217,10 @@ def is_file_in_bucket(file_path):
 
     blob = bucket.blob(object_path)
     blob_exists = blob.exists()
+    client.close()
 
     return blob_exists
+
 
 def delete_file_from_bucket(file_path):
     client = storage.Client()
@@ -221,25 +231,16 @@ def delete_file_from_bucket(file_path):
 
     blob = bucket.blob(object_path)
     blob.delete()
+    client.close()
+
 
 def get_google_credentials():
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor()
-        cursor.execute("SELECT credential_value FROM secret_files WHERE credential_type = 'google_credentials'")
-        result = cursor.fetchone()
-        cursor.close()
-        connection.close()
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(assets_dir, "epoch-414600-66dd2b7c57f6.json")
 
-        if result:
-            temp_file_path = tempfile.mktemp(suffix=".json")
-            with open(temp_file_path, "w") as temp_file:
-                temp_file.write(result[0])
 
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file_path
-        else:
-            raise Exception("Google Cloud credentials not found in the database.")
+def get_fullchain_cert_path():
+    return os.path.join(assets_dir, "fullchain.pem")
 
-    except Exception as e:
-        print(e)
-        raise e
+
+def get_privkey_cert_path():
+    return os.path.join(assets_dir, "privkey.pem")
