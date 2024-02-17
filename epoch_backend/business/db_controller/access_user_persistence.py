@@ -21,8 +21,8 @@ class access_user_persistence(user_persistence):
     def update_user(self, user_to_update: user):
         pass
 
-    def get_all_users(self):
-        pass
+    def get_all_users(self, user_id: int):
+        return self.user_persistence.get_all_users(user_id)
 
     def validate_login(self, username: str, password: str):
         return self.user_persistence.validate_login(username, password)
@@ -32,3 +32,18 @@ class access_user_persistence(user_persistence):
 
     def remove_user_by_id(self, user_id: int):
         self.user_persistence.remove_user_by_id(user_id)
+
+    def get_followers(self, user_id: int):
+        return self.user_persistence.get_followers(user_id)
+
+    def get_following(self, user_id: int):
+        return self.user_persistence.get_following(user_id)
+
+    def follow_user(self, user_id: int, following_id: int):
+        self.user_persistence.follow_user(user_id, following_id)
+
+    def unfollow_user(self, user_id: int, following_id: int):
+        self.user_persistence.unfollow_user(user_id, following_id)
+
+    def get_username(self, user_id: int):
+        return self.get_username(user_id)

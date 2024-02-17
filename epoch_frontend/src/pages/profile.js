@@ -1,8 +1,13 @@
-import {getUserInfo} from "../services/user";
+import {getUserInfo, removeSessionCookie} from "../services/user";
 import React, {useState, useEffect} from 'react';
+import {Link} from 'react-router-dom';
 import {Spinner} from '../modules/Spinner'
 import {useNavigate} from "react-router-dom";
 
+function logout() {
+    removeSessionCookie();
+    window.location.reload(true);
+}
 
 function Profile() {
 
@@ -52,6 +57,19 @@ function Profile() {
                     <h2>Your account was created at {userInfo.created_at}</h2>
                     <h2>Your account bio is {userInfo.bio}</h2>
                     <h2>Your account profile pic id is {userInfo.profile_pic_id}</h2>
+
+
+                    <p style={{textAlign: 'center', marginTop: '10px'}}>
+                        follow someone?{' '}
+                        <Link to="/epoch/userlist"
+                            style={{textDecoration: 'underline', cursor: 'pointer', color: '#ffffff'}}>
+                                click here
+                        </Link>
+                        <div>
+                            <button type="button" onClick = {logout.bind(this)}>logout</button>
+                        </div>
+                    </p>
+                    
                 </>
             )}
 

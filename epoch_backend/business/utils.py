@@ -14,6 +14,7 @@ BUCKET_NAME = "epoch_backend_cloud_storage"
 assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets'))
 
 db_params_path = os.path.join(assets_dir, "db_params.json")
+local_db_params_path = os.path.join(assets_dir, "local_db_params.json")
 epoch_db_path = os.path.join(assets_dir, "epoch_db.sql")
 
 def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
@@ -98,7 +99,7 @@ def get_session_id_from_request( request_data):
                     return session_id
     return None
 
-def get_db_connection():
+""" def get_db_connection():
     try:
         with open(db_params_path, "r") as f:
             db_params = json.load(f)
@@ -117,7 +118,7 @@ def get_db_connection():
 
     except Exception as e:
         print(e)
-        raise e
+        raise e """
 
 def start_db_tables():
     try:
@@ -140,7 +141,6 @@ def start_db_tables():
 def send_cors_options_response(request_data, conn):
     headers, body = request_data.split("\r\n\r\n", 1)
     origin = get_origin_from_headers(headers)
-
     send_response(conn, 204, "No Content", body=b"", headers=get_cors_headers(origin))
 
 def get_cors_headers(origin="*"):
@@ -240,6 +240,43 @@ def get_google_credentials():
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file_path
         else:
             raise Exception("Google Cloud credentials not found in the database.")
+
+    except Exception as e:
+        print(e)
+        raise e
+
+def start_local_db_tables():
+    try:
+        with open(epoch_db_path, "r") as f:
+            epoch_tables = f.read()
+            f.close()
+
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(epoch_tables)
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except Exception as e:
+        print(e)
+        raise e
+    
+def get_db_connection():
+    try:
+        with open(local_db_params_path, "r") as f:
+            db_params = json.load(f)
+            f.close()
+
+        connection = psycopg2.connect(
+            host=db_params["host"],
+            port=db_params["port"],
+            dbname=db_params["database"],
+            user=db_params["user"],
+            password=db_params["password"],
+            connect_timeout=db_params["connect_timeout"]
+        )
+
+        return connection
 
     except Exception as e:
         print(e)
