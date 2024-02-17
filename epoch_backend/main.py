@@ -10,7 +10,7 @@ from business.utils import start_db_tables, get_google_credentials
 
 def main():
     start_db_tables()
-    get_google_credentials()   
+    #get_google_credentials()   
     webserver().run()
 
 if __name__ == "__main__":
