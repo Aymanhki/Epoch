@@ -2,12 +2,9 @@ import socket
 import threading
 import os
 import ssl
-from .utils import send_response
+from .utils import send_response, get_privkey_cert_path, get_fullchain_cert_path
 from .api_endpoints.router import handle_routing
 from .api_endpoints.user_endpoints import upload_profile_pic
-
-keyPath = './assets/privkey.pem'
-certPath = './assets/fullchain.pem'
 
 
 class webserver:
@@ -17,7 +14,7 @@ class webserver:
 
         if self.use_ssl:
             self.ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-            self.ssl_context.load_cert_chain(certfile=certPath, keyfile=keyPath)
+            self.ssl_context.load_cert_chain(certfile=get_fullchain_cert_path(), keyfile=get_privkey_cert_path())
 
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

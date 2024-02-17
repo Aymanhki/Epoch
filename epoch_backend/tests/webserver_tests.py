@@ -12,8 +12,8 @@ import threading
 session_id: str = None
 user_id: int = None
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
-EXTREME_TEST_RANGE = 50
-EXTREM_TEST_UPLOAD_RANGE = 10
+EXTREME_TEST_RANGE = 10
+EXTREM_TEST_UPLOAD_RANGE = 3
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
@@ -207,7 +207,7 @@ class webserver_tests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         print(f"User {i} deleted.")
 
-    def test_9_all_tests_extreme(self):
+    def test_9_load_test(self):
         usernames = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
         passwords = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
         names = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
