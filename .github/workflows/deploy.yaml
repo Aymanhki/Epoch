@@ -108,6 +108,8 @@ jobs:
             cp credentials/epoch-414600-66dd2b7c57f6.json Epoch/epoch_backend/assets/
             cp credentials/fullchain.pem Epoch/epoch_backend/assets/
             cp credentials/privkey.pem Epoch/epoch_backend/assets/
+            cp credentials/fullchain.pem Epoch/epoch_frontend/
+            cp credentials/privkey.pem Epoch/epoch_frontend/
             cd
             exit
           EOF
