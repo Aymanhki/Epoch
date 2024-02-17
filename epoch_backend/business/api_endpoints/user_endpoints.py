@@ -1,11 +1,11 @@
 import datetime
 import json
-from ..utils import send_response, get_cors_headers, get_origin_from_headers #,upload_file_to_cloud, download_file_to_cloud, is_file_in_bucket
+from ..utils import send_response, get_cors_headers, get_origin_from_headers, upload_file_to_cloud, download_file_to_cloud, is_file_in_bucket
 from ..db_controller.access_user_persistence import access_user_persistence
-#from ..db_controller.access_media_persistence import access_media_persistence
+from ..db_controller.access_media_persistence import access_media_persistence
 from ..db_controller.access_session_persistence import access_session_persistence
 from epoch_backend.objects.session import session
-#from epoch_backend.objects.media import media
+from epoch_backend.objects.media import media
 from epoch_backend.objects.user import user
 import uuid
 import base64
@@ -32,8 +32,8 @@ def post_user(conn, request_data):
         user = access_user_persistence().get_user(username)
         access_session_persistence().add_session(session(session_id, user.id))
 
-        #if user.profile_pic_id is None:
-            #access_user_persistence().update_user_profile_pic(user.id, 1)
+        if user.profile_pic_id is None:
+            access_user_persistence().update_user_profile_pic(user.id, 1)
 
         headers = {
             "Set-Cookie": f"epoch_session_id={session_id}; Expires={datetime.datetime.now() + datetime.timedelta(days=1)}; username={username}; Path=/",
@@ -66,20 +66,20 @@ def get_user(conn, request_data, session_id):
         user_fetch = access_user_persistence().get_user_by_id(user_id)
 
         if user_fetch is not None and user_fetch.__dict__ is not None and len(user_fetch.__dict__) > 0:
-            profile_pic_data = None # access_media_persistence().get_media(user_fetch.profile_pic_id)
+            profile_pic_data = access_media_persistence().get_media(user_fetch.profile_pic_id)
 
-            #if profile_pic_data is not None:
-            #    if is_file_in_bucket(profile_pic_data.path):
-            #        profile_pic_data = download_file_to_cloud(profile_pic_data.path)
-            #    else:
-            #        profile_pic_data = download_file_to_cloud(access_media_persistence().get_media(1).path)
+            if profile_pic_data is not None:
+                if is_file_in_bucket(profile_pic_data.path):
+                    profile_pic_data = download_file_to_cloud(profile_pic_data.path)
+                else:
+                    profile_pic_data = download_file_to_cloud(access_media_persistence().get_media(1).path)
 
-            #    profile_pic_data_base64 = base64.b64encode(bytes(profile_pic_data)).decode('utf-8')
-            #    user_info_with_pic = user_fetch.__dict__
-            #    user_info_with_pic["profile_pic_data"] = profile_pic_data_base64
-            #    send_response(conn, 200, "OK", body=json.dumps(user_info_with_pic).encode('UTF-8'), headers=headers)
-            #else:
-            send_response(conn, 200, "OK, but did not find profile picture for the user", body=json.dumps(user_fetch.__dict__).encode('UTF-8'), headers=headers)
+                profile_pic_data_base64 = base64.b64encode(bytes(profile_pic_data)).decode('utf-8')
+                user_info_with_pic = user_fetch.__dict__
+                user_info_with_pic["profile_pic_data"] = profile_pic_data_base64
+                send_response(conn, 200, "OK", body=json.dumps(user_info_with_pic).encode('UTF-8'), headers=headers)
+            else:
+                send_response(conn, 200, "OK, but did not find profile picture for the user", body=json.dumps(user_fetch.__dict__).encode('UTF-8'), headers=headers)
         else:
             send_response(conn, 404, "Could not get the user information because the user was not found", body=b"<h1>404 Not Found</h1>", headers=headers)
     else:
@@ -116,7 +116,7 @@ def register_user(conn, request_data):
     else:
         send_response(conn, 409, "Username already exist", body=b"<h1>409 Conflict</h1>", headers=get_cors_headers(origin))
 
-""" def upload_profile_pic(conn, request_data):
+def upload_profile_pic(conn, request_data):
     headers, body = request_data.split(b'\r\n\r\n', 1)
     print(f"Heard:\n{headers}\n")
     header_lines = headers.decode('UTF-8').split('\r\n')
@@ -152,7 +152,7 @@ def register_user(conn, request_data):
         send_response(conn, 200, "OK", body=json.dumps({"media_id": media_id}).encode('UTF-8'), headers=get_cors_headers(origin))
     else:
         send_response(conn, 500, "Could not upload profile picture, internal Server Error", body=b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
- """
+
 def delete_by_user_id(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)
 
