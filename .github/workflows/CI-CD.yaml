@@ -38,7 +38,9 @@ jobs:
             cp credentials/epoch-414600-66dd2b7c57f6.json Epoch/epoch_backend/assets/
             cp credentials/fullchain.pem Epoch/epoch_backend/assets/
             cp credentials/privkey.pem Epoch/epoch_backend/assets/
-            cd Epoch/
+            cd Epoch/epoch_frontend/
+            npm install
+            cd ..
             pkill selenium
             pkill chromedriver
             pkill geckodriver
@@ -49,7 +51,6 @@ jobs:
               exit 1
             fi
             cd epoch_frontend/
-            npm install
             if ! npm test; then
               echo "Frontend server Test(s) failed. Exiting with status 1."
               exit 1
