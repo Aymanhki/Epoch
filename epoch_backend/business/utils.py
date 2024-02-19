@@ -16,6 +16,8 @@ epoch_db_path = os.path.join(assets_dir, "epoch_db.sql")
 
 
 def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
+    print(f"Sent:\n{status_code} {reason_phrase}\n{headers}\n{body[:1000]}")
+
     try:
         response_line = f"HTTP/1.1 {status_code} {reason_phrase}\r\n"
         response_headers = headers
@@ -23,7 +25,6 @@ def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
         response_headers_str = "\r\n".join([f"{header}: {value}" for header, value in response_headers.items()])
         response = f"{response_line}{response_headers_str}\r\n\r\n".encode('utf-8') + body
         conn.sendall(response)
-        print(f"Sent:\n{response_line}{response_headers_str}\n{body[:100]}...")
     finally:
         conn.close()
 
