@@ -1,5 +1,5 @@
 import os
-from ..utils import send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
+from ..utils import get_cors_headers, get_origin_from_headers, send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
 from ..api_endpoints.following_endpoints import get_account_list, get_following_list, follow_user, unfollow_user
 from ..api_endpoints.user_endpoints import post_user, get_user, register_user, delete_by_user_id, delete_by_username
 from ..db_controller.access_session_persistence import access_session_persistence
@@ -69,7 +69,10 @@ def handle_api_request(method, path, request_data, conn):
     elif path == "/api/follow/accountList/":
         if method == "GET":
             session_id = get_session_id_from_request(request_data)
-            get_account_list(conn, request_data, session_id)
+            #get_account_list(conn, request_data, session_id)
+            origin = get_origin_from_headers(request_data)
+            response = get_account_list(conn, request_data, session_id)
+            send_response(conn, response[0], response[1], body = response[2], headers=get_cors_headers(origin))
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
@@ -77,7 +80,10 @@ def handle_api_request(method, path, request_data, conn):
     elif path == "/api/follow/followingList/":
         if method == "GET":
             session_id = get_session_id_from_request(request_data)
-            get_following_list(conn, request_data, session_id)
+            #get_following_list(conn, request_data, session_id)
+            origin = get_origin_from_headers(request_data)
+            response = get_following_list(conn, request_data, session_id)
+            send_response(conn, response[0], response[1], body = response[2], headers=get_cors_headers(origin))
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
@@ -85,14 +91,20 @@ def handle_api_request(method, path, request_data, conn):
     elif path == "/api/follow/follow/":
         if method == "POST":
             session_id = get_session_id_from_request(request_data)
-            follow_user(conn, request_data, session_id)
+            #follow_user(conn, request_data, session_id)
+            origin = get_origin_from_headers(request_data)
+            response = follow_user(conn, request_data, session_id)
+            send_response(conn, response[0], response[1], body = response[2], headers=get_cors_headers(origin))
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
     elif path == "/api/follow/unfollow/":
         if method == "POST":
             session_id = get_session_id_from_request(request_data)
-            unfollow_user(conn, request_data, session_id)
+            #unfollow_user(conn, request_data, session_id)
+            origin = get_origin_from_headers(request_data)
+            response = unfollow_user(conn, request_data, session_id)
+            send_response(conn, response[0], response[1], body = response[2], headers=get_cors_headers(origin))
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
     
