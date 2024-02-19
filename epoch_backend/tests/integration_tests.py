@@ -8,7 +8,6 @@ from selenium import webdriver
 import signal
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-
 import requests
 import json
 
@@ -16,8 +15,8 @@ TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
 
-servers_wait_time = 10
-default_element_wait_timeout = 30
+servers_wait_time = 1
+default_element_wait_timeout = 10
 
 session_id = None
 
@@ -54,15 +53,10 @@ class integration_tests(unittest.TestCase):
         terminate_processes_on_port(3000)
         terminate_processes_on_port(8080)
         cls.server_process = subprocess.Popen(["python3", "main.py"], cwd=cls.backend_dir)
+        time.sleep(servers_wait_time)
         cls.frontend_process = subprocess.Popen(["npm", "start"], cwd=cls.frontend_dir)
         time.sleep(servers_wait_time)
-        chrome_options = webdriver.ChromeOptions()
-
-        if os.environ.get("DEPLOYED_TEST") == "true":
-            chrome_options.add_argument('--headless')
-            chrome_options.add_argument('--no-sandbox')
-
-        cls.driver = webdriver.Chrome(options=chrome_options)
+        cls.driver = webdriver.Chrome()
 
     @classmethod
     def tearDownClass(cls):
@@ -72,6 +66,7 @@ class integration_tests(unittest.TestCase):
         os.kill(cls.frontend_process.pid, signal.SIGKILL)
         os.kill(cls.server_process.pid, signal.SIGINT)
         cls.frontend_process.kill()
+        time.sleep(servers_wait_time)
         cls.server_process.kill()
         time.sleep(servers_wait_time)
         terminate_processes_on_port(3000)
@@ -124,7 +119,3 @@ class integration_tests(unittest.TestCase):
         driver.delete_cookie("epoch_session_id")
         driver.get("http://localhost:3000/")
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: driver.find_element(By.ID, "login-button") is not None)
-
-
-if __name__ == '__main__':
-    unittest.main()
