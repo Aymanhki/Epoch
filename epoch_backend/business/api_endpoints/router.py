@@ -1,8 +1,10 @@
+import json
 import os
 from ..utils import get_cors_headers, get_origin_from_headers, send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
 from ..api_endpoints.following_endpoints import get_account_list, get_following_list, follow_user, unfollow_user
 from ..api_endpoints.user_endpoints import post_user, get_user, register_user, delete_by_user_id, delete_by_username
 from ..db_controller.access_session_persistence import access_session_persistence
+from ..db_controller.access_user_persistence import access_user_persistence
 #from business.api_endpoints.following_endpoints import get_account_list
 
 
@@ -28,6 +30,7 @@ def handle_routing(relative_path, request_data, conn, method):
         handle_static_request(method, conn, full_path)
 
 def handle_api_request(method, path, request_data, conn):
+    origin = get_origin_from_headers(request_data)
     if method == "OPTIONS":  # Handle CORS preflight request
         send_cors_options_response(request_data, conn)
         return
@@ -69,9 +72,7 @@ def handle_api_request(method, path, request_data, conn):
     elif path == "/api/follow/accountList/":
         if method == "GET":
             session_id = get_session_id_from_request(request_data)
-            #get_account_list(conn, request_data, session_id)
-            origin = get_origin_from_headers(request_data)
-            response = get_account_list(conn, request_data, session_id)
+            response = get_account_list(session_id, access_session_persistence(), access_user_persistence())
             send_response(conn, response[0], response[1], body = response[2], headers=get_cors_headers(origin))
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
@@ -80,9 +81,7 @@ def handle_api_request(method, path, request_data, conn):
     elif path == "/api/follow/followingList/":
         if method == "GET":
             session_id = get_session_id_from_request(request_data)
-            #get_following_list(conn, request_data, session_id)
-            origin = get_origin_from_headers(request_data)
-            response = get_following_list(conn, request_data, session_id)
+            response = get_following_list(session_id, access_session_persistence(), access_user_persistence())
             send_response(conn, response[0], response[1], body = response[2], headers=get_cors_headers(origin))
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
@@ -90,20 +89,36 @@ def handle_api_request(method, path, request_data, conn):
 
     elif path == "/api/follow/follow/":
         if method == "POST":
-            session_id = get_session_id_from_request(request_data)
-            #follow_user(conn, request_data, session_id)
-            origin = get_origin_from_headers(request_data)
-            response = follow_user(conn, request_data, session_id)
+            session_id = get_session_id_from_request(request_data) #get params from request
+            headers, body = request_data.split("\r\n\r\n", 1)
+            content_length = 0
+            for line in headers.split("\r\n"):
+                if "Content-Length" in line:
+                    content_length = int(line.split(" ")[1])
+            while len(body) < content_length:
+                body += conn.recv(1024).decode('UTF-8')
+            data = json.loads(body)
+            toFollow = data["userToFollow"]
+
+            response = follow_user(session_id, toFollow, access_session_persistence(), access_user_persistence())
             send_response(conn, response[0], response[1], body = response[2], headers=get_cors_headers(origin))
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
     elif path == "/api/follow/unfollow/":
         if method == "POST":
-            session_id = get_session_id_from_request(request_data)
-            #unfollow_user(conn, request_data, session_id)
-            origin = get_origin_from_headers(request_data)
-            response = unfollow_user(conn, request_data, session_id)
+            session_id = get_session_id_from_request(request_data) #get params from request
+            headers, body = request_data.split("\r\n\r\n", 1) 
+            content_length = 0
+            for line in headers.split("\r\n"):
+                if "Content-Length" in line:
+                    content_length = int(line.split(" ")[1])
+            while len(body) < content_length:
+                body += conn.recv(1024).decode('UTF-8')
+            data = json.loads(body)
+            toUnfollow = data["userToUnfollow"]
+
+            response = unfollow_user(session_id, toUnfollow, access_session_persistence(), access_user_persistence())
             send_response(conn, response[0], response[1], body = response[2], headers=get_cors_headers(origin))
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
