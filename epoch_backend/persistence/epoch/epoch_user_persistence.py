@@ -146,7 +146,7 @@ class epoch_user_persistence(user_persistence):
         return json.dumps(json_data)
     
     def get_following(self, user_id:int):
-        #get list of users that user_id follows
+    #get list of users that user_id follows
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute("SELECT following_id FROM following WHERE user_id = %s", (user_id,))

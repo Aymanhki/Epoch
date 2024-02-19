@@ -17,7 +17,7 @@ def handle_routing(relative_path, request_data, conn, method):
             session_id = get_session_id_from_request(request_data)
             if access_session_persistence().get_session(session_id) is None:
                 print("\n* Unauthorized request rejected *\n")
-                send_response(conn, 401, "Unauthorized", body=b"<h1>401 Unauthorized</h1>")
+                send_response(conn, 401, "Unauthorized (Missing Session Cookie)", body=b"<h1>401 Unauthorized</h1>")
                 return
 
         handle_api_request(method, relative_path, request_data, conn)
