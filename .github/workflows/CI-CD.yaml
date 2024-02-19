@@ -36,7 +36,6 @@ jobs:
             cp credentials/fullchain.pem Epoch/epoch_backend/assets/
             cp credentials/privkey.pem Epoch/epoch_backend/assets/
             cd Epoch/
-            export DEPLOYED_TEST=true
             if ! pytest --cov=epoch_backend -rA --color=yes --disable-warnings --disable-pytest-warnings --show-capture=no ./epoch_backend/tests/integration_tests.py ./epoch_backend/tests/webserver_tests.py; then
               echo "Webserver Backend Test(s) failed. Exiting with status 1."
               exit 1

@@ -17,7 +17,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
 
 servers_wait_time = 10
-default_element_wait_timeout = 30
+default_element_wait_timeout = 10
 
 session_id = None
 
@@ -57,11 +57,8 @@ class integration_tests(unittest.TestCase):
         cls.frontend_process = subprocess.Popen(["npm", "start"], cwd=cls.frontend_dir)
         time.sleep(servers_wait_time)
         chrome_options = webdriver.ChromeOptions()
-
-        if os.environ.get("DEPLOYED_TEST") == "true":
-            chrome_options.add_argument('--headless')
-            chrome_options.add_argument('--no-sandbox')
-
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
         cls.driver = webdriver.Chrome(options=chrome_options)
 
     @classmethod
@@ -72,6 +69,7 @@ class integration_tests(unittest.TestCase):
         os.kill(cls.frontend_process.pid, signal.SIGKILL)
         os.kill(cls.server_process.pid, signal.SIGINT)
         cls.frontend_process.kill()
+        time.sleep(servers_wait_time)
         cls.server_process.kill()
         time.sleep(servers_wait_time)
         terminate_processes_on_port(3000)
