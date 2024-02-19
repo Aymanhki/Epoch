@@ -21,8 +21,8 @@ class access_user_persistence(user_persistence):
     def update_user(self, user_to_update: user):
         pass
 
-    def get_all_users(self):
-        pass
+    def get_all_users(self, user_id: int):
+        return self.user_persistence.get_all_users(user_id)
 
     def validate_login(self, username: str, password: str):
         return self.user_persistence.validate_login(username, password)

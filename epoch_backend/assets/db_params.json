@@ -1,8 +1,0 @@
-{
-    "host": "35.203.60.186",
-    "database": "epoch_db",
-    "user": "epoch_admin",
-    "password": "Epoch@3",
-    "port": 5432,
-    "connect_timeout": 10
-}

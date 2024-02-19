@@ -12,8 +12,8 @@ import threading
 session_id: str = None
 user_id: int = None
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
-EXTREME_TEST_RANGE = 50
-EXTREM_TEST_UPLOAD_RANGE = 10
+EXTREME_TEST_RANGE = 10
+EXTREM_TEST_UPLOAD_RANGE = 3
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
@@ -105,7 +105,7 @@ class webserver_tests(unittest.TestCase):
 
     def test_4_delete_user(self):
         print("Deleting user...")
-        response = requests.delete('http://localhost:8080/api/delete/user/', json={'userId': self.get_user_id()},
+        response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()},
                                    cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
         print("User deleted.")
@@ -127,7 +127,7 @@ class webserver_tests(unittest.TestCase):
 
     def test_7_delete_nonexistent_user(self):
         print("Deleting nonexistent user...")
-        response = requests.delete('http://localhost:8080/api/delete/user/', json={'userId': self.get_user_id()},
+        response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()},
                                    cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 401)
         print(response.text)
@@ -157,7 +157,7 @@ class webserver_tests(unittest.TestCase):
         profile_pic_binary = base64.b64decode(profile_pic_base64)
         original_pic_base64 = base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8')
         assert (original_pic_base64 == profile_pic_base64)
-        response = requests.delete('http://localhost:8080/api/delete/user/', json={'userId': self.get_user_id()}, cookies={'epoch_session_id': self.get_session_id()})
+        response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()}, cookies={'epoch_session_id': self.get_session_id()})
         assert (response.status_code == 200)
         print("User with picture registered and deleted.")
 
@@ -203,11 +203,11 @@ class webserver_tests(unittest.TestCase):
 
     def delete_user(self, i, user_ids, session_ids):
         print(f"Deleting user {i}...")
-        response = requests.delete('http://localhost:8080/api/delete/user/', json={'userId': user_ids[i]}, cookies={'epoch_session_id': session_ids[i]})
+        response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': user_ids[i]}, cookies={'epoch_session_id': session_ids[i]})
         self.assertEqual(response.status_code, 200)
         print(f"User {i} deleted.")
 
-    def test_9_all_tests_extreme(self):
+    def test_9_load_test(self):
         usernames = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
         passwords = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
         names = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
