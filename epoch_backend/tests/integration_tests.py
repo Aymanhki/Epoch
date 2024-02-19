@@ -15,21 +15,28 @@ TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
 
-servers_wait_time = 1
+servers_wait_time = 10
 default_element_wait_timeout = 10
-
 session_id = None
+
 
 def terminate_processes_on_port(port):
     try:
         process = subprocess.Popen(['lsof', '-ti', f':{port}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
-
         process_ids = out.decode().split()
+
         for pid in process_ids:
             os.kill(int(pid), signal.SIGTERM)
+
     except Exception as e:
         print(f"Error terminating processes on port {port}: {e}")
+
+
+def set_session_id(value: str):
+    global session_id
+    session_id = value
+
 
 class integration_tests(unittest.TestCase):
     server_process = None
@@ -43,20 +50,20 @@ class integration_tests(unittest.TestCase):
     name = str(uuid.uuid4())
     bio = str(uuid.uuid4())
 
-    def set_session_id(self, value: str):
-        global session_id
-        session_id = value
-
-
     @classmethod
     def setUpClass(cls):
         terminate_processes_on_port(3000)
         terminate_processes_on_port(8080)
         cls.server_process = subprocess.Popen(["python3", "main.py"], cwd=cls.backend_dir)
-        time.sleep(servers_wait_time)
         cls.frontend_process = subprocess.Popen(["npm", "start"], cwd=cls.frontend_dir)
         time.sleep(servers_wait_time)
-        cls.driver = webdriver.Chrome()
+        options = webdriver.ChromeOptions()
+
+        if os.environ.get("CI") == "true":
+            options.add_argument("--no-sandbox")
+            options.add_argument("--headless")
+
+        cls.driver = webdriver.Chrome(options=options)
 
     @classmethod
     def tearDownClass(cls):
@@ -71,8 +78,6 @@ class integration_tests(unittest.TestCase):
         time.sleep(servers_wait_time)
         terminate_processes_on_port(3000)
         terminate_processes_on_port(8080)
-
-
 
     def test_0_register_user(self):
         driver = self.driver
@@ -95,7 +100,6 @@ class integration_tests(unittest.TestCase):
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: self.name in driver.page_source)
         driver.delete_cookie("epoch_session_id")
 
-
     def test_1_login(self):
         driver = self.driver
         driver.get("http://localhost:3000/login")
@@ -109,13 +113,15 @@ class integration_tests(unittest.TestCase):
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: driver.get_cookie("epoch_session_id") is not None)
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: self.name in driver.page_source)
 
-
-
     def test_2_logout(self):
         driver = self.driver
         driver.get("http://localhost:3000/")
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: self.name in driver.page_source)
-        self.set_session_id(driver.get_cookie("epoch_session_id")["value"])
+        set_session_id(driver.get_cookie("epoch_session_id")["value"])
         driver.delete_cookie("epoch_session_id")
         driver.get("http://localhost:3000/")
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: driver.find_element(By.ID, "login-button") is not None)
+
+
+if __name__ == '__main__':
+    unittest.main()
