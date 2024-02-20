@@ -4,22 +4,37 @@ function tryLogin(username, password) {
         var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-
-        xhr.open("POST", `${serverUrl}/api/login`, true); // Login the user
+        xhr.open("POST", `${serverUrl}/api/login/`, true); // Login the user
         xhr.setRequestHeader("Content-Type", "application/json"); // Set the request header
         xhr.withCredentials = true;
+        xhr.timeout = 10000;
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    console.log("Login successful");
                     resolve(true);
                 } else {
-                    console.error("Error logging in user:", xhr.responseText);
-                    reject(false);
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
                 }
             }
         };
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
 
         xhr.send(JSON.stringify({username: username, password: password})); // Send the request
     });
@@ -45,28 +60,43 @@ function getUserInfo() {
         var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('GET', `${serverUrl}/api/login`, true);
+        xhr.open('GET', `${serverUrl}/api/login/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
+        xhr.timeout = 10000;
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     const userData = JSON.parse(xhr.responseText);
 
-                    // Check if profile picture data is available
-                    if (userData.profile_pic_data) {
-                        // Assuming profile_pic_data is a base64 encoded string
+                   if (userData.profile_pic_data) {
                         const profilePicData = userData.profile_pic_data;
                         userData.profile_pic_data = `data:image/png;base64,${profilePicData}`;
                     }
 
                     resolve(userData);
                 } else {
-                    reject(`Error fetching user info: ${xhr.status} - ${xhr.statusText}`);
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
                 }
             }
         };
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
 
         xhr.send(JSON.stringify({session_id: session_id}));
     });
@@ -76,17 +106,17 @@ function removeSessionCookie() {
     document.cookie = "epoch_session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
-function uploadFile(file, userId) {
+function uploadProfilePic(file, userId) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-
-        xhr.open('POST', `${serverUrl}/api/upload`, true);
+        xhr.open('POST', `${serverUrl}/api/upload/profile/1/`, true);
         xhr.setRequestHeader('Content-Type', file.type);
         xhr.setRequestHeader('File-Name', file.name);
         xhr.setRequestHeader('User-Id', userId);
         xhr.withCredentials = true;
+        xhr.timeout = 100000;
 
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
@@ -95,15 +125,34 @@ function uploadFile(file, userId) {
                 }
                 else
                 {
-                    reject(xhr.responseText);
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    }
+                    else
+                    {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
                 }
             }
         };
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        };
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
 
         const reader = new FileReader();
 
         reader.onload = () => {
             const fileData = reader.result;
+
             xhr.send(fileData);
         };
 
@@ -116,25 +165,83 @@ function registerUser(userObject) {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-
-        xhr.open('POST', `${serverUrl}/api/register`, true);
+        xhr.open('POST', `${serverUrl}/api/register/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
+        xhr.timeout = 10000;
 
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     resolve(JSON.parse(xhr.responseText));
                 } else {
-                    reject(xhr.responseText);
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
                 }
             }
         };
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
 
         xhr.send(JSON.stringify(userObject));
     });
 }
 
+function deleteUser(userId) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        xhr.open('DELETE', `${serverUrl}/api/delete/userId/`, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.withCredentials = true;
+        xhr.timeout = 10000;
 
 
-module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadFile, registerUser};
+
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    resolve(true);
+                } else {
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
+                }
+            }
+        };
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
+
+        xhr.send(JSON.stringify({userId: userId}));
+    });
+}
+
+
+module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadProfilePic, registerUser, deleteUser};

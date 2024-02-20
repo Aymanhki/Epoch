@@ -1,6 +1,6 @@
-from persistence.interfaces.session_persistence import session_persistence
-from objects.session import session
-from business.services import services
+from epoch_backend.persistence.interfaces.session_persistence import session_persistence
+from epoch_backend.objects.session import session
+from epoch_backend.business.services import services
 
 class access_session_persistence(session_persistence):
     def __init__(self):
@@ -20,3 +20,9 @@ class access_session_persistence(session_persistence):
 
     def get_all_sessions(self):
         return self.session_persistence.get_all_sessions()
+
+    def remove_session_by_user_id(self, user_id: int):
+        self.session_persistence.remove_by_user_id(user_id)
+
+    def get_user_by_session_id(self, session_id: str):
+        return self.session_persistence.get_user_by_session_id(session_id)

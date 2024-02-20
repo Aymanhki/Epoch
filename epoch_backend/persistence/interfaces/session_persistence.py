@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from objects.session import session
+from ...objects.session import session
 
 class session_persistence(ABC):
     @abstractmethod
@@ -16,4 +16,8 @@ class session_persistence(ABC):
 
     @abstractmethod
     def get_all_sessions(self):
+        pass
+
+    @abstractmethod
+    def get_user_by_session_id(self, session_id: str):
         pass

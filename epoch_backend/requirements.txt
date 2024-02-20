@@ -1,5 +1,6 @@
 pytz
 psycopg2-binary
 google-cloud-storage
-
-
+pytest
+selenium
+requests

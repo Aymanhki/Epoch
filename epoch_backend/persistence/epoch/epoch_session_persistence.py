@@ -1,6 +1,6 @@
-from persistence.interfaces.session_persistence import session_persistence
-from objects.session import session
-from business.utils import get_db_connection
+from ..interfaces.session_persistence import session_persistence
+from ...objects.session import session
+from ...business.utils import get_db_connection
 from datetime import datetime, timedelta
 
 class epoch_session_persistence(session_persistence):
@@ -58,3 +58,20 @@ class epoch_session_persistence(session_persistence):
             sessions.append(session(row[0], row[1]))
 
         return sessions
+
+    def remove_by_user_id(self, user_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"DELETE FROM sessions WHERE user_id = {user_id}")
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+    def get_user_by_session_id(self, session_id: str):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"SELECT user_id FROM sessions WHERE session_id = '{session_id}'")
+        result = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return result

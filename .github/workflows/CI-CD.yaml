@@ -1,0 +1,127 @@
+name: Deploy to Google Cloud VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-new-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install SSH Client and sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client sshpass
+
+      - name: SSH into Google Cloud VM for testing
+        run: |
+          set -e 
+          sshpass -p ${{ secrets.TESTER_SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.TESTER_SSH_USERNAME }} << EOF
+            echo "Current directory path: $(pwd)"
+            cd 
+            rm -rf Epoch
+            git clone https://github.com/Aymanhki/Epoch.git 
+            cd
+            cp credentials/db_params.json Epoch/epoch_backend/assets/
+            cp credentials/epoch-414600-66dd2b7c57f6.json Epoch/epoch_backend/assets/
+            cp credentials/fullchain.pem Epoch/epoch_backend/assets/
+            cp credentials/privkey.pem Epoch/epoch_backend/assets/
+            cd Epoch/epoch_frontend/
+            npm install
+            cd ..
+            pkill selenium
+            pkill chromedriver
+            pkill geckodriver
+            pkill firefox
+            export CI=true
+            if ! pytest --cov=epoch_backend -rA --color=yes --disable-warnings --disable-pytest-warnings --show-capture=no ./epoch_backend/tests/integration_tests.py ./epoch_backend/tests/webserver_tests.py; then
+              echo "Webserver Backend Test(s) failed. Exiting with status 1."
+              exit 1
+            fi
+            cd epoch_frontend/
+            if ! npm test; then
+              echo "Frontend server Test(s) failed. Exiting with status 1."
+              exit 1
+            fi
+            exit 0
+          EOF
+
+  clean-old-build:
+    needs: test-new-build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install SSH Client and sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client sshpass
+
+      - name: SSH into Google Cloud VM for cleanup
+        run: |
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+            echo "Current directory path: $(pwd)"
+            cd 
+            rm -rf Epoch
+            sudo fuser -k -n tcp 443
+            sudo fuser -k -n tcp 8080
+            sudo fuser -k -n tcp 80
+            sudo fuser -k -n tcp 8000
+            docker stop \$(docker ps -q)
+            docker rm \$(docker ps -aq)
+            docker rmi \$(docker images -q)
+            git clone https://github.com/Aymanhki/Epoch.git 
+            cd
+            cp credentials/db_params.json Epoch/epoch_backend/assets/
+            cp credentials/epoch-414600-66dd2b7c57f6.json Epoch/epoch_backend/assets/
+            cp credentials/fullchain.pem Epoch/epoch_backend/assets/
+            cp credentials/privkey.pem Epoch/epoch_backend/assets/
+            cp credentials/fullchain.pem Epoch/epoch_frontend/
+            cp credentials/privkey.pem Epoch/epoch_frontend/
+            cd
+            exit
+          EOF
+
+  deploy-new-build:
+    needs: clean-old-build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install SSH Client and sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client sshpass
+
+      - name: Deploying Backend (Build and Run Backend Docker Container)
+        run: |
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+            echo "Current directory path: $(pwd)"
+            cd
+            cd Epoch/epoch_backend/
+            docker build -t epoch_backend ./
+            docker run -d -p 8080:8080 epoch_backend
+            exit
+          EOF
+        if: success()
+
+      - name: Deploying Frontend (Build and Run Frontend Docker Container)
+        run: |
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+            echo "Current directory path: $(pwd)"
+            cd
+            cd Epoch/epoch_frontend/
+            docker build -t epoch_frontend ./
+            docker run -d -p 80:80 -p 443:443 epoch_frontend
+            exit
+          EOF
+        if: success()

@@ -1,17 +1,21 @@
 import os
-from business.utils import send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
-from business.api_endpoints.user_endpoints import post_user, get_user, register_user
-from business.db_controller.access_session_persistence import access_session_persistence
+from ..utils import send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
+from ..api_endpoints.following_endpoints import get_account_list, get_following_list, follow_user, unfollow_user
+from ..api_endpoints.user_endpoints import post_user, get_user, register_user, delete_by_user_id, delete_by_username
+from ..db_controller.access_session_persistence import access_session_persistence
+#from business.api_endpoints.following_endpoints import get_account_list
+
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')
 
 def handle_routing(relative_path, request_data, conn, method):
     if relative_path.startswith('/api/'):
-        if relative_path.startswith('/api/') and relative_path != '/api/login' and relative_path != '/api/register' and relative_path != '/api/upload':
+        if relative_path.startswith('/api/') and relative_path != '/api/login/' and relative_path != '/api/register/' and relative_path != '/api/upload/profile/1/':
             session_id = get_session_id_from_request(request_data)
             if access_session_persistence().get_session(session_id) is None:
-                send_response(conn, 401, "Unauthorized", body=b"<h1>401 Unauthorized</h1>")
+                print("\n* Unauthorized request rejected *\n")
+                send_response(conn, 401, "Unauthorized (Missing Session Cookie)", body=b"<h1>401 Unauthorized</h1>")
                 return
 
         handle_api_request(method, relative_path, request_data, conn)
@@ -28,7 +32,7 @@ def handle_api_request(method, path, request_data, conn):
         send_cors_options_response(request_data, conn)
         return
 
-    if path == "/api/login":
+    if path == "/api/login/":
         if method == "POST":  # if the user is logging in
             post_user(conn, request_data)
 
@@ -42,16 +46,56 @@ def handle_api_request(method, path, request_data, conn):
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
-    elif path == "/api/register":
+    elif path == "/api/register/":
         if method == "POST":
             register_user(conn, request_data)
 
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
-    elif path == " ":
-        pass
+    elif path == "/api/delete/userId/":
+        if method == "DELETE":
+            delete_by_user_id(conn, request_data)
 
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+    elif path == "/api/delete/username/":
+        if method == "DELETE":
+            delete_by_username(conn, request_data)
+
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+
+    elif path == "/api/follow/accountList/":
+        if method == "GET":
+            session_id = get_session_id_from_request(request_data)
+            get_account_list(conn, request_data, session_id)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+
+    
+    elif path == "/api/follow/followingList/":
+        if method == "GET":
+            session_id = get_session_id_from_request(request_data)
+            get_following_list(conn, request_data, session_id)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+
+
+    elif path == "/api/follow/follow/":
+        if method == "POST":
+            session_id = get_session_id_from_request(request_data)
+            follow_user(conn, request_data, session_id)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+
+    elif path == "/api/follow/unfollow/":
+        if method == "POST":
+            session_id = get_session_id_from_request(request_data)
+            unfollow_user(conn, request_data, session_id)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+    
     else:
         send_response(conn, 404, "Not Found", body=b"<h1>404 Not Found</h1>")
 
@@ -79,7 +123,7 @@ def handle_static_request(method, conn, path):
         return
 
     index_path = os.path.abspath(os.path.join(HOME_PATH, INDEX_HTML_PATH.lstrip('/')))
-    # Otherwise it is a GET request, so serve the file
+
     with open(index_path, 'rb') as file:
         body = file.read()
         send_response(conn, 200, "OK", body=body, headers=headers)

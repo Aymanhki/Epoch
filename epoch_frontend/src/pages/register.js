@@ -1,8 +1,11 @@
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import '../styles/Register.css';
-import {removeSessionCookie, uploadFile, registerUser, tryLogin} from '../services/user';
+import {removeSessionCookie, uploadProfilePic, registerUser, tryLogin, deleteUser} from '../services/user';
 import {Spinner} from '../modules/Spinner';
+import {useNavigate} from 'react-router-dom';
+
+
 
 function Register() {
     const [name, setName] = useState('');
@@ -16,112 +19,162 @@ function Register() {
     const [nameError, setNameError] = useState(false);
     const [generalError, setGeneralError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [usernameErrorPrompt, setUsernameErrorPrompt] = useState('');
+    const [passwordErrorPrompt, setPasswordErrorPrompt] = useState('');
+    const [nameErrorPrompt, setNameErrorPrompt] = useState('');
+    const [generalErrorPrompt, setGeneralErrorPrompt] = useState('');
     const fileInputRef = React.createRef();
+    const navigate = useNavigate();
 
     const handleProfilePicChange = async (e) => {
         const file = e.target.files[0];
+
+        if (!file) {
+            setIsLoading(false);
+            return;
+        }
+
         setProfilePic(file);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!name.trim()) {
-            setNameError(true);
-            return;
-        }
+        let wrongUsername = false;
+        let wrongPassword = false;
+        let wrongName = false;
 
-        if (!username.trim()) {
-            setUsernameError(true);
-            return;
-        }
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$/;
+        const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
 
-        if (!password.trim()) {
+
+        if(!password.match(passwordRegex)) {
             setPasswordError(true);
-            return;
+            setPasswordErrorPrompt('Password must be between 1 and 254 characters, at least one uppercase letter, one lowercase letter, one number, and one special character');
+            wrongPassword = true;
+        }
+        else
+        {
+            setPasswordError(false);
+            wrongPassword = false;
         }
 
-        setRegisteringPrompt('Registering...');
-        setIsLoading(true);
-        removeSessionCookie();
-        const userObject = {
-            name: name,
-            username: username,
-            password: password,
-            bio: bio,
+        if(!username.match(usernameRegex)) {
+            setUsernameError(true);
+            setUsernameErrorPrompt('Username must be between 1 and 50 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -');
+            wrongUsername = true;
+        }
+        else
+        {
+            setUsernameError(false);
+            wrongUsername = false;
+        }
 
-        };
+        if(name.length <= 0 || name.length > 255) {
+            setNameError(true);
+            setNameErrorPrompt('Name must be between 1 and 254 characters');
+            wrongName = true;
+        }
+        else
+        {
+            setNameError(false);
+            wrongName = false;
+        }
 
 
-        registerUser(userObject)
-            .then((success) => {
+        if (!wrongUsername && !wrongPassword && !wrongName) {
 
-                if (profilePic) {
-                    uploadFile(profilePic, success.user_id)
-                        .then((success) => {
-                            tryLogin(username, password)
-                                .then((success) => {
-                                    window.location.href = '/epoch/profile';
-                                    setRegisteringPrompt('Register');
-                                    setIsLoading(false);
-                                })
-                                .catch((error) => {
+            setRegisteringPrompt('Registering...');
+            setIsLoading(true);
+            removeSessionCookie();
+            const userObject = {
+                name: name,
+                username: username,
+                password: password,
+                bio: bio,
+
+            };
+
+
+            registerUser(userObject)
+                .then((success) => {
+                    if (profilePic) {
+                        uploadProfilePic(profilePic, success.user_id)
+                            .then((success) => {
+                                tryLogin(username, password)
+                                    .then((success) => {
+                                        setIsLoading(false);
+                                        //window.location.href = '/epoch/profile';
+                                        //window.location.assign('/epoch/profile');
+                                        navigate('/epoch/profile');
+                                        setRegisteringPrompt('Register');
+                                    })
+                                    .catch((error) => {
+                                        setGeneralError(true);
+                                        setRegisteringPrompt('Register');
+                                        setIsLoading(false);
+                                        setGeneralErrorPrompt(error);
+                                    });
+
+                            }).catch((error) => {
+                            deleteUser(success.user_id)
+                                .then(() => {
                                     setGeneralError(true);
                                     setRegisteringPrompt('Register');
                                     setIsLoading(false);
 
+                                })
+                                .catch(() => {
+                                    setGeneralError(true);
+                                    setRegisteringPrompt('Register');
+                                    setIsLoading(false);
+                                    setGeneralErrorPrompt('Could not register');
+
                                 });
 
-                        }).catch(() => {
-                        setGeneralError(true);
-                        setRegisteringPrompt('Register');
-                        setIsLoading(false);
-
-                    });
-                } else {
-                    tryLogin(username, password)
-                        .then((success) => {
-                            window.location.href = '/epoch/profile';
-                            setRegisteringPrompt('Register');
-                            setIsLoading(false);
-
-                        })
-                        .catch((error) => {
                             setGeneralError(true);
                             setRegisteringPrompt('Register');
                             setIsLoading(false);
-
+                            setGeneralErrorPrompt(error);
                         });
-                }
+                    } else {
+                        tryLogin(username, password)
+                            .then((success) => {
+                                setRegisteringPrompt('Register');
+                                setIsLoading(false);
+                                //window.location.href = '/epoch/profile';
+                                //window.location.assign('/epoch/profile');
+                                navigate('/epoch/profile');
+                            })
+                            .catch((error) => {
+                                setGeneralError(true);
+                                setIsLoading(false);
+                                setGeneralErrorPrompt(error);
+                                setRegisteringPrompt('Register');
+                            });
+                    }
 
-            })
-            .catch((error) => {
-                setGeneralError(error);
-                setRegisteringPrompt('Register');
-                setIsLoading(false);
-
-            });
+                })
+                .catch((error) => {
+                    setGeneralError(true);
+                    setIsLoading(false);
+                    setGeneralErrorPrompt(error);
+                    setRegisteringPrompt('Register');
+                });
+        }
     };
-
 
     return (
         <div>
-            {isLoading && <Spinner/>}
-            <div className="register-container">
+            {isLoading ? <Spinner/> :
+                <div className="register-container">
                 <div className="register-form">
-                    <form onSubmit={handleSubmit}>
-                        <h1 style={{
-                            fontSize: '32px',
-                            marginBottom: '20px',
-                            fontFamily: 'Futura',
-                            fontWeight: 'bold',
-                            textAlign: 'left',
-                            alignSelf: 'flex-start'
-                        }}>{registeringPrompt}</h1>
+                    <form onSubmit={handleSubmit} data-testid="register-form">
+                        <h1 style={{fontSize: '32px', marginBottom: '10px', fontFamily: 'Futura', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>{registeringPrompt}</h1>
 
-                        <div className="profile-pic-upload-container">
+                        <div className="profile-pic-upload-container" >
 
-                            <div className="profile-pic-upload">
+                            <div className="profile-pic-upload" >
                                 {profilePic ? (
                                     <img
                                         src={typeof profilePic === 'string' ? profilePic : URL.createObjectURL(profilePic)}
@@ -132,7 +185,7 @@ function Register() {
                                 )}
                             </div>
 
-                            <div className="plus-sign" onClick={() => fileInputRef.current.click()}>+</div>
+                            <div className="plus-sign" onClick={() => {fileInputRef.current.click(); }}>+</div>
 
                             <input
                                 type="file"
@@ -142,66 +195,50 @@ function Register() {
                                 ref={fileInputRef} // Attach the ref to the file input
                                 style={{display: 'none'}} // Hide the file input
                                 onChange={handleProfilePicChange}
+
                             />
                         </div>
 
 
-                        <label htmlFor="name">Name {nameError && <span style={{color: 'red'}}>*</span>}
-                            {nameError && !name.trim() &&
-                                <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>Name field cannot be empty</span>}
+                        <label htmlFor="name">Name {nameError && <span style={{color: 'red'}}>* {nameErrorPrompt}</span>}
                         </label>
 
-                        <input type="text" id="name" name="name" value={name} onChange={(e) => {
+                        <input type="text" id="name" name="name" data-testid="name-input-field" value={name} onChange={(e) => {
                             setName(e.target.value);
                             setNameError(false);
                             setGeneralError(false);
-                        }} onBlur={() => {
-                            setNameError(!name.trim());
-                            setGeneralError(false);
-                        }}/>
+                        }} />
 
                         <label htmlFor="bio">Bio</label>
                         <textarea className="bio-textarea" id="bio" name="bio" value={bio}
                                   onChange={(e) => setBio(e.target.value)}/>
 
-                        <label htmlFor="username">Username {usernameError && <span style={{color: 'red'}}>*</span>}
-                            {usernameError && !username.trim() &&
-                                <span
-                                    style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>Username field cannot be empty</span>}
+                        <label htmlFor="username">Username {usernameError && <span style={{color: 'red'}}>* {usernameErrorPrompt}</span>}
                         </label>
 
-                        <input type="text" id="username" name="username" value={username} onChange={(e) => {
+                        <input type="text" id="username" name="username" data-testid="username-input-field" value={username} onChange={(e) => {
                             setUsername(e.target.value);
                             setUsernameError(false);
                             setGeneralError(false);
-                        }} onBlur={() => {
-                            setUsernameError(!username.trim());
-                            setGeneralError(false);
-                        }}/>
+                        }} />
 
-                        <label htmlFor="password">Password {passwordError && <span style={{color: 'red'}}>*</span>}
-                            {passwordError && !password.trim() &&
-                                <span
-                                    style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>Password field cannot be empty</span>}
+                        <label htmlFor="password">Password {passwordError && <span style={{color: 'red'}}>* {passwordErrorPrompt}</span>}
                         </label>
 
-                        <input type="password" id="password" name="password" value={password} onChange={(e) => {
+                        <input type="password" id="password" name="password" data-testid="password-input-field" value={password} onChange={(e) => {
                             setPassword(e.target.value);
                             setPasswordError(false);
                             setGeneralError(false);
-                        }} onBlur={() => {
-                            setPasswordError(!password.trim());
-                            setGeneralError(false);
-                        }}/>
+                        }} />
 
                         {generalError &&
                             <span style={{
                                 color: 'red',
                                 marginLeft: '5px',
                                 marginBottom: '5px'
-                            }}>Could not register</span>}
+                            }}>{generalErrorPrompt}</span>}
 
-                        <button type="submit" className={"register-button"}>{registeringPrompt}</button>
+                        <button type="submit" className={"register-button"} id={"register-button"} data-testid="register-button">{registeringPrompt}</button>
 
                         <p style={{textAlign: 'center', marginTop: '10px'}}>
                             Already have an account?{' '}
@@ -210,8 +247,8 @@ function Register() {
                                 style={{
                                     textDecoration: 'underline',
                                     cursor: 'pointer',
-                                    color: '#1a2a6c',
                                 }}
+                                className={"register-link"}
                             >
                                 Log in here
                             </Link>
@@ -219,6 +256,7 @@ function Register() {
                     </form>
                 </div>
             </div>
+            }
         </div>
     );
 }

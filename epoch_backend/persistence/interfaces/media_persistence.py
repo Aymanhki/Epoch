@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from objects.media import media
+from ...objects.media import media
 
 class media_persistence(ABC):
     @abstractmethod
