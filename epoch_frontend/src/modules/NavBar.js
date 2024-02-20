@@ -10,7 +10,9 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 const NavBar = ({ onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userProfilePhoto, setUserProfilePhoto] = useState(null);
-/*
+
+// this causes page to reload constantly if user has no profile picture set
+  /*
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
