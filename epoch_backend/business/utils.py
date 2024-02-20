@@ -16,7 +16,7 @@ epoch_db_path = os.path.join(assets_dir, "epoch_db.sql")
 
 
 def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
-    print(f"Sending: {status_code} {reason_phrase}\n{headers}\n{body[:1000]}...")
+    print(f"Sent:\n{status_code} {reason_phrase}\n{headers}\n{body[:1000]}")
 
     try:
         response_line = f"HTTP/1.1 {status_code} {reason_phrase}\r\n"
@@ -27,7 +27,6 @@ def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
         conn.sendall(response)
     finally:
         conn.close()
-
 
 
 def get_last_modified(file_path):
