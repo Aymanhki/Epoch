@@ -1,0 +1,93 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  height: 30px;
+  border-bottom: 1px solid lightgrey;
+}
+
+.navbar .left {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+}
+
+.navbar .right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.search-bar:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.search-bar input {
+  border: none;
+  width: 200px;
+  height: 10px;
+  margin-bottom: 0%;
+  font-size: 12px;
+}
+
+.search-bar svg {
+  width: 20px;
+  height: 20px;
+}
+
+.dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid rgb(0, 0, 0);
+  border-radius: 5px;
+  padding: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.dropdown-content span,
+.dropdown-content a {
+  display: block;
+  padding: 8px 12px;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dropdown-content span:hover,
+.dropdown-content a:hover {
+  background-color: #f0f0f0;
+}
+
+.navbar a svg,
+.navbar a:visited svg {
+  color: #f0f0f0;
+}
