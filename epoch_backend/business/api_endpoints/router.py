@@ -2,9 +2,9 @@ import json
 import os
 
 from epoch_backend.business.api_endpoints.following_endpoints import follow_user, get_account_list, get_following_list, unfollow_user
-from epoch_backend.business.db_controller import access_user_persistence
 from ..utils import get_cors_headers, get_origin_from_headers, send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
 from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, get_user_from_name
+from ..db_controller.access_user_persistence import access_user_persistence
 from ..db_controller.access_session_persistence import access_session_persistence
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
@@ -74,6 +74,7 @@ def handle_api_request(method, path, request_data, conn):
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
     elif path.startswith("/api/follow/"):
+        
         # split request data into headers, body
         headers, body = request_data.split("\r\n\r\n", 1)
         content_length = 0
@@ -83,22 +84,25 @@ def handle_api_request(method, path, request_data, conn):
         while len(body) < content_length:
             body += conn.recv(1024).decode('UTF-8')
         # get data from body and headers
-        data = json.loads(body)
+        if body:
+            data = json.loads(body)
         origin = get_origin_from_headers(headers)
         session_id = get_session_id_from_request(request_data)
         # init response 
         response = [405, "Method Not Allowed", b"<h1>405 Method Not Allowed</h1>"]
         # handle specific request
-        if path == "/api/follow/accountList" and method == 'GET':
+        if path == "/api/follow/accountList/" and method == 'GET':
             response = get_account_list(session_id, access_session_persistence(), access_user_persistence())
-        elif path == "/api/follow/accountList" and method == 'GET':
+        elif path == "/api/follow/followingList/" and method == 'GET':
             response = get_following_list(session_id, access_session_persistence(), access_user_persistence())
-        elif path == "/api/follow/follow" and method == 'POST':
-            toFollow = data["userToFollow"]
-            response = follow_user(session_id, toFollow, access_session_persistence(), access_user_persistence())
-        elif path == "/api/follow/unFollow" and method == 'POST':
-            toUnfollow = data["userToUnfollow"]
-            response = unfollow_user(session_id, toUnfollow, access_session_persistence(), access_user_persistence())
+        elif path == "/api/follow/follow/" and method == 'POST':
+            if data:
+                toFollow = data["userToFollow"]
+                response = follow_user(session_id, toFollow, access_session_persistence(), access_user_persistence())
+        elif path == "/api/follow/unFollow/" and method == 'POST':
+            if data:
+                toUnfollow = data["userToUnfollow"]
+                response = unfollow_user(session_id, toUnfollow, access_session_persistence(), access_user_persistence())
         
         send_response(conn, response[0], response[1], response[2], headers=get_cors_headers(origin))
 
