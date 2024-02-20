@@ -5,7 +5,6 @@ from ..api_endpoints.following_endpoints import get_account_list, get_following_
 from ..api_endpoints.user_endpoints import post_user, get_user, register_user, delete_by_user_id, delete_by_username
 from ..db_controller.access_session_persistence import access_session_persistence
 from ..db_controller.access_user_persistence import access_user_persistence
-#from business.api_endpoints.following_endpoints import get_account_list
 
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
@@ -70,6 +69,9 @@ def handle_api_request(method, path, request_data, conn):
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
     elif path == "/api/user":
+        # use front end services/user.js -> get userinfo
+        pass
+    elif path == "/api/follow/accountList/":
         if method == "GET":
             session_id = get_session_id_from_request(request_data)
             response = get_account_list(session_id, access_session_persistence(), access_user_persistence())
