@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../styles/Login.css";
 import { getUserInfo, removeSessionCookie } from "../services/user";
 import { Spinner } from "../modules/Spinner";
-import NavBar from "../modules/NavBar";
-import {useRef} from "react";
-import Post from "../modules/Post";
+import NavBar from "../modules/NavBar";import {useRef} from "react";
 import {useNavigate} from "react-router-dom";
 
 function Home() {
@@ -50,11 +48,12 @@ function Home() {
 
   return (
     <div>
+      {<NavBar onLogout={handleLogout} />}
+
       {isLoading ? (
         <Spinner />
       ) : (
         <>
-          {<NavBar onLogout={handleLogout} />}
           <h1>Home Page</h1>
           <h2>Hello {userInfo.name}</h2>
 
@@ -72,7 +71,6 @@ function Home() {
           <h2>Your account was created at {userInfo.created_at}</h2>
           <h2>Your account bio is {userInfo.bio}</h2>
           <h2>Your account profile pic id is {userInfo.profile_pic_id}</h2>
-          {<Post/>}
         </>
       )}
     </div>
