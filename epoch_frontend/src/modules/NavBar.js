@@ -10,7 +10,7 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 const NavBar = ({ onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userProfilePhoto, setUserProfilePhoto] = useState(null);
-
+/*
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -25,7 +25,7 @@ const NavBar = ({ onLogout }) => {
 
     fetchUserInfo();
   }, []);
-
+*/
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
