@@ -2,40 +2,44 @@ import React, { useState, useEffect } from "react";
 import "../styles/Login.css";
 import { getUserInfo, removeSessionCookie } from "../services/user";
 import { Spinner } from "../modules/Spinner";
-import NavBar from "../modules/NavBar";
+import NavBar from "../modules/NavBar";import {useRef} from "react";
+import {useNavigate} from "react-router-dom";
 
 function Home() {
   const [redirectToLogin, setRedirectToLogin] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+    const isMounted = useRef(true);
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    setIsLoading(true);
-    getUserInfo()
-      .then((data) => {
-        setRedirectToLogin(false);
-        setUserInfo(data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setRedirectToLogin(true);
-        setIsLoading(false);
-      });
-  }, []);
 
-  const handleLogout = () => {
-    removeSessionCookie();
-    setRedirectToLogin(true);
-  };
+    useEffect(() => {
+        isMounted.current = true;
 
-  if (redirectToLogin) {
-    window.location.href = "/epoch/login";
-    return (
-      <div>
-        <h2>User Not Signed In...</h2>
-      </div>
-    );
-  }
+        setIsLoading(true);
+        getUserInfo()
+            .then(data => {
+                if (isMounted.current) {
+                    setRedirectToLogin(false);
+                    setUserInfo(data);
+                    setIsLoading(false);
+                }
+            })
+            .catch(error => {
+                if (isMounted.current) {
+                    setRedirectToLogin(true);
+                    setIsLoading(false);
+                }
+            });
+
+        return () => { isMounted.current = false };
+    }, [setIsLoading, setUserInfo, setRedirectToLogin]);
+
+    if (redirectToLogin && isMounted.current) {
+        //window.location.href = "/epoch/login";
+        navigate('/epoch/login');
+        return <div><h2>User Not Signed In</h2></div>;
+    }
 
   return (
     <div>

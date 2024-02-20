@@ -17,6 +17,7 @@ const options = {
   cert: fs.readFileSync(certPath),
 };
 
+
 app.use((req, res, next) => {
   if (!req.secure) {
     return res.redirect(`https://${req.hostname}${req.url}`);
@@ -33,7 +34,6 @@ app.get('*', (req, res) => {
 https.createServer(options, app).listen(PORT_HTTPS, () => {
   console.log(`Server is running on port ${PORT_HTTPS}`);
 });
-
 
 http.createServer((req, res) => {
   res.writeHead(301, { 'Location': `https://${req.headers['host']}${req.url}` });

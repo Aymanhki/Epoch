@@ -69,7 +69,7 @@ def get_user(conn, request_data, session_id):
             profile_pic_data = access_media_persistence().get_media(user_fetch.profile_pic_id)
 
             if profile_pic_data is not None:
-                if  is_file_in_bucket(profile_pic_data.path):
+                if is_file_in_bucket(profile_pic_data.path):
                     profile_pic_data = download_file_to_cloud(profile_pic_data.path)
                 else:
                     profile_pic_data = download_file_to_cloud(access_media_persistence().get_media(1).path)
@@ -153,8 +153,7 @@ def upload_profile_pic(conn, request_data):
     else:
         send_response(conn, 500, "Could not upload profile picture, internal Server Error", body=b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
 
-
-def delete_user(conn, request_data):
+def delete_by_user_id(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)
 
     content_length = 0
@@ -171,6 +170,31 @@ def delete_user(conn, request_data):
     origin = get_origin_from_headers(headers)
 
     if access_user_persistence().get_user_by_id(user_id) is not None:
+        access_session_persistence().remove_session_by_user_id(user_id)
+        access_user_persistence().remove_user_by_id(user_id)
+        send_response(conn, 200, "OK", body=b"<h1>200 OK</h1>", headers=get_cors_headers(origin))
+    else:
+        send_response(conn, 404, "Could not find the user you are trying to delete", body=b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))
+
+def delete_by_username(conn, request_data):
+    headers, body = request_data.split("\r\n\r\n", 1)
+
+    content_length = 0
+
+    for line in headers.split("\r\n"):
+        if "Content-Length" in line:
+            content_length = int(line.split(" ")[1])
+
+    while len(body) < content_length:
+        body += conn.recv(1024).decode('UTF-8')
+
+    data = json.loads(body)
+    username = data.get("username")
+    origin = get_origin_from_headers(headers)
+    user_fetch = access_user_persistence().get_user(username)
+
+    if user_fetch is not None:
+        user_id = user_fetch.id
         access_session_persistence().remove_session_by_user_id(user_id)
         access_user_persistence().remove_user_by_id(user_id)
         send_response(conn, 200, "OK", body=b"<h1>200 OK</h1>", headers=get_cors_headers(origin))
