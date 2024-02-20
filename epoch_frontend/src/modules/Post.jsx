@@ -18,24 +18,20 @@ export default function Post() {
   // To show Post pop up
   const [showPost, setShowPost] = React.useState(false)
   const onClick = () => setShowPost(true)
-  const [open, setOpen] = React.useState(false);
 
+  const [open, setOpen] = React.useState(false);
   const handleClick = () => {
     setOpen(!open);
   };
-
-  const togglePopUp = () => {
-    setShowPost(!showPost);
-  }
 
   return (
     <div className='post'>
       <div className="floatingPostButton">
         <Fab className='postButton' color='primary'>
-          <AddIcon className='postButtonIcon' onClick = {() => togglePopUp()}/>
+          <AddIcon className='postButtonIcon' onClick = {() => setShowPost(true)}/>
         </Fab>
       </div>
-      <PostPopup trigger={showPost} setTrigger={showPost}>
+      <PostPopup trigger={showPost} setTrigger={setShowPost}>
         <div className="postInputBox">
             <div className="postWrapper">
               <div className="postTop">
