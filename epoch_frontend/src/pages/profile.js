@@ -1,80 +1,50 @@
-import {getUserInfo, removeSessionCookie} from "../services/user";
-import React, {useState, useEffect} from 'react';
-import {Link} from 'react-router-dom';
-import {Spinner} from '../modules/Spinner'
-import {useNavigate} from "react-router-dom";
+import { getUsernameInfo } from '../services/user';
+import React, { useState, useEffect } from 'react';
+import { useParams, Navigate } from 'react-router-dom';
 
-function logout() {
-    removeSessionCookie();
-    window.location.reload(true);
-}
-
+// need to distinguish if this is the current user logged in
+    //should show edits if yes, show follow if not logged in
 function Profile() {
-
-    // State variable for redirect
-    const [redirectToLogin, setRedirectToLogin] = useState(false);
+    const { username } = useParams();
     const [userInfo, setUserInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
+    const [userNotFound, setUserNotFound] = useState(false);
 
 
-    // Check for valid session cookie on component mount
     useEffect(() => {
         setIsLoading(true);
-        getUserInfo()
+        getUsernameInfo(username)
             .then(data => {
-                setRedirectToLogin(false);
-                setUserInfo(data);
-                setIsLoading(false);
+                if (data) {
+                    setUserInfo(data);
+                    setIsLoading(false);
+                }
+                else {
+                    setUserNotFound(true)
+                    setIsLoading(false)
+                }
             })
             .catch(error => {
-                setRedirectToLogin(true);
+                console.error("Error fetching user info:", error);
                 setIsLoading(false);
             });
-    }, [setIsLoading, setUserInfo, setRedirectToLogin]);
-
-    // Redirect to home if redirectToHome is true
-    if (redirectToLogin) {
-        //window.location.href = "/epoch/login";
-        navigate('/epoch/login');
-        return <div><h2>User Not Signed In</h2></div>;
+    }, []);
+    if (userNotFound) {
+        return (
+            <div>
+                <h1> USER NOT FOUND </h1>
+            </div>
+        );  
     }
-
-    return (
-        <div>
-            {isLoading ? <Spinner/>: (
-                <>
-                    <h1>Profile Page</h1>
-                    <h2> Hello {userInfo.name}</h2>
-
-                    {userInfo.profile_pic_data && (
-                        <img src={userInfo.profile_pic_data} alt="Profile Pic" style={{ maxWidth: '300px' }} />
-                    )}
-
-                    <h2>Your user id is {userInfo.id}</h2>
-                    <h2>Your username is {userInfo.username}</h2>
-                    <h2>Your password is {userInfo.password}</h2>
-                    <h2>Your account was created at {userInfo.created_at}</h2>
-                    <h2>Your account bio is {userInfo.bio}</h2>
-                    <h2>Your account profile pic id is {userInfo.profile_pic_id}</h2>
-
-
-                    <p style={{textAlign: 'center', marginTop: '10px'}}>
-                        follow someone?{' '}
-                        <Link to="/epoch/userlist"
-                            style={{textDecoration: 'underline', cursor: 'pointer', color: '#ffffff'}}>
-                                click here
-                        </Link>
-                        <div>
-                            <button type="button" onClick = {logout.bind(this)}>logout</button>
-                        </div>
-                    </p>
-                    
-                </>
-            )}
-
-        </div>
-    );
+    else {
+        return (
+            <div>
+                <h1> HELLO! </h1>
+                <h1> From address = [{username}] </h1>
+                <h1> From get = [{userInfo.username}]</h1>
+            </div>
+        );
+    }
 }
 
 export default Profile;

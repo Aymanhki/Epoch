@@ -13,7 +13,7 @@ INDEX_HTML_PATH = os.path.normpath('/index.html')
 
 def handle_routing(relative_path, request_data, conn, method):
     if relative_path.startswith('/api/'):
-        if relative_path.startswith('/api/') and relative_path != '/api/login/' and relative_path != '/api/register/' and relative_path != '/api/upload/profile/1/':
+        if relative_path.startswith('/api/') and relative_path != '/api/login/' and relative_path != '/api/register/' and relative_path != '/api/upload/profile/1/'and relative_path != '/api/user/':
             session_id = get_session_id_from_request(request_data)
             if access_session_persistence().get_session(session_id) is None:
                 print("\n* Unauthorized request rejected *\n")
@@ -33,6 +33,7 @@ def handle_api_request(method, path, request_data, conn):
     origin = get_origin_from_headers(request_data)
     if method == "OPTIONS":  # Handle CORS preflight request
         send_cors_options_response(request_data, conn)
+        print("handled options")
         return
 
     if path == "/api/login/":
@@ -68,8 +69,7 @@ def handle_api_request(method, path, request_data, conn):
 
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
-
-    elif path == "/api/follow/accountList/":
+    elif path == "/api/user":
         if method == "GET":
             session_id = get_session_id_from_request(request_data)
             response = get_account_list(session_id, access_session_persistence(), access_user_persistence())

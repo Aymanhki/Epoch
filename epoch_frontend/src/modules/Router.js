@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate, useParams } from 'react-router-dom';
 
 import Login from '../pages/login';
 import Register from '../pages/register';
@@ -16,11 +16,12 @@ function Router() {
                 <Route path="/login" element={<Navigate to="/epoch/login" />} />
                 <Route path="/register" element={<Navigate to="/epoch/register" />} />
                 <Route path="/home" element={<Navigate to="/epoch/home" />} />
-                <Route path="/profile" element={<Navigate to="/epoch/profile" />} />
+                <Route path="/:username" element={<ProfileRedirect />} />
+                
                 <Route path="/epoch/login" element={<Login />} />
                 <Route path="/epoch/register" element={<Register />} />
                 <Route path="/epoch/home" element={<Home />} />
-                <Route path="/epoch/profile" element={<Profile />} />
+                <Route path="/epoch/:username" element={<Profile />} />
                 <Route path="/epoch/userlist" element={<Userlist/>} />
 
                 {/* Catch-all route for 404 */}
@@ -28,6 +29,14 @@ function Router() {
             </Routes>
         </BrowserRouter>
     );
+}
+
+function ProfileRedirect() {
+    // Extract the username from the URL
+    const { username } = useParams();
+
+    // Redirect to /epoch/username
+    return <Navigate to={`/epoch/${username}`} />;
 }
 
 export default Router;

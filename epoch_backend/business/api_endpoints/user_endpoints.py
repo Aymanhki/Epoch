@@ -85,6 +85,42 @@ def get_user(conn, request_data, session_id):
     else:
         send_response(conn, 401, "Could not find a valid session for the user you are trying to fetch information for", body=b"<h1>401 Unauthorized</h1>", headers=headers)
 
+def get_user_from_name(conn, request_data, username):
+    headers, body = request_data.split("\r\n\r\n", 1)
+
+    content_length = 0
+
+    for line in headers.split("\r\n"):
+        if "Content-Length" in line:
+            content_length = int(line.split(" ")[1])
+
+    while len(body) < content_length:
+        body += conn.recv(1024).decode('UTF-8')
+
+    origin = get_origin_from_headers(headers)
+    headers = get_cors_headers(origin)
+
+    user_fetch = access_user_persistence().get_user_fake(username)
+    
+    if user_fetch is not None and user_fetch.__dict__ is not None and len(user_fetch.__dict__) > 0:
+        profile_pic_data = access_media_persistence().get_media(user_fetch.profile_pic_id)
+
+        if profile_pic_data is not None:
+            if  is_file_in_bucket(profile_pic_data.path):
+                profile_pic_data = download_file_to_cloud(profile_pic_data.path)
+            else:
+                profile_pic_data = download_file_to_cloud(access_media_persistence().get_media(1).path)
+
+            profile_pic_data_base64 = base64.b64encode(bytes(profile_pic_data)).decode('utf-8')
+            user_info_with_pic = user_fetch.__dict__
+            user_info_with_pic["profile_pic_data"] = profile_pic_data_base64
+            send_response(conn, 200, "OK", body=json.dumps(user_info_with_pic).encode('UTF-8'), headers=headers)
+        else:
+            send_response(conn, 200, "OK, but did not find profile picture for the user", body=json.dumps(user_fetch.__dict__).encode('UTF-8'), headers=headers)
+    else:
+        send_response(conn, 400, "Could not get the user information because the user was not found", body=b"<h1>404 Not Found</h1>", headers=headers)
+
+
 def register_user(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)
 

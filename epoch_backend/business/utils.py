@@ -144,6 +144,7 @@ def start_db_tables():
 
 
 def send_cors_options_response(request_data, conn):
+    print(f"\n\nSENDCORS\n{request_data}\n\n")
     headers, body = request_data.split("\r\n\r\n", 1)
     origin = get_origin_from_headers(headers)
     send_response(conn, 204, "No Content", body=b"", headers=get_cors_headers(origin))
