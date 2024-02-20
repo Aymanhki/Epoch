@@ -1,6 +1,6 @@
 import os
 from ..utils import send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
-from ..api_endpoints.user_endpoints import post_user, get_user, register_user, delete_user, get_user_from_name
+from ..api_endpoints.user_endpoints import post_user, get_user, register_user, get_user_from_name
 from ..db_controller.access_session_persistence import access_session_persistence
 #from business.api_endpoints.following_endpoints import get_account_list
 
