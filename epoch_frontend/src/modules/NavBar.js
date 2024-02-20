@@ -61,6 +61,7 @@ const NavBar = ({ onLogout }) => {
               src={userProfilePhoto}
               alt="Profile"
               className="profile-photo"
+              style={{ width: "40px", height: "40px" }}
             />
           ) : (
             <AccountCircleOutlinedIcon />

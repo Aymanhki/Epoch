@@ -35,6 +35,11 @@ function Home() {
         return () => { isMounted.current = false };
     }, [setIsLoading, setUserInfo, setRedirectToLogin]);
 
+    const handleLogout = () => {
+        removeSessionCookie();
+        navigate('/epoch/login');
+    }
+
     if (redirectToLogin && isMounted.current) {
         //window.location.href = "/epoch/login";
         navigate('/epoch/login');
