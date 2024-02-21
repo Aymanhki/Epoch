@@ -51,4 +51,4 @@ CREATE TABLE IF NOT EXISTS following (
 );
 
 
--- INSERT INTO  media_content (content_type, file_name, path) VALUES ('image/png', 'default_pfp.png', 'https://storage.googleapis.com/epoch-cloud/epoch-media/default_pfp.png');
+-- INSERT INTO  media_content (content_type, file_name, path) VALUES ('image/png', 'default_pfp.png', 'https://storage.cloud.google.com/epoch-cloud-storage-media/epoch-media/default_pfp.png');

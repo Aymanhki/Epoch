@@ -1,13 +1,16 @@
 import Router from "./modules/Router";
 import React from 'react';
+import {UserProvider} from "./services/UserContext"
 
 function App() {
 
 
     return (
-        <div className="App">
-            <Router/>
-        </div>
+        <UserProvider>
+            <div className="App">
+                <Router/>
+            </div>
+        </UserProvider>
     );
 }
 

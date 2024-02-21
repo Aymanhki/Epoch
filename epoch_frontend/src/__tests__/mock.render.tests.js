@@ -1,4 +1,4 @@
-import {getUserInfo, tryLogin, registerUser, deleteUser, uploadProfilePic} from "../services/user";
+import {getUserInfo, tryLogin, registerUser, deleteUser, uploadProfilePic, getUsernameInfo} from "../services/user";
 import {act, render, screen, waitFor} from "@testing-library/react";
 import {BrowserRouter} from "react-router-dom";
 import Profile from "../pages/profile";
@@ -7,6 +7,8 @@ import App from "../App";
 import React from "react";
 import '@testing-library/jest-dom';
 import {v4} from "uuid";
+import {UserProvider} from "../services/UserContext"
+
 
 jest.mock("../services/user");
 
@@ -19,6 +21,7 @@ const mockUser = {
   bio: "This is a test user",
   profile_pic_id: "456",
 };
+
 const username = v4();
 const password = v4() + "A1!";
 
@@ -26,11 +29,14 @@ describe('Render Pages', () => {
 
     test("displays user information on profile page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
+        getUsernameInfo.mockResolvedValue(mockUser);
 
         await act(async () => {
           render(
             <BrowserRouter>
-              <Profile />
+                <UserProvider>
+                    <Profile />
+                </UserProvider>
             </BrowserRouter>
           );
         });
@@ -49,7 +55,9 @@ describe('Render Pages', () => {
         await act(async () => {
           render(
             <BrowserRouter>
-              <Home />
+                <UserProvider>
+                    <Home />
+                </UserProvider>
             </BrowserRouter>
           );
         });
@@ -78,75 +86,3 @@ describe('Render Pages', () => {
     });
 });
 
-
-
-
-// import {Builder} from 'selenium-webdriver';
-// import  express  from 'express';
-// import path from 'path';
-// import { By, until } from 'selenium-webdriver';
-// import { beforeAll, afterAll } from '@jest/globals';
-//
-// const MAX_WAIT_FUNCTION = 10000000;
-// const MAX_WAIT_ELEMENT = 500000000;
-// const MAX_WAIT_QUIT = 1000000000;
-//
-// describe('Login Functionality', () => {
-//     let driver;
-//     let server;
-//
-//     const serverSetupPromise = new Promise((resolve, reject) => {
-//         const app = express();
-//         const port = 3000;
-//
-//         app.use(express.static(path.join(__dirname, '..', '..', 'build')));
-//         app.get('*', (req, res) => {
-//             res.sendFile(path.join(__dirname, '..', '..', 'build', 'index.html'));
-//         });
-//
-//         server = app.listen(port, () => {
-//             console.log(`Server is running on port ${port}`);
-//             resolve();
-//         });
-//
-//         server.on('error', (error) => {
-//             reject(error);
-//         });
-//     });
-//
-//     beforeAll(async () => {
-//         try {
-//             await serverSetupPromise;
-//             driver = new Builder().forBrowser('chrome').build();
-//         } catch (error) {
-//             console.error('Error setting up WebDriver:', error);
-//         }
-//     }, MAX_WAIT_FUNCTION);
-//
-//     afterAll(async () => {
-//         try {
-//             await driver.quit();
-//             await server.close();
-//         } catch (error) {
-//             console.error('Error closing WebDriver:', error);
-//         }
-//     }, MAX_WAIT_FUNCTION);
-//
-//
-//     test('User can log in', async () => {
-//         try {
-//             await driver.get('http://localhost:3000/epoch/login');
-//             const usernameInput = await driver.wait(until.elementLocated(By.id('username')), MAX_WAIT_ELEMENT);
-//             const passwordInput = await driver.wait(until.elementLocated(By.id('password')), MAX_WAIT_ELEMENT);
-//             const submitButton = await driver.wait(driver.findElement(By.css("[type='submit']")), MAX_WAIT_ELEMENT);
-//             await usernameInput.sendKeys('aymanhki');
-//             await passwordInput.sendKeys('Hkibrahim@3');
-//             await submitButton.click();
-//             await driver.wait(until.urlIs('http://localhost:3000/epoch/home'), MAX_WAIT_ELEMENT);
-//             await driver.wait(until.elementLocated(By.xpath(`//*[contains(text(), 'aymanhki')]`)), MAX_WAIT_ELEMENT);
-//
-//         } catch (error) {
-//             console.error('Error logging in:', error);
-//         }
-//     }, MAX_WAIT_FUNCTION);
-// });

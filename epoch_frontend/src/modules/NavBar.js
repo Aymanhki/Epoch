@@ -1,83 +1,114 @@
-import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import React, {useState, useEffect, useContext} from "react";
+import {NavLink} from "react-router-dom";
 import "../styles/NavBar.css";
-import { getUserInfo } from "../services/user";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PostAddOutlinedIcon from "@mui/icons-material/PostAddOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import {useNavigate} from "react-router-dom";
+import {removeSessionCookie} from "../services/user";
+import {getUserInfo} from "../services/user";
+import {UserContext} from "../services/UserContext";
 
-const NavBar = ({ onLogout }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [userProfilePhoto, setUserProfilePhoto] = useState(null);
+const NavBar = ({profilePic}) => {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const navigate = useNavigate();
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const { updateUser } = useContext(UserContext);
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const userInfo = await getUserInfo();
-        if (userInfo && userInfo.profile_pic_data) {
-          setUserProfilePhoto(userInfo.profile_pic_data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch user info:", error);
-      }
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
     };
 
-    fetchUserInfo();
-  }, []);
+    useEffect(() => {
+        const closeDropdownOnOutsideClick = (event) => {
+            if (isDropdownOpen && !event.target.closest(".dropdown")) {
+                setIsDropdownOpen(false);
+            }
+        };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+        document.body.addEventListener("click", closeDropdownOnOutsideClick);
 
-  return (
-    <div className="navbar">
-      <div className="left">
-        <div className="logo-container">
-          <img
-            src="../images/epoch-logos-96.jpeg"
-            alt="Epoch"
-            className="logo"
-          />
-          <span>Epoch</span>
-        </div>
-        <NavLink to="/epoch/home" activeClassName="active">
-          <HomeOutlinedIcon />
-        </NavLink>
-        <NavLink to="/epoch/post" activeClassName="active">
-          <PostAddOutlinedIcon />
-        </NavLink>
-        <NavLink to="/epoch/search" activeClassName="active">
-          <div className="search-bar">
-            <SearchOutlinedIcon className="search-icon" />
-            <input type="text" placeholder="Search" />
-          </div>
-        </NavLink>
-      </div>
-      <div className="right">
-        <div className="dropdown" onClick={toggleDropdown}>
-          {userProfilePhoto ? (
-            <img
-              src={userProfilePhoto}
-              alt="Profile"
-              className="profile-photo"
-              style={{ width: "40px", height: "40px" }}
-            />
-          ) : (
-            <AccountCircleOutlinedIcon />
-          )}
-          {isDropdownOpen && (
-            <div className="dropdown-content">
-              <span onClick={onLogout}>Logout</span>
-              <NavLink to="/epoch/profile" activeClassName="active">
-                Profile
-              </NavLink>
+        return () => {
+            document.body.removeEventListener("click", closeDropdownOnOutsideClick);
+        };
+    }, [isDropdownOpen]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    const handleLogout = () => {
+        removeSessionCookie();
+        updateUser(null);
+        navigate('/epoch/login');
+    }
+
+    return (
+        <div className="navbar">
+
+            <div className="left">
+                <div className="logo-container" onClick={() => navigate('/epoch/home')}>
+                    <img
+                        src="../images/epoch-logo-400.jpeg"
+                        alt="Epoch"
+                        className="logo"
+                        style={{width: "3rem", height: "100%"}}
+                        onClick={() => navigate('/epoch/home')}
+                    />
+                    <span style={{textDecorationColor: "transparent"}}>Epoch</span>
+                </div>
+
             </div>
-          )}
+
+            <div className="right">
+                <NavLink to="/epoch/home" className="active">
+                    <HomeOutlinedIcon/>
+                </NavLink>
+
+                <NavLink to="/epoch/post" className="active">
+                    <PostAddOutlinedIcon/>
+                </NavLink>
+
+                <NavLink to="/epoch/search" className="active">
+                    <SearchOutlinedIcon className="search-icon"/>
+                </NavLink>
+
+                <div className={`dropdown ${isDropdownOpen ? 'open' : ''}`} onClick={toggleDropdown}>
+                    <div className="profile-photo-container">
+                        {profilePic ? (
+                            <img
+                                src={profilePic}
+                                alt="Profile"
+                                className="profile-photo"
+                            />
+                        ) : (
+                            <AccountCircleOutlinedIcon/>
+                        )}
+                    </div>
+
+                  {((!isMobile && isDropdownOpen) || (isMobile)) &&
+                    <div className="dropdown-content">
+                        <span onClick={() => handleLogout()}>Logout</span>
+                        <span onClick={() => navigate('/epoch/profile')}>Profile</span>
+                    </div>
+                  }
+
+
+                </div>
+            </div>
+
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default NavBar;
