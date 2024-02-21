@@ -7,7 +7,7 @@ from google.cloud import storage
 from urllib.parse import urlparse, unquote
 
 
-BUCKET_NAME = "epoch-cloud"
+BUCKET_NAME = "epoch-cloud-storage-media"
 
 # Set the current working directory to the root of your project
 assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets'))
@@ -144,7 +144,6 @@ def start_db_tables():
 
 
 def send_cors_options_response(request_data, conn):
-    print(f"\n\nSENDCORS\n{request_data}\n\n")
     headers, body = request_data.split("\r\n\r\n", 1)
     origin = get_origin_from_headers(headers)
     send_response(conn, 204, "No Content", body=b"", headers=get_cors_headers(origin))
@@ -154,9 +153,9 @@ def get_cors_headers(origin="*"):
     return {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks",
+        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length",
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks",
+        "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length",
     }
 
 
@@ -237,7 +236,7 @@ def delete_file_from_bucket(file_path):
 
 
 def get_google_credentials():
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(assets_dir, "epoch-414600-66dd2b7c57f6.json")
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(assets_dir, "virtual-bonito-412515-d7dae3104a12.json")
 
 
 def get_fullchain_cert_path():

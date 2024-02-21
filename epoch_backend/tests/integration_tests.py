@@ -10,6 +10,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 import requests
 import json
+import pytest
+
 
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -63,11 +65,18 @@ class integration_tests(unittest.TestCase):
             options.add_argument("--no-sandbox")
             options.add_argument("--headless")
 
-        cls.driver = webdriver.Chrome(options=options)
+        try:
+            cls.driver = webdriver.Chrome(options=options)
+        except Exception as e:
+            cls.tearDownClass()
+            pytest.exit(f"Error starting webdriver: {e}")
 
     @classmethod
     def tearDownClass(cls):
-        cls.driver.quit()
+        try:
+            cls.driver.quit()
+        except Exception as e:
+            print(f"Error quitting webdriver: {e}")
         global session_id
         requests.delete("http://localhost:8080/api/delete/username/", data=json.dumps({"username": cls.username}), headers={"Content-Type": "application/json"}, cookies={"epoch_session_id": session_id})
         os.kill(cls.frontend_process.pid, signal.SIGKILL)

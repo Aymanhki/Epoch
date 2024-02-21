@@ -58,3 +58,18 @@ class access_user_persistence(user_persistence):
             'user_id': '1001',
             'bio': 'this is my bio',
         }
+
+    def get_followers(self, user_id: int):
+        return self.user_persistence.get_followers(user_id)
+
+    def get_following(self, user_id: int):
+        return self.user_persistence.get_following(user_id)
+
+    def follow_user(self, user_id: int, following_id: int):
+        self.user_persistence.follow_user(user_id, following_id)
+
+    def unfollow_user(self, user_id: int, following_id: int):
+        self.user_persistence.unfollow_user(user_id, following_id)
+
+    def get_username(self, user_id: int):
+        return self.user_persistence.get_username(user_id)

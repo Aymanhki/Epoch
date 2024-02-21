@@ -1,7 +1,7 @@
 import json
 import os
 
-from epoch_backend.business.api_endpoints.following_endpoints import follow_user, get_account_list, get_following_list, unfollow_user
+from business.api_endpoints.following_endpoints import follow_user, get_account_list, get_following_list, unfollow_user
 from ..utils import get_cors_headers, get_origin_from_headers, send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
 from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, get_user_from_name
 from ..db_controller.access_user_persistence import access_user_persistence
@@ -31,7 +31,6 @@ def handle_routing(relative_path, request_data, conn, method):
 def handle_api_request(method, path, request_data, conn):
     if method == "OPTIONS":  # Handle CORS preflight request
         send_cors_options_response(request_data, conn)
-        print("handled options")
         return
 
     if path == "/api/login/":
@@ -67,9 +66,9 @@ def handle_api_request(method, path, request_data, conn):
 
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
-    elif path == "/api/user":
+    elif path == "/api/user/":
         if method == "GET":
-            username = get_user_from_name(conn, request_data, username)
+            get_user_from_name(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
