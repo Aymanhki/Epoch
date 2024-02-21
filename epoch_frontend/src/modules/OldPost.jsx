@@ -1,6 +1,6 @@
 import '../styles/Post.css';
 import React from 'react';
-import PostPopup from './PostPopup';
+import OldPostPopup from './OldPostPopup';
 import PermMediaIcon from '@mui/icons-material/PermMedia';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import AddIcon from '@mui/icons-material/Add';
@@ -14,8 +14,8 @@ import List from '@mui/material/List';
 
 import { IconButton, Fab } from "@mui/material";
 
-export default function Post() {
-  // To show Post pop up
+export default function OldPost() {
+  // To show OldPost pop up
   const [showPost, setShowPost] = React.useState(false)
   const onClick = () => setShowPost(true)
 
@@ -26,18 +26,17 @@ export default function Post() {
 
   return (
     <div className='post'>
-      <div className="floatingPostButton">
-        <Fab className='postButton' color='primary'>
-          <AddIcon className='postButtonIcon' onClick = {() => setShowPost(true)}/>
-        </Fab>
-      </div>
-      <PostPopup trigger={showPost} setTrigger={setShowPost}>
+
+      <OldPostPopup trigger={showPost} setTrigger={setShowPost}>
         <div className="postInputBox">
+
             <div className="postWrapper">
+
               <div className="postTop">
                 <img className='postProfileImage' src='' alt='' />
                 <input placeholder='What is your prediction?' className='postInput' />
               </div>
+
               <hr className='shareHr'/>
               <div className="postBottom">
                 <div className="postOptions">
@@ -59,7 +58,7 @@ export default function Post() {
                         <ListItemText primary="1 Week" />
                         <ListItemText primary="1 Year" />
                         <ListItemText primary="Custom" />
-                      </List> 
+                      </List>
                     </Collapse>
                   </div>
                   <div className="postOption">
@@ -71,7 +70,7 @@ export default function Post() {
               </div>
             </div>
         </div>
-      </PostPopup>
+      </OldPostPopup>
     </div>
   )
 }

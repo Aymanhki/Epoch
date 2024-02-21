@@ -63,8 +63,6 @@ class webserver:
 
             if request_data.startswith(b"POST /api/upload/profile/1/"):
                 upload_profile_pic(conn, request_data)
-
-
             else:
                 request_data = request_data.decode('UTF-8')
                 request_lines = request_data.split('\r\n')
@@ -99,7 +97,7 @@ class webserver:
             self.running = False
             self.cleanup_threads()
             self.active_threads.clear()
-            self.server_socket.shutdown(socket.SHUT_RDWR)
+            self.server_socket.close()
             print("Server stopped.")
 
         except Exception as e:

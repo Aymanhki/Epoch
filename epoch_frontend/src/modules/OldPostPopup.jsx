@@ -3,16 +3,15 @@ import '../styles/PostPopup.css';
 
 import CloseIcon from '@mui/icons-material/Close';
 
-function PostPopup(props) {
+function OldPostPopup(props) {
   return (props.trigger) ? (
     <div className='postPopup'>
         <div className="popup-inner">
             <CloseIcon className='close-btn' onClick={() => props.setTrigger(false)}/>
-            {props.children}  
-        </div>  
-      
+            {props.children}
+        </div>
     </div>
   ) : "";
 }
 
-export default PostPopup
+export default OldPostPopup

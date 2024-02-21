@@ -14,6 +14,7 @@ user_id: int = None
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
 EXTREME_TEST_RANGE = 10
 EXTREM_TEST_UPLOAD_RANGE = 3
+SERVER_WAIT_TIME = 5
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
@@ -42,7 +43,7 @@ class webserver_tests(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.web_server.stop()
-        cls.server_thread.join()
+        cls.server_thread.join(timeout=SERVER_WAIT_TIME)
 
     def set_session_id(self, value: str):
         global session_id

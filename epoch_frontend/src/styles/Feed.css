@@ -1,0 +1,53 @@
+.feed{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    height: 100vh;
+    margin: auto;
+    position: relative;
+}
+
+.floatingPostButton{
+    background-color: #ffffff;
+    color: #222222;
+    border: none;
+    border-radius: 50%;
+    width: 4rem;
+    height: 4rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    transition: transform 0.1s ease-in-out;
+}
+
+.floatingPostButton:hover{
+    background-color: #333;
+    color: #ffffff;
+    font-size:  3rem;
+}
+
+.floatingPostButton.rotate {
+  transform: rotate(45deg);
+  transition: transform 0.1s ease-in-out;
+}
+
+
+
+@media (max-width: 768px){
+
+}
+
+@media (prefers-color-scheme: dark){
+    .floatingPostButton{
+        background-color: #ffffff;
+        color: #222222;
+    }
+}

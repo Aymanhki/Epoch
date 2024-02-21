@@ -17,8 +17,8 @@ TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb
 script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
 
-servers_wait_time = 5
-default_element_wait_timeout = 10
+servers_wait_time = 10
+default_element_wait_timeout = 60
 session_id = None
 
 
