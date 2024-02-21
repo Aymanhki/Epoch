@@ -8,7 +8,7 @@ import { Spinner } from "../modules/Spinner";
 import {UserContext} from "../services/UserContext";
 import '../styles/Profile.css'
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-
+import Feed from "../modules/Feed";
 
 function Profile() {
     const { username } = useParams();
@@ -108,10 +108,13 @@ function Profile() {
                                 <button className={"follow-button"}>{isFollowingPrompt}</button>
                             )}
                         </div>
-                        <div>
-                            <h1>From address = [{username}]</h1>
-                            <h1>From get = [{userInfo.username}]</h1>
-                            <h1>Is this the current user? [{isCurrentUser.toString()}]</h1>
+                        {/*<div>*/}
+                        {/*    <h1>From address = [{username}]</h1>*/}
+                        {/*    <h1>From get = [{userInfo.username}]</h1>*/}
+                        {/*    <h1>Is this the current user? [{isCurrentUser.toString()}]</h1>*/}
+                        {/*</div>*/}
+                        <div className="profile-feed">
+                            <Feed feedUsername={userInfo.username} isInProfile={true} currentUser={user} />
                         </div>
                     </div>
                 </div>
