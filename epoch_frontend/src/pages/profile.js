@@ -6,9 +6,10 @@ import {NotFound} from "./notFound";
 import NavBar from "../modules/NavBar";
 import { Spinner } from "../modules/Spinner";
 import {UserContext} from "../services/UserContext";
+import '../styles/Profile.css'
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 
-// need to distinguish if this is the current user logged in
-//should show edits if yes, show follow if not logged in
+
 function Profile() {
     const { username } = useParams();
     const [userInfo, setUserInfo] = useState({});
@@ -18,9 +19,10 @@ function Profile() {
     const { user } = useContext(UserContext);
     const { updateUser } = useContext(UserContext);
     const [isCurrentUser, setIsCurrentUser] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [isFollowingPrompt, setIsFollowingPrompt] = useState('Follow');
 
     useEffect(() => {
-
         setIsLoading(true);
         if (!user) {
             getUserInfo()
@@ -68,23 +70,50 @@ function Profile() {
 
     return (
         <>
-            {<NavBar profilePic={user.profile_pic_data}/>}
-            {isLoading ? (<Spinner />) : (
-                <div>
-                    <h1>Profile Page</h1>
-                    <h1> HELLO! </h1>
-                    <h1> From address = [{username}] </h1>
-                    <h1> From get = [{userInfo.username}]</h1>
-                    <h1> name = [{userInfo.name}]</h1>
-                    <h1> Is this the current user? [{isCurrentUser.toString()}]</h1>
+            <NavBar profilePic={user.profile_pic_data} />
+            {isLoading ? (
+                <Spinner />
+            ) : (
+                <div className="profile-page-container">
+                    <div className="profile-wrapper">
+                        <div className="profile-info-wrapper">
+                            {userInfo.profile_pic_data && (
+                                <div className="profile-pic-wrapper">
+                                    <img
+                                        src={userInfo.profile_pic_data}
+                                        alt="Profile Pic"
+                                        className="profile-pic"
+                                    />
+                                    {userInfo.profile_background_pic_data ? (
+                                        <img
+                                            src={userInfo.profile_background_pic_data}
+                                            alt="Background Pic"
+                                            className="background-pic"
+                                        />
+                                    ) : (
+                                        <img
+                                            src={process.env.PUBLIC_URL + '/images/default_profile_background.png'}
+                                            alt="Background Pic"
+                                            className="background-pic"
+                                        />
+                                    )}
+                                </div>
+                            )}
+                            <h1 className="profile-name">{userInfo.name}</h1>
+                            <h2 className="profile-username">@{userInfo.username}</h2>
 
-                    {userInfo.profile_pic_data && (
-                        <img
-                          src={userInfo.profile_pic_data}
-                          alt="Profile Pic"
-                          style={{ maxWidth: "300px" }}
-                        />
-                    )}
+                            {isCurrentUser ? (
+                                <BorderColorOutlinedIcon className="edit-profile-button-icon" onClick={() => navigate('/edit-profile')} />
+                            ) : (
+                                <button className={"follow-button"}>{isFollowingPrompt}</button>
+                            )}
+                        </div>
+                        <div>
+                            <h1>From address = [{username}]</h1>
+                            <h1>From get = [{userInfo.username}]</h1>
+                            <h1>Is this the current user? [{isCurrentUser.toString()}]</h1>
+                        </div>
+                    </div>
                 </div>
             )}
         </>
