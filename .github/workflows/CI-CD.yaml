@@ -28,7 +28,7 @@ jobs:
             git clone https://github.com/Aymanhki/Epoch.git 
             cd
             cp credentials/db_params.json Epoch/epoch_backend/assets/
-            cp credentials/epoch-414600-66dd2b7c57f6.json Epoch/epoch_backend/assets/
+            cp credentials/virtual-bonito-412515-d7dae3104a12.json Epoch/epoch_backend/assets/
             cp credentials/fullchain.pem Epoch/epoch_backend/assets/
             cp credentials/privkey.pem Epoch/epoch_backend/assets/
             cd Epoch/epoch_frontend/
@@ -80,7 +80,7 @@ jobs:
             git clone https://github.com/Aymanhki/Epoch.git 
             cd
             cp credentials/db_params.json Epoch/epoch_backend/assets/
-            cp credentials/epoch-414600-66dd2b7c57f6.json Epoch/epoch_backend/assets/
+            cp credentials/virtual-bonito-412515-d7dae3104a12.json Epoch/epoch_backend/assets/
             cp credentials/fullchain.pem Epoch/epoch_backend/assets/
             cp credentials/privkey.pem Epoch/epoch_backend/assets/
             cp credentials/fullchain.pem Epoch/epoch_frontend/
