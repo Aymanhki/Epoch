@@ -4,9 +4,22 @@
     align-items: center;
     justify-content: flex-start;
     flex-direction: column;
-    height: 100vh;
+    height: calc(100vh - 5rem);
     margin: auto;
     position: relative;
+    overflow: hidden;
+}
+
+.posts-wrapper {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    height: calc(100vh - 5rem - 3rem);
+    padding: 1rem;
+    margin: 1rem;
+    overflow-y: scroll;
 }
 
 .floatingPostButton{

@@ -3,16 +3,29 @@ import os
 
 from ..api_endpoints.following_endpoints import follow_user, get_account_list, get_following_list, unfollow_user
 from ..utils import get_cors_headers, get_origin_from_headers, send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
-from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, get_user_from_name
+from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, get_user_from_name, upload_profile_pic
 from ..db_controller.access_user_persistence import access_user_persistence
 from ..db_controller.access_session_persistence import access_session_persistence
+from ..api_endpoints.post_endpoints import new_post, get_all_user_posts
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')
 
+no_auth_endpoints = [
+    "/api/login/",
+    "/api/register/",
+
+    "/api/user/",
+    "/api/follow/accountList/",
+    "/api/follow/followingList/",
+    "/api/follow/follow/",
+    "/api/follow/unFollow/",
+    "/api/upload/profile/1/",
+]
+
 def handle_routing(relative_path, request_data, conn, method):
     if relative_path.startswith('/api/'):
-        if relative_path.startswith('/api/') and relative_path != '/api/login/' and relative_path != '/api/register/' and relative_path != '/api/upload/profile/1/'and relative_path != '/api/user/':
+        if relative_path.startswith('/api/') and relative_path not in no_auth_endpoints and method != "OPTIONS":
             session_id = get_session_id_from_request(request_data)
             if access_session_persistence().get_session(session_id) is None:
                 print("\n* Unauthorized request rejected *\n")
@@ -105,6 +118,23 @@ def handle_api_request(method, path, request_data, conn):
         
         send_response(conn, response[0], response[1], response[2], headers=get_cors_headers(origin))
 
+    elif path.startswith("/api/post/"):
+        if method == "POST":
+            new_post(conn, request_data)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+
+    elif path.startswith("/api/user/download-post/"):
+        if method == "GET":
+            get_all_user_posts(conn, request_data)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+
+    elif path.startswith("/api/upload/profile/1/"):
+        if method == "POST":
+            upload_profile_pic(conn, request_data)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
     else:
         send_response(conn, 404, "Not Found", body=b"<h1>404 Not Found</h1>")
 

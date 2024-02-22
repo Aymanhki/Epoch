@@ -21,6 +21,7 @@ function Profile() {
     const [isCurrentUser, setIsCurrentUser] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
     const [isFollowingPrompt, setIsFollowingPrompt] = useState('Follow');
+    const [showNewPostPopup, setShowNewPostPopup] = useState(false);
 
     useEffect(() => {
         setIsLoading(true);
@@ -60,7 +61,7 @@ function Profile() {
         }
     }, [setIsLoading, setIsCurrentUser, user, username]);
 
-    if(!user) {
+    if(!user || !userInfo) {
         return <Spinner />
     }
 
@@ -70,7 +71,7 @@ function Profile() {
 
     return (
         <>
-            <NavBar profilePic={user.profile_pic_data} />
+            <NavBar profilePic={user.profile_pic_data} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
             {isLoading ? (
                 <Spinner />
             ) : (
@@ -114,7 +115,7 @@ function Profile() {
                         {/*    <h1>Is this the current user? [{isCurrentUser.toString()}]</h1>*/}
                         {/*</div>*/}
                         <div className="profile-feed">
-                            <Feed feedUsername={userInfo.username} isInProfile={true} currentUser={user} />
+                            <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
                         </div>
                     </div>
                 </div>

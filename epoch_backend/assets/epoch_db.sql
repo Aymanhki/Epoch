@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     bio TEXT,
     profile_pic INT REFERENCES media_content(media_id) NULL,
+    background_pic INT REFERENCES media_content(media_id) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 

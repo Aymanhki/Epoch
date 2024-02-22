@@ -10,7 +10,7 @@ import {removeSessionCookie} from "../services/user";
 import {getUserInfo} from "../services/user";
 import {UserContext} from "../services/UserContext";
 
-const NavBar = ({profilePic}) => {
+const NavBar = ({profilePic, showNewPostPopup, setShowNewPostPopup}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -75,7 +75,14 @@ const NavBar = ({profilePic}) => {
                     <HomeOutlinedIcon/>
                 </NavLink>
 
-                <NavLink to="/epoch/post" className="active">
+                <NavLink className="active" onClick={() => {
+                    if(showNewPostPopup) {
+                        setShowNewPostPopup(false);
+                    }
+                    else {
+                        setShowNewPostPopup(true);
+                    }
+                }}>
                     <PostAddOutlinedIcon/>
                 </NavLink>
 
@@ -92,7 +99,9 @@ const NavBar = ({profilePic}) => {
                                 className="profile-photo"
                             />
                         ) : (
-                            <AccountCircleOutlinedIcon/>
+                            <div>
+                                <AccountCircleOutlinedIcon/>
+                            </div>
                         )}
                     </div>
 

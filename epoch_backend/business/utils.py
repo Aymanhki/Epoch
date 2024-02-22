@@ -175,11 +175,11 @@ def get_origin_from_headers(headers):
         print("Origin header not found.")
 
 
-def upload_file_to_cloud(user_id, file_name, file, content_type):
+def upload_file_to_cloud(username, file_name, file, content_type):
     path = ''
 
-    if user_id is not None:
-        path = f"epoch-media/users/{user_id}/{file_name}"
+    if username is not None:
+        path = f"epoch-media/users/{username}/{file_name}"
     else:
         path = f"epoch-media/{file_name}"
 
@@ -195,7 +195,7 @@ def upload_file_to_cloud(user_id, file_name, file, content_type):
     return file_url
 
 
-def download_file_to_cloud(file_url):
+def download_file_from_cloud(file_url):
     client = storage.Client()
     bucket = client.get_bucket(BUCKET_NAME)
     parsed_url = urlparse(file_url)
