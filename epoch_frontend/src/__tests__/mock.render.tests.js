@@ -62,12 +62,7 @@ describe('Render Pages', () => {
           );
         });
 
-        await waitFor(() => {
-            const allNameElements = screen.getAllByText(new RegExp(mockUser.name, 'i'));
-            allNameElements.forEach((element) => {
-              expect(element).toBeInTheDocument();
-            });
-        });
+        await waitFor(() => {expect(screen.getByTestId('home-feed')).toBeInTheDocument();});
     });
 
     test("App lands on login home page", async () => {
@@ -77,12 +72,7 @@ describe('Render Pages', () => {
             render(<App />);
         });
 
-        await waitFor(() => {
-            const allNameElements = screen.getAllByText(new RegExp(mockUser.name, 'i'));
-            allNameElements.forEach((element) => {
-                expect(element).toBeInTheDocument();
-            });
-        });
+        await waitFor(() => {expect(screen.getByTestId('home-feed')).toBeInTheDocument(); });
     });
 });
 

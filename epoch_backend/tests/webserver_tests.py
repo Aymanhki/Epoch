@@ -141,7 +141,17 @@ class webserver_tests(unittest.TestCase):
         response_json = response.json()
         self.assertTrue('user_id' in response_json)
         self.set_user_id(response_json['user_id'])
-        response = requests.post('http://localhost:8080/api/upload/profile/1/', data=TEST_PROFILE_PIC_BINARY, headers={'File-Name': 'test.jpg', 'Content-Type': 'image/jpeg', 'User-Id': str(self.get_user_id())})
+
+        body = {
+            "fileData": base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'),
+            "fileName": 'test.jpg',
+            "fileType": 'image/jpeg',
+            "userId": self.get_user_id()
+        }
+
+        body = json.dumps(body)
+
+        response = requests.post('http://localhost:8080/api/upload/profile/1/', data=body)
         assert (response.status_code == 200)
         response = requests.post('http://localhost:8080/api/login/', json={'username': self.username, 'password': self.password})
         assert (response.status_code == 200)
@@ -155,7 +165,6 @@ class webserver_tests(unittest.TestCase):
         assert (response_json['id'] == self.get_user_id())
         profile_pic_base64 = response_json['profile_pic_data']
         assert (profile_pic_base64 is not None)
-        profile_pic_binary = base64.b64decode(profile_pic_base64)
         original_pic_base64 = base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8')
         assert (original_pic_base64 == profile_pic_base64)
         response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()}, cookies={'epoch_session_id': self.get_session_id()})
@@ -174,7 +183,17 @@ class webserver_tests(unittest.TestCase):
 
     def upload_profile_pic(self, i, usernames, user_ids, media_ids):
         print(f"Uploading profile picture for user {i}...")
-        response = requests.post('http://localhost:8080/api/upload/profile/1/', data=TEST_PROFILE_PIC_BINARY, headers={'File-Name': 'test.jpg', 'Content-Type': 'image/jpeg', 'User-Id': str(user_ids[i])})
+
+        body = {
+            "fileData": base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'),
+            "fileName": 'test.jpg',
+            "fileType": 'image/jpeg',
+            "userId": user_ids[i]
+        }
+
+        body = json.dumps(body)
+
+        response = requests.post('http://localhost:8080/api/upload/profile/1/', data=body)
         self.assertEqual(response.status_code, 200)
         media_ids[i] = json.loads(response.text)['media_id']
         print(f"Profile picture uploaded for user {i}.")

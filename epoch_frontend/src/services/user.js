@@ -161,9 +161,6 @@ function uploadProfilePic(file, userId) {
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
         xhr.open('POST', `${serverUrl}/api/upload/profile/1/`, true);
-        xhr.setRequestHeader('Content-Type', file.type);
-        xhr.setRequestHeader('File-Name', file.name);
-        xhr.setRequestHeader('User-Id', userId);
         xhr.withCredentials = true;
         xhr.timeout = 100000;
 
@@ -200,12 +197,14 @@ function uploadProfilePic(file, userId) {
         const reader = new FileReader();
 
         reader.onload = () => {
-            const fileData = reader.result;
-
-            xhr.send(fileData);
+            const fileName = file.name;
+            const fileType = file.type;
+            const fileData = reader.result.split(',')[1];
+            const toSend = JSON.stringify({fileName: fileName, fileType: fileType, fileData: fileData, userId: userId});
+            xhr.send(toSend);
         };
 
-        reader.readAsArrayBuffer(file);
+        reader.readAsDataURL(file);
     });
 }
 
@@ -291,6 +290,7 @@ function deleteUser(userId) {
         xhr.send(JSON.stringify({userId: userId}));
     });
 }
+
 
 
 module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadProfilePic, registerUser, deleteUser, getUsernameInfo};
