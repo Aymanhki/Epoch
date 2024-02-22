@@ -43,6 +43,14 @@ jobs:
               echo "Webserver Backend Test(s) failed. Exiting with status 1."
               exit 1
             fi
+            sudo fuser -k -n tcp 443
+            sudo fuser -k -n tcp 8080
+            sudo fuser -k -n tcp 80
+            sudo fuser -k -n tcp 8000
+            lsof -t -i:8080 | xargs kill -9
+            lsof -t -i:80 | xargs kill -9
+            lsof -t -i:443 | xargs kill -9
+            lsof -t -i:8000 | xargs kill -9
             cd epoch_frontend/
             if ! npm test; then
               echo "Frontend server Test(s) failed. Exiting with status 1."
