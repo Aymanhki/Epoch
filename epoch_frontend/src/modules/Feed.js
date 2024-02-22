@@ -10,6 +10,7 @@ import {getAllUserPosts} from '../services/post.js'
 export default function Feed({feedUsername, feedUserId, isInProfile, currentUser, showNewPostPopup, setShowNewPostPopup}) {
     const [isLoading, setIsLoading] = useState(true);
     const [feedPosts, setFeedPosts] = useState(Array(10).fill(null));
+    const [refreshFeed, setRefreshFeed] = useState(false);
 
     const fetchImage = async () => {
         const response = await fetch(process.env.PUBLIC_URL + '/images/placeholder.png');
@@ -38,12 +39,23 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
 
         const resolvedPosts = await Promise.all(postPromises);
         setFeedPosts(resolvedPosts);
-        setIsLoading(false);
     };
 
     useEffect(() => {
-        setIsLoading(true);
-        if(isInProfile && currentUser.id === feedUserId)
+        refreshFeedPosts();
+    }, [ feedUserId, feedUsername, currentUser, isInProfile]);
+
+    useEffect(() => {
+        if(refreshFeed)
+        {
+            setIsLoading(true);
+            refreshFeedPosts();
+        }
+    }, [refreshFeed]);
+
+    const refreshFeedPosts = () => {
+
+        if(isInProfile && feedUserId && currentUser.id === feedUserId)
         {
             getAllUserPosts(currentUser.id).then((data) => {
                 setFeedPosts(data);
@@ -53,7 +65,7 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
                 setIsLoading(false);
             });
         }
-        else if(currentUser.id !== feedUserId)
+        else if(feedUserId && currentUser.id !== feedUserId)
         {
             getAllUserPosts(feedUserId).then((data) => {
                 setFeedPosts(data);
@@ -63,26 +75,29 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
                 setIsLoading(false);
             });
         }
-        else
+        else if(!isInProfile && feedUsername && currentUser.username === feedUsername)
         {
             // ideally, here we would fetch the posts from the users that the current user is following (shuffle or show chronological order)
-            populateTempPosts();
+            populateTempPosts().then(() => {
+                setIsLoading(false);
+            });
         }
 
-    }, [feedUsername, currentUser]);
+        setRefreshFeed(false);
+    }
 
     return (
         <>
         {isLoading ? (<Spinner/>) :
             (<div className="feed">
                 <div className={'posts-wrapper'}>
-                    {feedPosts.map((newPost, index) => <Post key={newPost.post_id} post={newPost}/>)}
+                    {feedPosts.map((newPost, index) => <Post key={ newPost.post_id} post={newPost}/>)}
                 </div>
-                <button className={`floatingPostButton ${showNewPostPopup ? 'rotate' : ''}`}
+                {( (!isInProfile &&feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId) ) && (<button className={`floatingPostButton ${showNewPostPopup ? 'rotate' : ''}`}
                         onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+
-                </button>
+                </button>)}
                 <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
-                           username={currentUser.username} profilePic={currentUser.profile_pic_data}/>
+                           username={currentUser.username} profilePic={currentUser.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
 
             </div>)}
         </>

@@ -81,7 +81,11 @@ class epoch_post_persistence(post_persistence):
 
                 post_dict["file_type"] = posts_media.get(i)[1]
                 post_dict["file_name"] = posts_media.get(i)[2]
-                post_dict["file"] = 'data:' + posts_media.get(i)[1][1] + ';base64,' + post_media
+
+                if posts_media.get(i)[1].startswith("video/quicktime"):
+                    post_dict["file"] = 'data:' + 'video/mp4' + ';base64,' + post_media
+                else:
+                    post_dict["file"] = 'data:' + posts_media.get(i)[1] + ';base64,' + post_media
             else:
                 post_dict["file"] = None
                 post_dict["file_name"] = None

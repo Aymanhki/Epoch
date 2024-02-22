@@ -6,7 +6,7 @@ import {newPost} from "../services/post.js"
 import {useSpring, animated} from 'react-spring';
 
 
-export default function PostPopup({showPopup, setShowPopup, username, profilePic}) {
+export default function PostPopup({showPopup, setShowPopup, username, profilePic, refreshFeed, setRefreshFeed}) {
     const [uploadedFile, setUploadedFile] = useState(null);
     const [postText, setPostText] = useState(null);
     const fileInputRef = React.createRef();
@@ -156,6 +156,7 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                 newPost(postObject).then((resolve) => {
                     setPostButtonPrompt('Posted');
                     setSuccess(true);
+                    setRefreshFeed(true);
                     setSuccessMessage('Post was successful');
                     setTimeout(() => {
                         setShowPopup(false);

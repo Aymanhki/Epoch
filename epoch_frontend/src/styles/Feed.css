@@ -15,9 +15,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-y: scroll;
-    height: calc(100vh - 3rem - 5rem);
+    width: 90%;
+    height: calc(100vh - 5rem - 3rem);
     padding: 1rem;
+    margin: 1rem;
+    overflow-y: scroll;
 }
 
 .floatingPostButton{

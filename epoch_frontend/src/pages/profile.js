@@ -61,7 +61,7 @@ function Profile() {
         }
     }, [setIsLoading, setIsCurrentUser, user, username]);
 
-    if(!user) {
+    if(!user || !userInfo) {
         return <Spinner />
     }
 
