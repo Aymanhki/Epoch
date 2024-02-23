@@ -9,6 +9,7 @@ import {UserContext} from "../services/UserContext";
 import '../styles/Profile.css'
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import Feed from "../modules/Feed";
+import EditProfilePopup from '../modules/EditProfilePopup';
 
 function Profile() {
     const { username } = useParams();
@@ -22,6 +23,7 @@ function Profile() {
     const [isFollowing, setIsFollowing] = useState(false);
     const [isFollowingPrompt, setIsFollowingPrompt] = useState('Follow');
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
+    const [showEditProfilePopup, setShowEditProfilePopup] = useState(false)
 
     useEffect(() => {
         setIsLoading(true);
@@ -102,22 +104,21 @@ function Profile() {
                             )}
                             <h1 className="profile-name">{userInfo.name}</h1>
                             <h2 className="profile-username">@{userInfo.username}</h2>
-
+                            <h3 className="profile-bio">{userInfo.bio}</h3>
+                            
                             {isCurrentUser ? (
-                                <BorderColorOutlinedIcon className="edit-profile-button-icon" onClick={() => navigate('/edit-profile')} />
+                                <BorderColorOutlinedIcon className="edit-profile-button-icon" onClick={() => setShowEditProfilePopup(!showEditProfilePopup)} />
+                                
                             ) : (
                                 <button className={"follow-button"}>{isFollowingPrompt}</button>
                             )}
                         </div>
-                        {/*<div>*/}
-                        {/*    <h1>From address = [{username}]</h1>*/}
-                        {/*    <h1>From get = [{userInfo.username}]</h1>*/}
-                        {/*    <h1>Is this the current user? [{isCurrentUser.toString()}]</h1>*/}
-                        {/*</div>*/}
                         <div className="profile-feed">
                             <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
                         </div>
+                        
                     </div>
+                    {showEditProfilePopup && <EditProfilePopup userInfo={userInfo} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
                 </div>
             )}
         </>

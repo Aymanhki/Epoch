@@ -20,3 +20,6 @@ class user:
 
     def __hash__(self):
         return hash((self.username, self.password))
+    
+    def set_bio(self, new_bio: str):
+        self.bio = new_bio

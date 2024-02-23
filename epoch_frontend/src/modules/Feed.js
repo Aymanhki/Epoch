@@ -94,7 +94,7 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
                     {feedPosts.map((newPost, index) => <Post key={ newPost.post_id} post={newPost}/>)}
                 </div>
                 {( (!isInProfile &&feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId) ) && (<button className={`floatingPostButton ${showNewPostPopup ? 'rotate' : ''}`}
-                        onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+
+                        onClick={() => setShowNewPostPopup(!showNewPostPopup)}>
                 </button>)}
                 <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
                            username={currentUser.username} profilePic={currentUser.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
