@@ -45,6 +45,7 @@ class webserver_tests(unittest.TestCase):
     def tearDownClass(cls):
         cls.web_server.stop()
         cls.server_thread.join(timeout=SERVER_WAIT_TIME)
+        time.sleep(1)
 
     def set_session_id(self, value: str):
         global session_id
