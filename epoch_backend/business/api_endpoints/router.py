@@ -120,7 +120,7 @@ def handle_api_request(method, path, request_data, conn):
             else:
                 response = [500, "Server error: no request body",b"<h1>500 Internal Server Error</h1>"]
         
-        send_response(conn, response[0], response[1], response[2]) #, headers=get_cors_headers(origin))
+        send_response(conn, response[0], response[1], response[2], headers=get_cors_headers(origin))
 
     elif path.startswith("/api/post/"):
         if method == "POST":
