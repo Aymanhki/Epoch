@@ -9,8 +9,9 @@ import {useNavigate} from "react-router-dom";
 import {removeSessionCookie} from "../services/user";
 import {getUserInfo} from "../services/user";
 import {UserContext} from "../services/UserContext";
+import SmartMedia from "./SmartMedia";
 
-const NavBar = ({profilePic, showNewPostPopup, setShowNewPostPopup}) => {
+const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPopup}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -93,8 +94,9 @@ const NavBar = ({profilePic, showNewPostPopup, setShowNewPostPopup}) => {
                 <div className={`dropdown ${isDropdownOpen ? 'open' : ''}`} onClick={toggleDropdown}>
                     <div className="profile-photo-container">
                         {profilePic ? (
-                            <img
-                                src={profilePic}
+                            <SmartMedia
+                                fileUrl={profilePic}
+                                file_type={profilePicType}
                                 alt="Profile"
                                 className="profile-photo"
                             />

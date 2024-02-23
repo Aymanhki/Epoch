@@ -26,7 +26,7 @@ export default function ({post}) {
 
                 <div className="post-header-left">
                     <div className={'profile-photo-container'}>
-                        <img src={post.profile_picture} alt="Profile" className="profile-photo" />
+                        <SmartMedia fileUrl={post.profile_picture} file_type={post.profile_picture_type} file_name={post.profile_picture_name} alt="Profile" className="profile-photo" />
                     </div>
                     <div className="post-header-info">
                         <h3 className={'post-username'}>{post.username}</h3>
@@ -42,7 +42,7 @@ export default function ({post}) {
 
             <div className="post-body">
                 <p className={"post-caption"}>{post.caption}</p>
-                {post.file && <div className={'file-wrapper'}><div className={'post-file'}><SmartMedia file={post.file} base64={post.file} file_type={post.file_type} file_name={post.file_name} /></div></div>}
+                {post.file && <div className={'file-wrapper'}><div className={'post-file'}><SmartMedia file={post.file} fileUrl={post.file} file_type={post.file_type} file_name={post.file_name} /></div></div>}
             </div>
 
             <div className="post-footer">

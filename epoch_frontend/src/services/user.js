@@ -70,10 +70,10 @@ function getUserInfo() {
                 if (xhr.status === 200) {
                     const userData = JSON.parse(xhr.responseText);
 
-                   if (userData.profile_pic_data) {
-                        const profilePicData = userData.profile_pic_data;
-                        userData.profile_pic_data = `data:image/png;base64,${profilePicData}`;
-                    }
+                   // if (userData.profile_pic_data) {
+                   //      const profilePicData = userData.profile_pic_data;
+                   //      userData.profile_pic_data = `data:image/png;base64,${profilePicData}`;
+                   //  }
 
                     resolve(userData);
                 } else {

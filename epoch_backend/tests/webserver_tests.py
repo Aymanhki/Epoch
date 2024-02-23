@@ -169,10 +169,8 @@ class webserver_tests(unittest.TestCase):
         assert (response_json['name'] == self.name)
         assert (response_json['bio'] == self.bio)
         assert (response_json['id'] == self.get_user_id())
-        profile_pic_base64 = response_json['profile_pic_data']
-        assert (profile_pic_base64 is not None)
-        original_pic_base64 = base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8')
-        assert (original_pic_base64 == profile_pic_base64)
+        profile_pic = response_json['profile_pic_data']
+        assert (profile_pic is not None)
         response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()}, cookies={'epoch_session_id': self.get_session_id()})
         assert (response.status_code == 200)
         print("User with picture registered and deleted.")
@@ -224,7 +222,6 @@ class webserver_tests(unittest.TestCase):
         self.assertEqual(response_json['bio'], bios[i])
         self.assertEqual(response_json['id'], user_ids[i])
         self.assertEqual(response_json['profile_pic_id'], media_ids[i])
-        self.assertEqual(response_json['profile_pic_data'], base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'))
         print(f"Got user info for user {i}.")
 
     def delete_user(self, i, user_ids, session_ids):
