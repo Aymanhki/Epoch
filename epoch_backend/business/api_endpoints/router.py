@@ -86,7 +86,6 @@ def handle_api_request(method, path, request_data, conn):
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
     elif path.startswith("/api/follow/"):
-        
         # split request data into headers, body
         headers, body = request_data.split("\r\n\r\n", 1)
         content_length = 0
@@ -96,8 +95,9 @@ def handle_api_request(method, path, request_data, conn):
         while len(body) < content_length:
             body += conn.recv(1024).decode('UTF-8')
         # get data from body and headers
-        if body:
+        if content_length > 0: 
             data = json.loads(body)
+        
         origin = get_origin_from_headers(headers)
         session_id = get_session_id_from_request(request_data)
         # init response 
@@ -108,13 +108,17 @@ def handle_api_request(method, path, request_data, conn):
         elif path == "/api/follow/followingList/" and method == 'GET':
             response = get_following_list(session_id, access_session_persistence(), access_user_persistence())
         elif path == "/api/follow/follow/" and method == 'POST':
-            if data:
+            if content_length>0:
                 toFollow = data["userToFollow"]
                 response = follow_user(session_id, toFollow, access_session_persistence(), access_user_persistence())
-        elif path == "/api/follow/unFollow/" and method == 'POST':
-            if data:
+            else:
+                response = [500, "Server error: no request body",b"<h1>500 Internal Server Error</h1>"]
+        elif path == "/api/follow/unfollow/" and method == 'POST':
+            if content_length>0:
                 toUnfollow = data["userToUnfollow"]
                 response = unfollow_user(session_id, toUnfollow, access_session_persistence(), access_user_persistence())
+            else:
+                response = [500, "Server error: no request body",b"<h1>500 Internal Server Error</h1>"]
         
         send_response(conn, response[0], response[1], response[2], headers=get_cors_headers(origin))
 
