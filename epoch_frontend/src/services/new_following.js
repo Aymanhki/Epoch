@@ -45,7 +45,7 @@ function getAccountList() {
             reject("Account List Request aborted");
         }
 
-        http.send(JSON.stringify({session_id: "f743d751-d2a4-4db8-af0b-bce739410157"}));
+        http.send(JSON.stringify({session_id: session_id}));
     });
 }
 
@@ -90,7 +90,7 @@ function getFollowingList() {
             reject("following List Request aborted");
         }
 
-        http.send(JSON.stringify({session_id: "f743d751-d2a4-4db8-af0b-bce739410157"}));
+        http.send(JSON.stringify({session_id: session_id}));
     });
 
 }
