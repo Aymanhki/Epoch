@@ -1,7 +1,7 @@
 import React from 'react';
 import '../styles/PostPopup.css';
 
-const SmartMedia = ({file, base64, file_type, file_name}) => {
+const SmartMedia = ({file, fileUrl, file_type, file_name}) => {
     const getMediaType = () => {
         if(file && file.type !== undefined && file.type !== null) {
             if (file.type.startsWith('image/')) {
@@ -13,7 +13,7 @@ const SmartMedia = ({file, base64, file_type, file_name}) => {
             } else {
                 return 'unsupported';
             }
-        } else if (base64) {
+        } else if (fileUrl) {
             if (file_type.startsWith('image/')) {
                 return 'image';
             } else if (file_type.startsWith('video/')) {
@@ -40,14 +40,14 @@ const SmartMedia = ({file, base64, file_type, file_name}) => {
                 default:
                     return <p>Unsupported media type</p>;
             }
-        } else if (base64) {
+        } else if (fileUrl) {
             switch (mediaType) {
                 case 'image':
-                    return <img src={base64} className={'media-preview'}/>;
+                    return <img src={fileUrl} className={'media-preview'}/>;
                 case 'video':
-                    return <video src={base64} controls className={'media-preview'}/>;
+                    return <video src={fileUrl} controls className={'media-preview'}/>;
                 case 'audio':
-                    return <video src={base64} controls className={'media-preview'}/>;
+                    return <video src={fileUrl} controls className={'media-preview'}/>;
                 default:
                     return <p>Unsupported media type</p>;
             }

@@ -104,7 +104,7 @@ function Profile() {
 
     return (
         <>
-            <NavBar profilePic={user.profile_pic_data} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
+            <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
             {isLoading ? (
                 <Spinner />
             ) : (

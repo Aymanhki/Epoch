@@ -61,7 +61,7 @@ class epoch_post_persistence(post_persistence):
         profile_picture_type = profile_picture[1]
         #profile_picture = download_file_from_cloud(profile_picture[5])
         #profile_picture = base64.b64encode(profile_picture).decode('utf-8')
-        profile_picture = profile_picture[5]
+        profile_picture_url = profile_picture[5]
 
 
         all_posts = []
@@ -69,7 +69,9 @@ class epoch_post_persistence(post_persistence):
             current_post = posts[i]
             post_dict = {}
             post_dict["post_id"] = current_post[0]
-            post_dict["profile_picture"] = profile_picture
+            post_dict["profile_picture"] = profile_picture_url
+            post_dict["profile_picture_type"] = profile_picture_type
+            post_dict["profile_picture_name"] = profile_picture[2]
             post_dict["username"] = username
             post_dict["release"] = current_post[5].strftime("%Y-%m-%d %H:%M:%S")
             post_dict["caption"] = current_post[3]
