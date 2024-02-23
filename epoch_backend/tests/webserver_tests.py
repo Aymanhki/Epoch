@@ -1,3 +1,5 @@
+import signal
+import subprocess
 import unittest
 import requests
 import uuid
@@ -22,6 +24,17 @@ os.chdir(script_dir)
 from epoch_backend.business.webserver import webserver
 from epoch_backend.business.utils import start_db_tables, get_google_credentials
 
+def terminate_processes_on_port(port):
+    try:
+        process = subprocess.Popen(['lsof', '-ti', f':{port}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        process_ids = out.decode().split()
+
+        for pid in process_ids:
+            os.kill(int(pid), signal.SIGTERM)
+
+    except Exception as e:
+        print(f"Error terminating processes on port {port}: {e}")
 
 class webserver_tests(unittest.TestCase):
     server_thread = None
@@ -33,6 +46,8 @@ class webserver_tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        terminate_processes_on_port(3000)
+        terminate_processes_on_port(8080)
         start_db_tables()
         get_google_credentials()
         cls.web_server = webserver()
@@ -44,6 +59,8 @@ class webserver_tests(unittest.TestCase):
     def tearDownClass(cls):
         cls.web_server.stop()
         cls.server_thread.join(timeout=SERVER_WAIT_TIME)
+        terminate_processes_on_port(3000)
+        terminate_processes_on_port(8080)
         time.sleep(1)
 
     def set_session_id(self, value: str):

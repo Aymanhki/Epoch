@@ -1,12 +1,17 @@
 import {getAccountList, followAccount, unfollowAccount, getFollowingList} from "../services/following"
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {Spinner} from '../modules/Spinner'
 import {useNavigate} from "react-router-dom";
+import NavBar from "../modules/NavBar";
+import {UserContext} from "../services/UserContext";
+
 
 function Userlist() {
     const [isLoading, setIsLoading] = useState(false);
     const [followingIds, setFollowingList] = useState({});
     const [userList, setUserList] = useState({});
+    const [showNewPostPopup, setShowNewPostPopup] = useState(false);
+    const { user } = useContext(UserContext);
     const navigate = useNavigate();
 
     function follow(target) {
@@ -100,6 +105,7 @@ function Userlist() {
 */
     return (
         <div>
+            <NavBar profilePic={user.profile_pic_data} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
             {isLoading && followingIds ? <Spinner/>: (
                 <>
                     <h1>List of all Epoch Users</h1>
