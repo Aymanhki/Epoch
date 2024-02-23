@@ -18,20 +18,21 @@ jest.mock("../services/user");
 jest.mock("../services/post");
 
 const mockUser = {
-  name: "Test User",
-  id: "123",
-  username: "testuser",
-  password: "password",
-  created_at: "2022-01-01",
-  bio: "This is a test user",
-  profile_pic_id: "456",
-  profile_picture_type: "test",
-  profile_picture_name: "test",
-  profile_picture_data: "test",
-  profile_pic_type: "test",
-  profile_pic_name: "test",
-  profile_pic_data: "test",
-  profile_pic: "test"
+    name: "Test User",
+    id: "123",
+    username: "testuser",
+    password: "password",
+    created_at: "2022-01-01",
+    bio: "This is a test user",
+    profile_pic_id: "456",
+    profile_picture_type: "test",
+    profile_picture_name: "test",
+    profile_picture_data: "test",
+    profile_pic_type: "test",
+    profile_pic_name: "test",
+    profile_pic_data: "test",
+    profile_pic: "test",
+
 };
 
 const mockPost = {
@@ -48,7 +49,7 @@ const username = v4();
 const password = v4() + "A1!";
 
 describe('Render Pages', () => {
-        beforeEach(() => {
+    beforeEach(() => {
         mockOpen = jest.fn();
         mockSend = jest.fn();
         mockSetRequestHeader = jest.fn();
@@ -75,19 +76,19 @@ describe('Render Pages', () => {
 
 
         await act(async () => {
-          render(
-            <BrowserRouter>
-                <UserProvider>
-                    <Profile />
-                </UserProvider>
-            </BrowserRouter>
-          );
+            render(
+                <BrowserRouter>
+                    <UserProvider>
+                        <Profile/>
+                    </UserProvider>
+                </BrowserRouter>
+            );
         });
 
         await waitFor(() => {
             const allNameElements = screen.getAllByText(new RegExp(mockUser.name, 'i'));
             allNameElements.forEach((element) => {
-              expect(element).toBeInTheDocument();
+                expect(element).toBeInTheDocument();
             });
         });
     });
@@ -97,16 +98,18 @@ describe('Render Pages', () => {
         getAllUserPosts.mockResolvedValue([mockPost]);
 
         await act(async () => {
-          render(
-            <BrowserRouter>
-                <UserProvider>
-                    <Home />
-                </UserProvider>
-            </BrowserRouter>
-          );
+            render(
+                <BrowserRouter>
+                    <UserProvider>
+                        <Home/>
+                    </UserProvider>
+                </BrowserRouter>
+            );
         });
 
-        await waitFor(() => {expect(screen.getByTestId('home-feed')).toBeInTheDocument();});
+        await waitFor(() => {
+            expect(screen.getByTestId('home-feed')).toBeInTheDocument();
+        });
 
     });
 
@@ -115,10 +118,12 @@ describe('Render Pages', () => {
         getAllUserPosts.mockResolvedValue([mockPost]);
 
         await act(async () => {
-            render(<App />);
+            render(<App/>);
         });
 
-        await waitFor(() => {expect(screen.getByTestId('home-feed')).toBeInTheDocument(); });
+        await waitFor(() => {
+            expect(screen.getByTestId('home-feed')).toBeInTheDocument();
+        });
     });
 });
 

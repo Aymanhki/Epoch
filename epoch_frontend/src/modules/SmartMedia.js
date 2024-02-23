@@ -13,7 +13,7 @@ const SmartMedia = ({file, fileUrl, file_type, file_name}) => {
             } else {
                 return 'unsupported';
             }
-        } else if (fileUrl) {
+        } else if (fileUrl && file_type !== undefined && file_type !== null) {
             if (file_type.startsWith('image/')) {
                 return 'image';
             } else if (file_type.startsWith('video/')) {
@@ -23,6 +23,8 @@ const SmartMedia = ({file, fileUrl, file_type, file_name}) => {
             } else {
                 return 'unsupported';
             }
+        } else {
+            return 'unsupported';
         }
     };
 
