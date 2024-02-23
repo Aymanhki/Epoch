@@ -24,6 +24,7 @@ function Router() {
                 <Route path="/epoch/home" element={<Home />} />
                 <Route path="/epoch/:username" element={<Profile />} />
                 <Route path="/epoch/userlist" element={<Userlist/>} />
+                <Route path="/epoch/search" element={<Userlist/>} />
 
                 {/* Catch-all route for 404 */}
                 <Route path="*" element={<NotFound />} />
