@@ -15,7 +15,6 @@ class services:
     @staticmethod
     def get_media_persistence():
         return epoch_media_persistence()
-    
     @staticmethod
     def get_post_persistence():
         return epoch_post_persistence()

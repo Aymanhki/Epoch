@@ -3,21 +3,17 @@ from ...objects.post import post
 
 class post_persistence(ABC):
     @abstractmethod
-    def create_post(self, post_id: int, user_id: int, body: str, release_at: str):
+    def add_post(self, new_post: post):
         pass
 
     @abstractmethod
-    def get_post_by_post_id(self, post_id: int):
+    def remove_post(self, post_id: int):
         pass
 
     @abstractmethod
-    def get_posts_by_user_id(self, user_id: int):
+    def get_post(self, post_id: int):
         pass
 
     @abstractmethod
-    def update_post_media(self, post_id: int, media: int):
-        pass
-
-    @abstractmethod
-    def update_post_body(self, post_id: int, body: str):
+    def get_all_user_posts(self, user_id: int):
         pass

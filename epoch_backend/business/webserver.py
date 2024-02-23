@@ -5,7 +5,7 @@ import ssl
 from .utils import send_response, get_privkey_cert_path, get_fullchain_cert_path
 from .api_endpoints.router import handle_routing
 from .api_endpoints.user_endpoints import upload_profile_pic
-
+from .api_endpoints.post_endpoints import new_post
 
 class webserver:
     def __init__(self, host='0.0.0.0', port=8080):
@@ -59,17 +59,12 @@ class webserver:
             print(f"Connected by {addr}")
             conn.settimeout(None)
             request_data = conn.recv(1024)
-            print(f"Heard:\n{request_data}\n")
-
-            if request_data.startswith(b"POST /api/upload/profile/1/"):
-                upload_profile_pic(conn, request_data)
-            else:
-                request_data = request_data.decode('UTF-8')
-                request_lines = request_data.split('\r\n')
-                request_line = request_lines[0]
-                method, relative_path, _ = request_line.split(' ')
-
-                handle_routing(relative_path, request_data, conn, method)
+            print(f"Heard:\n{request_data[:1000]}\n")
+            request_data = request_data.decode('UTF-8')
+            request_lines = request_data.split('\r\n')
+            request_line = request_lines[0]
+            method, relative_path, _ = request_line.split(' ')
+            handle_routing(relative_path, request_data, conn, method)
 
         except Exception as e:
             print(f"Error handling request from {addr}: {e}")

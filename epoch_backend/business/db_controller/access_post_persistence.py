@@ -6,17 +6,14 @@ class access_post_persistence(post_persistence):
     def __init__(self):
         self.post_persistence = services.get_post_persistence()
 
-    def create_post(self, post_id: int, user_id: int, body: str, release_at: str):
-        return self.create_post(post_id, user_id, body, release_at)
+    def add_post(self, new_post: post):
+        return self.post_persistence.add_post(new_post)
 
-    def get_post_by_post_id(self, post_id: int):
-        return self.get_post_by_post_id(post_id)
+    def remove_post(self, post_id: int):
+        self.post_persistence.remove_post(post_id)
 
-    def get_posts_by_user_id(self, user_id: int):
-        return self.get_posts_by_user_id(user_id)
+    def get_post(self, post_id: int):
+        return self.post_persistence.get_post(post_id)
 
-    def update_post_media(self, post_id: int, media: int):
-        return self.update_post_media(post_id, media)
-
-    def update_post_body(self, post_id: int, body: str):
-        return self.update_post_body(post_id, body)
+    def get_all_user_posts(self, user_id: int):
+        return self.post_persistence.get_all_user_posts(user_id)

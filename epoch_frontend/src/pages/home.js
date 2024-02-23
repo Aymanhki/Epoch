@@ -6,6 +6,7 @@ import NavBar from "../modules/NavBar";import {useRef} from "react";
 import {useNavigate} from "react-router-dom";
 import Feed from "../modules/Feed";
 import { UserContext } from '../services/UserContext';
+import '../styles/Home.css';
 
 
 function Home() {
@@ -15,6 +16,7 @@ function Home() {
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
     const { updateUser } = useContext(UserContext);
+    const [showNewPostPopup, setShowNewPostPopup] = useState(false);
 
 
     useEffect(() => {
@@ -52,29 +54,19 @@ function Home() {
 
   return (
     <div>
-      {<NavBar profilePic={user.profile_pic_data}/>}
+      {<NavBar profilePic={user.profile_pic_data } showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>}
 
       {isLoading ? (
         <Spinner />
       ) : (
         <>
-          <h1>Home Page</h1>
-          <h2>Hello {user.name}</h2>
-
-          {user.profile_pic_data && (
-            <img
-              src={user.profile_pic_data}
-              alt="Profile Pic"
-              style={{ maxWidth: "300px" }}
-            />
-          )}
-
-          <h2>Your user id is {user.id}</h2>
-          <h2>Your username is {user.username}</h2>
-          <h2>Your password is {user.password}</h2>
-          <h2>Your account was created at {user.created_at}</h2>
-          <h2>Your account bio is {user.bio}</h2>
-          <h2>Your account profile pic id is {user.profile_pic_id}</h2>
+            <div className="home-page-container">
+                <div className="home-feed-wrapper">
+                    <div className="home-feed" data-testid={"home-feed"} id={"home-feed"} >
+                        <Feed feedUsername={user.username} feedUserId={user.id} isInProfile={false} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>
+                    </div>
+                </div>
+            </div>
         </>
       )}
         {/*<Feed />*/}

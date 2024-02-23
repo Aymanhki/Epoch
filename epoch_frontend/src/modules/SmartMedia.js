@@ -1,33 +1,56 @@
 import React from 'react';
-import AudioPlayer from 'react-audio-player';
 import '../styles/PostPopup.css';
 
-const SmartMedia = ({src, type, className, ...otherProps}) => {
-    // Function to determine the media type based on the file type
+const SmartMedia = ({file, base64, file_type, file_name}) => {
     const getMediaType = () => {
-        if (type.startsWith('image/')) {
-            return 'image';
-        } else if (type.startsWith('video/')) {
-            return 'video';
-        } else if (type.startsWith('audio/')) {
-            return 'audio';
-        } else {
-            return 'unsupported';
+        if(file && file.type !== undefined && file.type !== null) {
+            if (file.type.startsWith('image/')) {
+                return 'image';
+            } else if (file.type.startsWith('video/')) {
+                return 'video';
+            } else if (file.type.startsWith('audio/')) {
+                return 'audio';
+            } else {
+                return 'unsupported';
+            }
+        } else if (base64) {
+            if (file_type.startsWith('image/')) {
+                return 'image';
+            } else if (file_type.startsWith('video/')) {
+                return 'video';
+            } else if (file_type.startsWith('audio/')) {
+                return 'audio';
+            } else {
+                return 'unsupported';
+            }
         }
     };
 
     const renderMediaElement = () => {
         const mediaType = getMediaType();
 
-        switch (mediaType) {
-            case 'image':
-                return <img src={src} alt="Media" className={'media-preview'} {...otherProps} />;
-            case 'video':
-                return <video src={src} controls className={'media-preview'} {...otherProps} />;
-            case 'audio':
-                return <video src={src} controls className={'media-preview'} {...otherProps} />;
-            default:
-                return <p>Unsupported media type</p>;
+        if(file && file.type !== undefined && file.type !== null) {
+            switch (mediaType) {
+                case 'image':
+                    return <img src={URL.createObjectURL(file)} className={'media-preview'}/>;
+                case 'video':
+                    return <video src={URL.createObjectURL(file)} controls className={'media-preview'}/>;
+                case 'audio':
+                    return <video src={URL.createObjectURL(file)} controls className={'media-preview'}/>;
+                default:
+                    return <p>Unsupported media type</p>;
+            }
+        } else if (base64) {
+            switch (mediaType) {
+                case 'image':
+                    return <img src={base64} className={'media-preview'}/>;
+                case 'video':
+                    return <video src={base64} controls className={'media-preview'}/>;
+                case 'audio':
+                    return <video src={base64} controls className={'media-preview'}/>;
+                default:
+                    return <p>Unsupported media type</p>;
+            }
         }
     };
 
