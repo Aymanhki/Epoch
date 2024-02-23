@@ -22,17 +22,7 @@ default_element_wait_timeout = 60
 session_id = None
 
 
-def terminate_processes_on_port(port):
-    try:
-        process = subprocess.Popen(['lsof', '-ti', f':{port}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = process.communicate()
-        process_ids = out.decode().split()
-
-        for pid in process_ids:
-            os.kill(int(pid), signal.SIGTERM)
-
-    except Exception as e:
-        print(f"Error terminating processes on port {port}: {e}")
+from epoch_backend.business.utils import terminate_processes_on_port
 
 
 def set_session_id(value: str):
