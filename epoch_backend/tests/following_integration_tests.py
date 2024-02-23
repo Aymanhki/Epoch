@@ -23,7 +23,7 @@ from epoch_backend.business.webserver import webserver
 from epoch_backend.business.utils import start_db_tables, get_google_credentials, terminate_processes_on_port
 
 
-class webserver_tests(unittest.TestCase):
+class following_integration_tests(unittest.TestCase):
     server_thread = None
     web_server = None
     username = str(uuid.uuid4())
@@ -47,6 +47,7 @@ class webserver_tests(unittest.TestCase):
     def tearDownClass(cls):
         cls.web_server.stop()
         cls.server_thread.join(timeout=SERVER_WAIT_TIME)
+        time.sleep(1)
 
     def set_session_id(self, value: str):
         global session_id
