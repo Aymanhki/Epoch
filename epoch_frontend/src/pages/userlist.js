@@ -84,7 +84,6 @@ function Userlist() {
 
     return (
         <>           
-        <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} /> 
             {isLoading ? <Spinner/>: (
                 <div className="user list">
                     <h1>List of all Epoch Users</h1>
