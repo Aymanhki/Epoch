@@ -118,10 +118,10 @@ function getUsernameInfo(username) {
                 if (xhr.status === 200) {
                     const userData = JSON.parse(xhr.responseText);
 
-                    if (userData.profile_pic_data) {
-                        const profilePicData = userData.profile_pic_data;
-                        userData.profile_pic_data = `data:image/png;base64,${profilePicData}`;
-                    }
+                    // if (userData.profile_pic_data) {
+                    //     const profilePicData = userData.profile_pic_data;
+                    //     userData.profile_pic_data = `data:image/png;base64,${profilePicData}`;
+                    // }
 
                     resolve(userData);
                 } else {
@@ -290,7 +290,6 @@ function deleteUser(userId) {
         xhr.send(JSON.stringify({userId: userId}));
     });
 }
-
 
 
 module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadProfilePic, registerUser, deleteUser, getUsernameInfo};

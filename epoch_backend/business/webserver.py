@@ -93,6 +93,7 @@ class webserver:
             self.cleanup_threads()
             self.active_threads.clear()
             self.server_socket.close()
+            self.server_socket.shutdown(socket.SHUT_RDWR)
             print("Server stopped.")
 
         except Exception as e:

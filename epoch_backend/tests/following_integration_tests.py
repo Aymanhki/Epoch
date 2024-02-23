@@ -22,7 +22,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
 
 from epoch_backend.business.webserver import webserver
-from epoch_backend.business.utils import start_db_tables, get_google_credentials
+from epoch_backend.business.utils import start_db_tables, get_google_credentials, terminate_processes_on_port
 
 def terminate_processes_on_port(port):
     try:
@@ -46,9 +46,9 @@ class following_integration_tests(unittest.TestCase):
     user_to_follow_id = None
 
     @classmethod
-    def setUpClass(cls):   
-        terminate_processes_on_port(3000)
+    def setUpClass(cls):
         terminate_processes_on_port(8080)
+        terminate_processes_on_port(3000)
         start_db_tables()
         get_google_credentials()
         cls.web_server = webserver()
