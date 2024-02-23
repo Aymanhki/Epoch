@@ -1,3 +1,5 @@
+import signal
+import subprocess
 import unittest
 import requests
 import uuid
@@ -20,8 +22,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
 
 from epoch_backend.business.webserver import webserver
-from epoch_backend.business.utils import start_db_tables, get_google_credentials
-
+from epoch_backend.business.utils import start_db_tables, get_google_credentials, terminate_processes_on_port
 
 class webserver_tests(unittest.TestCase):
     server_thread = None
@@ -33,6 +34,8 @@ class webserver_tests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        terminate_processes_on_port(3000)
+        terminate_processes_on_port(8080)
         start_db_tables()
         get_google_credentials()
         cls.web_server = webserver()
@@ -44,6 +47,8 @@ class webserver_tests(unittest.TestCase):
     def tearDownClass(cls):
         cls.web_server.stop()
         cls.server_thread.join(timeout=SERVER_WAIT_TIME)
+        terminate_processes_on_port(3000)
+        terminate_processes_on_port(8080)
         time.sleep(1)
 
     def set_session_id(self, value: str):
