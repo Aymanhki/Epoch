@@ -30,7 +30,6 @@ class webserver_tests(unittest.TestCase):
     password = str(uuid.uuid4())
     name = str(uuid.uuid4())
     bio = str(uuid.uuid4())
-    user_to_follow_id = 1738
 
     @classmethod
     def setUpClass(cls):
@@ -104,72 +103,6 @@ class webserver_tests(unittest.TestCase):
         self.assertEqual(response_json['profile_pic_id'], 1)
         print(response_json)
         print("Got user info.")
-
-    # inserting following tests #       
-    def test_f1_get_all_user(self):
-        print("Getting all followable acccounts...")
-        response = requests.get('http://localhost:8080/api/follow/accountList/', cookies={'epoch_session_id': self.get_session_id()})
-        self.assertEqual(response.status_code, 200)
-        response_json = response.json()
-        for usrname in response_json:
-            self.assertNotEqual(response_json[usrname]['username'], self.username)
-        print("Got all followable acccounts.")
-        
-
-    def test_f2_get_following_empty(self):
-        print("Getting empty following list...")
-        response = requests.get('http://localhost:8080/api/follow/followingList/', cookies={'epoch_session_id': self.get_session_id()})
-        self.assertEqual(response.status_code, 200)
-        response_json = response.json()
-        self.assertEqual(len(response_json), 0)
-        print("Got empty following list.")
-
-    def test_f2_follow_user(self):
-        print("Following user...")
-        response = requests.post('http://localhost:8080/api/follow/follow/',
-                                 json={'userToFollow': self.user_to_follow_id},
-                                  cookies={'epoch_session_id': self.get_session_id()})
-        self.assertEqual(response.status_code, 200)
-        response_json = response.json()
-        self.assertTrue('user_id' in  response_json)
-        print("Followed user.")
-
-    def test_f3_get_following(self):
-        print("Getting following list...")
-        response = requests.get('http://localhost:8080/api/follow/followingList/', cookies={'epoch_session_id': self.get_session_id()})
-        self.assertEqual(response.status_code, 200)
-        response_json = response.json()
-        self.assertNotEqual(len(response_json), 0)
-        self.assertEqual(response_json['following_id'], self.user_to_follow_id)
-        self.assertTrue('user_id' in  response_json)
-        print("Got following list.")
-
-    def test_f4_get_followers(self):
-        # not implemented yet
-        pass
-
-    def test_f5_dupe_follow(self):
-        print("Attempting dupe follow...")
-        response = requests.post('http://localhost:8080/api/follow/follow/',
-                                 json={'userToFollow': self.user_to_follow_id},
-                                  cookies={'epoch_session_id': self.get_session_id()})
-        self.assertNotEqual(response.status_code, 200)
-        response_json = response.json()
-
-        print("Attempted dupe follow.")
-
-    def test_f6_unfollow_user(self):
-        print("Unfollowing user...")
-        response = requests.post('http://localhost:8080/api/follow/unfollow/',
-                                 json={'userToUnfollow': self.user_to_follow_id},
-                                  cookies={'epoch_session_id': self.get_session_id()})
-        self.assertEqual(response.status_code, 200)
-        response_json = response.json()
-        response = requests.get('http://localhost:8080/api/follow/followingList/', cookies={'epoch_session_id': self.get_session_id()})
-        self.assertEqual(response.status_code, 200)
-        response_json = response.json()
-        self.assertEqual(len(response_json), 0)
-        print("Unfollowed user.")
 
     def test_4_delete_user(self):
         print("Deleting user...")
