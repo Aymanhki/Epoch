@@ -32,6 +32,7 @@ class webserver_tests(unittest.TestCase):
     password = str(uuid.uuid4())
     name = str(uuid.uuid4())
     bio = str(uuid.uuid4())
+    user_to_follow_id = None
 
     @classmethod
     def setUpClass(cls):
@@ -67,8 +68,16 @@ class webserver_tests(unittest.TestCase):
     def get_user_id(self):
         global user_id
         return user_id
+    
+    def set_follow_id(self, value: int):
+        global user_to_follow_id
+        user_to_follow_id = value
 
-    def test_0_register_user(self):
+    def get_follow_id(self):
+        global user_to_follow_id
+        return user_to_follow_id
+
+    def test_a_register_user(self):
         print("Registering user...")
         response = requests.post('http://localhost:8080/api/register/',
                                  json={'username': self.username, 'password': self.password, 'name': self.name,
@@ -80,14 +89,14 @@ class webserver_tests(unittest.TestCase):
         print(response_json)
         print("User registered.")
 
-    def test_1_register_existing_user(self):
+    def test_b_register_existing_user(self):
         print("Registering existing user...")
         response = requests.post('http://localhost:8080/api/register/', json={'username': self.username, 'password': self.password, 'name': self.name, 'bio': self.bio})
         self.assertEqual(response.status_code, 409)
         print(response.text)
         print("Existing user not registered.")
 
-    def test_2_login_request(self):
+    def test_c_login_request(self):
         print("Logging in...")
         response = requests.post('http://localhost:8080/api/login/',
                                  json={'username': self.username, 'password': self.password})
@@ -98,7 +107,7 @@ class webserver_tests(unittest.TestCase):
         print(self.get_session_id())
         print("Logged in.")
 
-    def test_3_get_user_info(self):
+    def test_d_get_user_info(self):
         print("Getting user info...")
         response = requests.get('http://localhost:8080/api/login/', cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
@@ -111,7 +120,7 @@ class webserver_tests(unittest.TestCase):
         print(response_json)
         print("Got user info.")
 
-    def test_f1_get_all_user(self):
+    def test_e_get_all_user(self):
         print("Getting all followable acccounts...")
         response = requests.get('http://localhost:8080/api/follow/accountList/', cookies={'epoch_session_id': self.get_session_id()})
         print("response:", response)
@@ -126,7 +135,7 @@ class webserver_tests(unittest.TestCase):
             self.assertTrue(False)
         
 
-    def test_f2_get_following_empty(self):
+    def test_f_get_following_empty(self):
         print("Getting empty following list...")
         response = requests.get('http://localhost:8080/api/follow/followingList/', cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
@@ -134,7 +143,7 @@ class webserver_tests(unittest.TestCase):
         self.assertEqual(len(response_json), 0)
         print("Got empty following list.")
 
-    def test_f3_follow_user(self):
+    def test_g_follow_user(self):
         print("Following user...")
         response = requests.post('http://localhost:8080/api/follow/follow/',
                                  json={'userToFollow': self.get_follow_id()},
@@ -144,8 +153,9 @@ class webserver_tests(unittest.TestCase):
         self.assertTrue('user_id' in  response_json)
         print("Followed user.")
 
-    def test_f4_get_following(self):
+    def test_h_get_following(self):
         print("Getting following list...")
+
         response = requests.get('http://localhost:8080/api/follow/followingList/', cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
         response_json = response.json()
@@ -154,11 +164,11 @@ class webserver_tests(unittest.TestCase):
         self.assertFalse('user_id' in  response_json)
         print("Got following list.")
 
-    def test_f5_get_followers(self):
+    def test_i_get_followers(self):
         # not implemented yet
         pass
 
-    def test_f6_dupe_follow(self):
+    def test_j_dupe_follow(self):
         print("Attempting dupe follow...")
         response = requests.post('http://localhost:8080/api/follow/follow/',
                                  json={'userToFollow': self.user_to_follow_id},
@@ -166,7 +176,7 @@ class webserver_tests(unittest.TestCase):
         self.assertNotEqual(response.status_code, 200)
         print("Attempted dupe follow.")
 
-    def test_f7_unfollow_user(self):
+    def test_k_unfollow_user(self):
         print("Unfollowing user...")
         response = requests.post('http://localhost:8080/api/follow/unfollow/',
                                  json={'userToUnfollow': self.get_follow_id()},
@@ -179,14 +189,14 @@ class webserver_tests(unittest.TestCase):
         self.assertEqual(len(response_json), 0)
         print("Unfollowed user.")
 
-    def test_4_delete_user(self):
+    def test_l_delete_user(self):
         print("Deleting user...")
         response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()},
                                    cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
         print("User deleted.")
 
-    def test_5_login_nonexistent_user(self):
+    def test_m_login_nonexistent_user(self):
         print("Logging in nonexistent user...")
         response = requests.post('http://localhost:8080/api/login/',
                                  json={'username': self.username, 'password': self.password})
@@ -194,14 +204,14 @@ class webserver_tests(unittest.TestCase):
         print(response.text)
         print("Nonexistent user not logged in.")
 
-    def test_6_get_user_info_nonexistent_user(self):
+    def test_n_get_user_info_nonexistent_user(self):
         print("Getting info for nonexistent user...")
         response = requests.get('http://localhost:8080/api/login/', cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 401)
         print(response.text)
         print("Got no info for nonexistent user.")
 
-    def test_7_delete_nonexistent_user(self):
+    def test_o_delete_nonexistent_user(self):
         print("Deleting nonexistent user...")
         response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()},
                                    cookies={'epoch_session_id': self.get_session_id()})
@@ -209,7 +219,7 @@ class webserver_tests(unittest.TestCase):
         print(response.text)
         print("Nonexistent user not deleted.")
 
-    def test_8_register_user_with_picture(self):
+    def test_p_register_user_with_picture(self):
         print("Registering user with picture...")
         response = requests.post('http://localhost:8080/api/register/', json={'username': self.username, 'password': self.password, 'name': self.name, 'bio': self.bio})
         self.assertEqual(response.status_code, 200)
@@ -302,7 +312,7 @@ class webserver_tests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         print(f"User {i} deleted.")
 
-    def test_9_load_test(self):
+    def test_q_load_test(self):
         usernames = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
         passwords = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
         names = [ str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE) ]
