@@ -23,7 +23,7 @@ from epoch_backend.business.webserver import webserver
 from epoch_backend.business.utils import start_db_tables, get_google_credentials
 
 
-class webserver_tests(unittest.TestCase):
+class following_integration_tests(unittest.TestCase):
     server_thread = None
     web_server = None
     username = str(uuid.uuid4())
