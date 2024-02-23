@@ -24,18 +24,6 @@ os.chdir(script_dir)
 from epoch_backend.business.webserver import webserver
 from epoch_backend.business.utils import start_db_tables, get_google_credentials, terminate_processes_on_port
 
-def terminate_processes_on_port(port):
-    try:
-        process = subprocess.Popen(['lsof', '-ti', f':{port}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = process.communicate()
-        process_ids = out.decode().split()
-
-        for pid in process_ids:
-            os.kill(int(pid), signal.SIGTERM)
-
-    except Exception as e:
-        print(f"Error terminating processes on port {port}: {e}")
-
 class following_integration_tests(unittest.TestCase):
     server_thread = None
     web_server = None
