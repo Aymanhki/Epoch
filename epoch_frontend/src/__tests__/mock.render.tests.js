@@ -25,6 +25,13 @@ const mockUser = {
   created_at: "2022-01-01",
   bio: "This is a test user",
   profile_pic_id: "456",
+  profile_picture_type: "test",
+  profile_picture_name: "test",
+  profile_picture_data: "test",
+  profile_pic_type: "test",
+  profile_pic_name: "test",
+  profile_pic_data: "test",
+  profile_pic: "test"
 };
 
 const mockPost = {
