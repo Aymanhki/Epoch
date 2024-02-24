@@ -23,6 +23,8 @@ session_id = None
 
 
 from epoch_backend.business.utils import terminate_processes_on_port
+from selenium.webdriver.support import expected_conditions as EC
+
 
 
 def set_session_id(value: str):
@@ -93,7 +95,9 @@ class integration_tests(unittest.TestCase):
         profile_pic = driver.find_element(By.ID, "profilePic")
         profile_pic.send_keys(os.path.abspath('test.jpg'))
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: driver.find_element(By.CSS_SELECTOR, ".profile-pic-upload img").get_attribute("src") != "default_image_src")
-        register = driver.find_element(By.ID, "register-button")
+        register = WebDriverWait(driver, default_element_wait_timeout).until(
+            EC.element_to_be_clickable((By.ID, "register-button"))
+        )
         register.click()
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: driver.get_cookie("epoch_session_id") is not None)
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: self.name in driver.page_source)
@@ -107,7 +111,9 @@ class integration_tests(unittest.TestCase):
         username.send_keys(self.username)
         password = driver.find_element(By.NAME, "password")
         password.send_keys(self.password)
-        login = driver.find_element(By.ID, "login-button")
+        login = WebDriverWait(driver, default_element_wait_timeout).until(
+            EC.element_to_be_clickable((By.ID, "login-button"))
+        )
         login.click()
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: driver.get_cookie("epoch_session_id") is not None)
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
