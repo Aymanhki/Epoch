@@ -45,3 +45,11 @@
 .popup-content p {
     text-align: center;
 }
+.container {
+    display: flex;
+    align-items: center;
+  }
+
+.profile-pic {
+    position:inherit;
+}

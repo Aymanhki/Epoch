@@ -118,7 +118,7 @@ function Profile() {
                         </div>
                         
                     </div>
-                    {showEditProfilePopup && <EditProfilePopup userInfo={userInfo} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
+                    {showEditProfilePopup && <EditProfilePopup user={user} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
                 </div>
             )}
         </>

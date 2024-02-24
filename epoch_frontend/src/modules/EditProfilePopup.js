@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { updateUser } from '../services/user';
 import '../styles/EditProfilePopup.css';
 
-function EditProfilePopup({ onClose, userInfo }) {
-    // State variables to manage form data
+function EditProfilePopup({ onClose, user }) {
+    const [isUsernameEditing, setIsUsernameEditing] = useState(false);
+    const [isDisplaynameEditing, setIsDisplaynameEditing] = useState(false);
+    const [isBioEditing, setIsBioEditing] = useState(false);
     const [formData, setFormData] = useState({
-        username: userInfo.username,
-        displayname: userInfo.name,
-        bio: userInfo.bio
+        username: user.username,
+        displayname: user.name,
+        bio: user.bio
     });
-
+    
     // Handler to update form data
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -19,17 +21,36 @@ function EditProfilePopup({ onClose, userInfo }) {
         });
     };
 
+    const handleEditClick = (fieldName) => {
+        if (fieldName === 'username') {
+            setIsUsernameEditing(!isUsernameEditing);
+        } else if (fieldName === 'bio') {
+            setIsBioEditing(!isBioEditing);
+        } else if (fieldName == 'displayname')
+            setIsDisplaynameEditing(!isDisplaynameEditing)
+    };
+
     // Handler to submit form data
     const handleSubmit = (e) => {
         e.preventDefault();
         // Implement logic to submit updated data
         const newData = {
-            userID: userInfo.id,
+            userID: user.id,
             username: formData.username,
             displayname: formData.displayname,
-            bio: formData.bio
+            bio: formData.bio,
+            password: user.password,
+            created_at: user.created_at,
+            profile_pic_id:  user.profile_pic_id,
+            background_pic_id: 1
         };
-        updateUser(userInfo.id, newData)
+        updateUser(user.id, newData)
+            .then(resolve => {
+                onClose();
+            })
+            .catch(error => {
+                console.log(error)
+            })
         onClose(); // Close the popup after submitting
     };
     
@@ -37,19 +58,42 @@ function EditProfilePopup({ onClose, userInfo }) {
         <div className="popup-overlay">
             <div className="popup-content">
                 <button className="close-button" onClick={onClose}>Close</button>
-                <h1>Edit Profile ID {userInfo.id}</h1>
+                <h1>Edit {user.username} Profile ID {user.id}</h1>
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
+                    <div>
                         <label htmlFor="username">Username:</label>
-                        <input type="text" id="username" name="username" value={formData.username} onChange={handleInputChange} />
+                        {isUsernameEditing ? (
+                            <input type="text" id="username" name="username" value={formData.username} onChange={handleInputChange} />
+                        ) : (
+                            <div>{formData.username}</div>
+                        )}
+                        <button type="button" onClick={() => handleEditClick('username')}>
+                            {isUsernameEditing ? 'Save' : 'Edit'}
+                        </button>
+                        
                     </div>
-                    <div className="form-group">
-                    <label htmlFor="displayname">Display Name:</label>
-                        <input type="text" id="displayname" name="displayname" value={formData.displayname} onChange={handleInputChange} />
+                    <div>
+                        <label htmlFor="displayname">Display Name:</label>
+                        {isDisplaynameEditing ? (
+                            <input type="text" id="displayname" name="displayname" value={formData.displayname} onChange={handleInputChange} />
+                        ) : (
+                            <div>{formData.displayname}</div>
+                        )}
+                        <button type="button" onClick={() => handleEditClick('displayname')}>
+                            {isUsernameEditing ? 'Save' : 'Edit'}
+                        </button>   
                     </div>
-                    <div className="form-group">
+                    <div>
                         <label htmlFor="bio">Bio:</label>
-                        <textarea id="bio" name="bio" value={formData.bio} onChange={handleInputChange} />
+                        {isBioEditing ? (
+                            <textarea id="bio" name="bio" value={formData.bio} onChange={handleInputChange} />
+                        ) : (
+                            <div>{formData.bio}</div>
+                        )}
+                        <button type="button" onClick={() => handleEditClick('bio')}>
+                            {isUsernameEditing ? 'Save' : 'Edit'}
+                        </button> 
+                        
                     </div>
                     <button type="submit">Save</button>
                 </form>

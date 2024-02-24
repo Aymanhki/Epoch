@@ -292,9 +292,6 @@ function deleteUser(userId) {
 }
 
 function updateUser(userId, newUserInfo){
-    /*
-    
-    */
    return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
@@ -307,7 +304,7 @@ function updateUser(userId, newUserInfo){
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-
+                    resolve(true)
                 } else {
                     if (xhr.status !== 0) {
                         reject(xhr.statusText);

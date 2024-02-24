@@ -18,9 +18,10 @@ class access_user_persistence(user_persistence):
     def remove_user(self, username: str):
         self.user_persistence.remove_user(username)
 
-    def update_user(self, user_to_update: user, updated_data: dict):
+    def update_user(self, id_to_update: int, data):
         #TODO make this update the persistent data
-        user_to_update.set_bio(updated_data['bio'])
+        self.user_persistence.update_user(id_to_update, data)
+
 
     def get_all_users(self, user_id: int):
         return self.user_persistence.get_all_users(user_id)
