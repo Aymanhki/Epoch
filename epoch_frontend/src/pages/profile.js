@@ -4,6 +4,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import { useParams } from 'react-router-dom';
 import {NotFound} from "./notFound";
 import NavBar from "../modules/NavBar";
+import {redirect, useNavigate} from "react-router-dom";
 import { Spinner } from "../modules/Spinner";
 import {UserContext} from "../services/UserContext";
 import '../styles/Profile.css'
@@ -11,8 +12,6 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import Feed from "../modules/Feed";
 import EditProfilePopup from '../modules/EditProfilePopup';
 import PostPopup from "../modules/PostPopup";
-import {useNavigate} from "react-router-dom";
-
 
 function Profile() {
     const { username } = useParams();
