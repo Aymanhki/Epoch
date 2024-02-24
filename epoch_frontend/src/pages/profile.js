@@ -1,8 +1,7 @@
 import {getUserInfo, getUsernameInfo} from '../services/user';
 import {getFollowingList, unfollowAccount, followAccount } from '../services/following';
 import React, {useState, useEffect, useContext} from 'react';
-import { useParams, Navigate } from 'react-router-dom';
-import {useNavigate} from "react-router-dom";
+import { useParams } from 'react-router-dom';
 import {NotFound} from "./notFound";
 import NavBar from "../modules/NavBar";
 import { Spinner } from "../modules/Spinner";
@@ -19,7 +18,6 @@ function Profile() {
     const [userInfo, setUserInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [userNotFound, setUserNotFound] = useState(false);
-    const navigate = useNavigate();
     const { user } = useContext(UserContext);
     const { updateUser } = useContext(UserContext);
     const [isCurrentUser, setIsCurrentUser] = useState(false);
@@ -86,7 +84,7 @@ function Profile() {
             getFollowingList()
                 .then(data=>{
                     for (var i in data){
-                        if (data[i].following_id == viewedId){
+                        if (data[i].following_id === viewedId){
                             setIsFollowing(true);
                             setIsFollowingPrompt('Unfollow');
                         }
