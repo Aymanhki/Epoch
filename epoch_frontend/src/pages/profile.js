@@ -66,7 +66,7 @@ function Profile() {
             setIsCurrentUser(true);
             setIsLoading(false);
         }
-        else
+        else if(username !== "profile")
         {
             setIsLoading(true);
             getUsernameInfo(username)
