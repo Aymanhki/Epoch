@@ -95,6 +95,28 @@ function getFollowingList() {
 
 }
 
+async function fillUserList() {
+    var users = await getAccountList();
+    var following = await getFollowingList();
+
+    for (var i in users) {
+        users[i].isFollowing = false;
+    }
+    for (var k in following) {
+        for (var j in users) {
+            if (users[j].user_id === following[k].following_id){
+                users[j].isFollowing = true;
+            }
+        }
+    }
+    if(users.length>0){
+        users.sort(function(a,b){
+            return b.isFollowing - a.isFollowing;
+        });
+    }
+    return users;
+}
+
 function followAccount(target) {
     const session_id = getCookie('epoch_session_id');
     if (!session_id) {
@@ -111,4 +133,4 @@ function unfollowAccount(target) {
 
 }
 
-module.exports = {getAccountList, getFollowingList, followAccount, unfollowAccount}
+module.exports = {followAccount, unfollowAccount, fillUserList}
