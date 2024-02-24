@@ -18,8 +18,10 @@ class access_user_persistence(user_persistence):
     def remove_user(self, username: str):
         self.user_persistence.remove_user(username)
 
-    def update_user(self, user_to_update: user):
-        pass
+    def update_user(self, id_to_update: int, data):
+        #TODO make this update the persistent data
+        self.user_persistence.update_user(id_to_update, data)
+
 
     def get_all_users(self, user_id: int):
         return self.user_persistence.get_all_users(user_id)
@@ -50,14 +52,6 @@ class access_user_persistence(user_persistence):
     
     def unfollow_user(self, user_id: int, following_id: int):
         return self.user_persistence.unfollow_user(user_id, following_id)
-
-    def get_user_fake(self, username: str):
-        #REMOVE THIS AFTER THE SERVER GOES BACK UP
-        return {
-            'username': 'aUser',
-            'user_id': '1001',
-            'bio': 'this is my bio',
-        }
 
     def get_followers(self, user_id: int):
         return self.user_persistence.get_followers(user_id)
