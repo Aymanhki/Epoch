@@ -78,14 +78,4 @@ function Userlist() {
         </>
     );
 }
-/* this is just slow and ugly and doesnt update properly 
-                                <div>
-                                {account.isFollowing ? <button type="button" onClick = {
-                                        unfollow.bind(this, account.user_id)
-                                    }>unfollow</button> : <button type="button" onClick = {
-                                        follow.bind(this, account.user_id)
-                                    }>follow</button>}
-
-                                </div>
-*/
 export default Userlist;
