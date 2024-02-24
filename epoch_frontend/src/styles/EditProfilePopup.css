@@ -1,4 +1,4 @@
-.popup-overlay {
+.edit-popup-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,7 +11,7 @@
     font-family: 'Futura', sans-serif;
 }
 
-.popup-content {
+.edit-popup-content {
     background-color: black;
     padding: 20px;
     border-radius: 8px;
@@ -31,8 +31,8 @@
     color: gray;
 }
 
-.popup-content input[type="text"],
-.popup-content textarea {
+.edit-popup-content input[type="text"],
+.edit-popup-content textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -42,13 +42,15 @@
     font-size: 16px;
     resize: none; 
 }
-.popup-content p {
+
+.edit-popup-content p {
     text-align: center;
 }
-.container {
-    display: flex;
-    align-items: center;
-  }
+
+/*.container {*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*  }*/
 
 .profile-pic {
     position:inherit;

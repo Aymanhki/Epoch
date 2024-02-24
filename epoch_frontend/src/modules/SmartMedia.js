@@ -36,7 +36,7 @@ const SmartMedia = ({file, fileUrl, file_type, file_name}) => {
                 case 'image':
                     return <img src={URL.createObjectURL(file)} className={'media-preview'}/>;
                 case 'video':
-                    return <video src={URL.createObjectURL(file)} controls className={'media-preview'}/>;
+                    return <video src={URL.createObjectURL(file)} typeof={file.type} controls className={'media-preview'}/>;
                 case 'audio':
                     return <video src={URL.createObjectURL(file)} controls className={'media-preview'}/>;
                 default:
@@ -47,7 +47,7 @@ const SmartMedia = ({file, fileUrl, file_type, file_name}) => {
                 case 'image':
                     return <img src={fileUrl} className={'media-preview'}/>;
                 case 'video':
-                    return <video src={fileUrl} controls className={'media-preview'}/>;
+                    return <video src={fileUrl} controls type={file_type} className={'media-preview'} />
                 case 'audio':
                     return <video src={fileUrl} controls className={'media-preview'}/>;
                 default:
