@@ -12,12 +12,8 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import Feed from "../modules/Feed";
 import EditProfilePopup from '../modules/EditProfilePopup';
 import PostPopup from "../modules/PostPopup";
-import {useNavigate} from "react-router-dom";
-
-
 
 function Profile() {
-    const navigate = useNavigate();
     const { username } = useParams();
     const [userInfo, setUserInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);

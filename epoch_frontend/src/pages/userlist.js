@@ -1,11 +1,11 @@
 import { followAccount, unfollowAccount } from "../services/following";
 import { fillUserList } from "../services/new_following";
 import React, {useState, useEffect, useContext} from 'react';
-import {redirect, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {Spinner} from '../modules/Spinner'
 import NavBar from "../modules/NavBar";
 import {UserContext} from "../services/UserContext";
-import {getUserInfo,getUsernameInfo} from "../services/user";
+import {getUserInfo} from "../services/user";
 import { TextField } from "@mui/material";
 
 function Userlist() {
@@ -81,7 +81,7 @@ function Userlist() {
             console.error("Error fetching following list:", error);
             navigate('/epoch/profile/');
         });
-    },[setUserList, navigate]);
+    },[setUserList, navigate, updateUser, user]);
 
     useEffect(() => {
         changeStatus(false);
@@ -103,13 +103,13 @@ function Userlist() {
         }
         console.log(filteredList);
         changeStatus(!changedStatus);
-    },[searchInput]);
+    },[searchInput, changedStatus, filteredList, userList]);
 
     useEffect(() => {
         if(!user){
-            navigate('/epoch/profile/');
+            navigate('/epoch/home/');
         }
-    },[redirect]);
+    },[user, navigate,]);
 
     return (
         <>
