@@ -4,6 +4,7 @@ import {Spinner} from '../modules/Spinner'
 import {useNavigate} from "react-router-dom";
 import NavBar from "../modules/NavBar";
 import {UserContext} from "../services/UserContext";
+import {getUserInfo} from "../services/user";
 
 
 function Userlist() {
@@ -12,6 +13,7 @@ function Userlist() {
     const [userList, setUserList] = useState({});
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
     const { user } = useContext(UserContext);
+    const { updateUser } = useContext(UserContext);
     const navigate = useNavigate();
 
     function follow(target) {
@@ -27,7 +29,6 @@ function Userlist() {
     }
 
     //on load get these lists from backend
-    
     useEffect(()=>{
         (async ()=>{
             setIsLoading(true);
@@ -35,6 +36,24 @@ function Userlist() {
             setIsLoading(false);
         })();
     }, []);
+
+    useEffect(() => {
+        if (!user) {
+             setIsLoading(true);
+            getUserInfo()
+                .then(data => {
+                        updateUser(data);
+                        setIsLoading(false);
+                })
+                .catch(error => {
+                        setIsLoading(false);
+                        updateUser(null);
+                });
+             setIsLoading(false);
+        }
+
+        setIsLoading(false);
+    }, [setIsLoading, updateUser, user]);
 
     const fetchData = async () => {
         try{
@@ -57,6 +76,10 @@ function Userlist() {
             console.error('Error fetching data ... returning to profile page: ', error);
             navigate('/epoch/profile');
         }
+    }
+
+    if(!user) {
+        return <Spinner />
     }
     
 /*
@@ -105,7 +128,7 @@ function Userlist() {
 */
     return (
         <div>
-            <NavBar profilePic={user.profile_pic_data} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
+            <NavBar profilePic={user.profile_pic_data } profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
             {isLoading && followingIds ? <Spinner/>: (
                 <>
                     <h1>List of all Epoch Users</h1>

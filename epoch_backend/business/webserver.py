@@ -68,7 +68,8 @@ class webserver:
 
         except Exception as e:
             print(f"Error handling request from {addr}: {e}")
-            send_response(conn, 500, "Internal Server Error", body=b"<h1>500 Internal Server Error</h1>")
+            reason_phrase = f"Error handling request: {e}"
+            send_response(conn, 500, reason_phrase, body=b"<h1>500 Internal Server Error</h1>")
 
     def cleanup_threads(self):
         with self.thread_lock:
