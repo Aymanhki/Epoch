@@ -291,5 +291,47 @@ function deleteUser(userId) {
     });
 }
 
+function updateUser(userId, newUserInfo){
+   return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        xhr.open('POST', `${serverUrl}/api/user/`, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.withCredentials = true;
+        xhr.timeout = 10000;
 
-module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadProfilePic, registerUser, deleteUser, getUsernameInfo};
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    resolve(true)
+                } else {
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
+                }
+            }
+        };
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
+        const toSend = JSON.stringify(newUserInfo);
+        xhr.send(toSend);
+    });
+}
+
+
+
+module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadProfilePic, registerUser, deleteUser, getUsernameInfo, updateUser};

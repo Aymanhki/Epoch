@@ -64,8 +64,14 @@ class epoch_user_persistence(user_persistence):
         connection.close()
         # im thinking this should update follower/following tables to remove user from there also 
 
-    def update_user(self, user_to_update: user):
-        pass
+    def update_user(self, id_to_update: int, data):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        print(data)
+        cursor.execute(f"UPDATE users SET name = '{data.name}', username = '{data.username}', password = '{data.password}', bio = '{data.bio}', profile_pic = '{data.profile_pic_id}', background_pic = NULL WHERE user_id = {id_to_update}")
+        connection.commit()
+        cursor.close()
+        connection.close()
 
     def get_all_users(self, user_id: int):
         connection = get_db_connection()

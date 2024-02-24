@@ -5,6 +5,7 @@ import {Spinner} from '../modules/Spinner'
 import {useNavigate} from "react-router-dom";
 import NavBar from "../modules/NavBar";
 import {UserContext} from "../services/UserContext";
+import {getUserInfo} from "../services/user";
 
 function Userlist() {
     const [isLoading, setIsLoading] = useState(false);
@@ -12,6 +13,7 @@ function Userlist() {
     const [userList, setUserList] = useState({});
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
     const { user } = useContext(UserContext);
+    const { updateUser } = useContext(UserContext);
     const navigate = useNavigate();
 
     function follow(target) {
@@ -32,11 +34,60 @@ function Userlist() {
         for (var i in userList) {
             if (userList[i].user_id === target) {
                 userList.isFollowing = false;
+        window.location.reload(true);
+    }
+
+    //on load get these lists from backend
+    useEffect(()=>{
+        (async ()=>{
+            setIsLoading(true);
+            await fetchData();
+            setIsLoading(false);
+        })();
+    }, []);
+
+    useEffect(() => {
+        if (!user) {
+             setIsLoading(true);
+            getUserInfo()
+                .then(data => {
+                        updateUser(data);
+                        setIsLoading(false);
+                })
+                .catch(error => {
+                        setIsLoading(false);
+                        updateUser(null);
+                });
+             setIsLoading(false);
+        }
+
+        setIsLoading(false);
+    }, [setIsLoading, updateUser, user]);
+
+    const fetchData = async () => {
+        try{
+            var user_data = await getAccountList();
+            var following_data = await getFollowingList();
+            let temp = user_data;
+
+            for(var i in following_data){
+                for(var j in user_data){
+                    if(following_data[i].following_id === temp[j].user_id){
+                        following_data[i].username = temp[j].username;
+                        user_data.splice(j,1);
+                    }
+                }
             }
         }
     }
 
     useEffect(() => { // get user list
+    if(!user) {
+        return <Spinner />
+    }
+    
+/*
+    useEffect(()=>{
         setIsLoading(true);
         getAccountList()
         .then(data=>{
@@ -83,9 +134,10 @@ function Userlist() {
     },[ setFollowingList, setIsLoading, navigate, userList]);
 
     return (
-        <>           
-            {isLoading ? <Spinner/>: (
-                <div className="user list">
+        <div>
+            <NavBar profilePic={user.profile_pic_data } profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
+            {isLoading && followingIds ? <Spinner/>: (
+                <>
                     <h1>List of all Epoch Users</h1>
                     <ul>
                         {userList && userList.map && userList.map(account =>

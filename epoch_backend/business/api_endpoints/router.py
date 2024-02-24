@@ -3,7 +3,7 @@ import os
 
 from ..api_endpoints.following_endpoints import follow_user, get_account_list, get_following_list, unfollow_user
 from ..utils import get_cors_headers, get_origin_from_headers, send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
-from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, get_user_from_name, upload_profile_pic
+from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, get_user_from_name, upload_profile_pic, update_user_info
 from ..db_controller.access_user_persistence import access_user_persistence
 from ..db_controller.access_session_persistence import access_session_persistence
 from ..api_endpoints.post_endpoints import new_post, get_all_user_posts
@@ -82,6 +82,8 @@ def handle_api_request(method, path, request_data, conn):
     elif path == "/api/user/":
         if method == "GET":
             get_user_from_name(conn, request_data)
+        elif method == "POST":
+            update_user_info(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 

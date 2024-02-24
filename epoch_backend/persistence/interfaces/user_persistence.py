@@ -19,7 +19,7 @@ class user_persistence(ABC):
         pass
 
     @abstractmethod
-    def update_user(self, user_to_update: user):
+    def update_user(self, id_to_update: int, data):
         pass
 
     @abstractmethod

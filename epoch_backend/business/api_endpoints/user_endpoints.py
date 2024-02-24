@@ -244,3 +244,27 @@ def delete_by_username(conn, request_data):
         send_response(conn, 200, "OK", body=b"<h1>200 OK</h1>", headers=get_cors_headers(origin))
     else:
         send_response(conn, 404, "Could not find the user you are trying to delete", body=b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))
+
+def update_user_info(conn, request_data):
+    # parse out request information, userid, username, bio, profile pic
+    print('******************************************')
+    headers, body = request_data.split("\r\n\r\n", 1)
+
+    content_length = 0
+
+    for line in headers.split("\r\n"):
+        if "Content-Length" in line:
+            content_length = int(line.split(" ")[1])
+
+    while len(body) < content_length:
+        body += conn.recv(1024).decode('UTF-8')
+    data = json.loads(body)
+    origin = get_origin_from_headers(headers)
+
+    print(f'{data}')
+    id = data.get('userID')
+
+    new_user = user(data.get('userID'), data.get('displayname'), data.get('username'),data.get('password'),data.get('bio'), data.get('profile_pic_id'), data.get('created_at'))
+    print(new_user.__dict__)
+    access_user_persistence().update_user(id, new_user)
+    send_response(conn, 200, "OK", body=b"", headers=get_cors_headers(origin))
