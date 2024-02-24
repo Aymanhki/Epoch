@@ -14,13 +14,14 @@ INDEX_HTML_PATH = os.path.normpath('/index.html')
 no_auth_endpoints = [
     "/api/login/",
     "/api/register/",
-
+    "/api/user/",
     "/api/user/",
     "/api/follow/accountList/",
     "/api/follow/followingList/",
     "/api/follow/follow/",
     "/api/follow/unFollow/",
     "/api/upload/profile/1/",
+    "/api/user/download-post/",
 ]
 
 def handle_routing(relative_path, request_data, conn, method):

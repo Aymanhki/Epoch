@@ -29,6 +29,10 @@ body {
     color: #fff;
 }
 
+.space {
+    line-height: 200%;
+}
+
 .login-form h2 {
     margin-bottom: 20px;
     text-align: left;
