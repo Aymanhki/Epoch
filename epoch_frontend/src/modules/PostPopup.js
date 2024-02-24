@@ -205,8 +205,9 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                     <div className={'popup-header'}>
                         <div className={'profile-photo-container'}>
                             <img className={'profile-photo'} src={profilePic} alt={'profile-photo'}/>
+                            
                         </div>
-                        <p>{username}</p>
+                        <p className={'popup-header-username'}>{username}</p>
                     </div>
 
                     <div className={'popup-body'}>
