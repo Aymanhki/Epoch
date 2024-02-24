@@ -4,6 +4,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import { useParams } from 'react-router-dom';
 import {NotFound} from "./notFound";
 import NavBar from "../modules/NavBar";
+import {redirect, useNavigate} from "react-router-dom";
 import { Spinner } from "../modules/Spinner";
 import {UserContext} from "../services/UserContext";
 import '../styles/Profile.css'
@@ -14,7 +15,9 @@ import PostPopup from "../modules/PostPopup";
 
 
 
+
 function Profile() {
+    const navigate = useNavigate();
     const { username } = useParams();
     const [userInfo, setUserInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
