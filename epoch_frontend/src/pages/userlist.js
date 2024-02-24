@@ -1,5 +1,4 @@
-import { followAccount, unfollowAccount } from "../services/following";
-import { fillUserList } from "../services/new_following";
+import { fillUserList, followAccount, unfollowAccount } from "../services/following";
 import React, {useState, useEffect, useContext} from 'react';
 import {useNavigate} from "react-router-dom";
 import {Spinner} from '../modules/Spinner'
