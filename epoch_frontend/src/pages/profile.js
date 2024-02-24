@@ -30,6 +30,7 @@ function Profile() {
     const [showEditProfilePopup, setShowEditProfilePopup] = useState(false)
     const [ viewedId, setViewedID ] = useState({});
     const [refreshFeed, setRefreshFeed] = useState(false);
+    const [redirectToLogin, setRedirectToLogin] = useState(false);
 
     function clickedFollow(target, isFollowing) {
         if(isFollowing){
@@ -65,7 +66,7 @@ function Profile() {
             setIsCurrentUser(true);
             setIsLoading(false);
         }
-        else if(user)
+        else
         {
             setIsLoading(true);
             getUsernameInfo(username)
@@ -84,7 +85,7 @@ function Profile() {
     }, [setIsLoading, setIsCurrentUser, user, username]);
 
     useEffect(() =>{
-        if(viewedId) {
+        if(viewedId && user) {
             getFollowingList()
                 .then(data=>{
                     for (var i in data){
@@ -98,7 +99,7 @@ function Profile() {
 
     },[getFollowingList, setIsFollowing, setIsFollowingPrompt, viewedId]);
 
-    if(!user || !userInfo) {
+    if(!user && !userInfo) {
         return <Spinner />
     }
 
@@ -106,9 +107,13 @@ function Profile() {
         return <NotFound />
     }
 
+    if(redirectToLogin) {
+        return navigate('/epoch/login');
+    }
+
     return (
         <>
-            <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
+            {user && (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />)}
             {isLoading ? (
                 <Spinner />
             ) : (
@@ -140,22 +145,31 @@ function Profile() {
                             <h1 className="profile-name">{userInfo.name}</h1>
                             <h2 className="profile-username">@{userInfo.username}</h2>
                             <h3 className="profile-bio">{userInfo.bio}</h3>
-                            
-                            {isCurrentUser ? (
-                                <BorderColorOutlinedIcon className="edit-profile-button-icon" onClick={() => setShowEditProfilePopup(!showEditProfilePopup)} />
-                                
-                            ) : (
-                                <button className={"follow-button"} onClick = { clickedFollow.bind(this, viewedId, isFollowing) }> {isFollowingPrompt} </button>
+                            {user !== null && (
+                                isCurrentUser ? (
+                                    <BorderColorOutlinedIcon className="edit-profile-button-icon" onClick={() => setShowEditProfilePopup(!showEditProfilePopup)} />
+                                ) : (
+                                    <button className={"follow-button"} onClick={clickedFollow.bind(this, viewedId, isFollowing)}> {isFollowingPrompt} </button>
+                                )
                             )}
                         </div>
                         <div className="profile-feed">
+                            {user ? (
                             <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
+                                ) : (
+                            <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true} currentUser={userInfo} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} viewingOnly={true}/>
+                            )}
                         </div>
                         
                     </div>
-                    <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup} username={user.username} profilePic={user.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
 
-                    {showEditProfilePopup && <EditProfilePopup user={user} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
+                        {user != null && (
+                            <>
+                                <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup} username={user.username} profilePic={user.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
+
+                                {showEditProfilePopup && <EditProfilePopup user={user} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
+                            </>
+                        )}
                 </div>
             )}
         </>
