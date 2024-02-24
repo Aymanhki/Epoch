@@ -5,7 +5,8 @@ import json
 import psycopg2
 from google.cloud import storage
 from urllib.parse import urlparse, unquote
-
+import subprocess
+import signal
 
 BUCKET_NAME = "epoch-cloud-storage-media"
 
@@ -245,3 +246,16 @@ def get_fullchain_cert_path():
 
 def get_privkey_cert_path():
     return os.path.join(assets_dir, "privkey.pem")
+
+
+def terminate_processes_on_port(port):
+    try:
+        process = subprocess.Popen(['lsof', '-ti', f':{port}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        process_ids = out.decode().split()
+
+        for pid in process_ids:
+            os.kill(int(pid), signal.SIGTERM)
+
+    except Exception as e:
+        print(f"Error terminating processes on port {port}: {e}")

@@ -59,8 +59,9 @@ class epoch_post_persistence(post_persistence):
         profile_picture = cursor.fetchone()
         connection.close()
         profile_picture_type = profile_picture[1]
-        profile_picture = download_file_from_cloud(profile_picture[5])
-        profile_picture = base64.b64encode(profile_picture).decode('utf-8')
+        #profile_picture = download_file_from_cloud(profile_picture[5])
+        #profile_picture = base64.b64encode(profile_picture).decode('utf-8')
+        profile_picture_url = profile_picture[5]
 
 
         all_posts = []
@@ -68,7 +69,9 @@ class epoch_post_persistence(post_persistence):
             current_post = posts[i]
             post_dict = {}
             post_dict["post_id"] = current_post[0]
-            post_dict["profile_picture"] = 'data:' + profile_picture_type + ';base64,' + profile_picture
+            post_dict["profile_picture"] = profile_picture_url
+            post_dict["profile_picture_type"] = profile_picture_type
+            post_dict["profile_picture_name"] = profile_picture[2]
             post_dict["username"] = username
             post_dict["release"] = current_post[5].strftime("%Y-%m-%d %H:%M:%S")
             post_dict["caption"] = current_post[3]
@@ -76,16 +79,17 @@ class epoch_post_persistence(post_persistence):
 
             if current_post[2] is not None:
                 post_media = posts_media.get(i)
-                post_media = download_file_from_cloud(post_media[5])
-                post_media = base64.b64encode(post_media).decode('utf-8')
+                #post_media = download_file_from_cloud(post_media[5])
+                #post_media = base64.b64encode(post_media).decode('utf-8')
+                post_media = post_media[5]
 
                 post_dict["file_type"] = posts_media.get(i)[1]
                 post_dict["file_name"] = posts_media.get(i)[2]
 
                 if posts_media.get(i)[1].startswith("video/quicktime"):
-                    post_dict["file"] = 'data:' + 'video/mp4' + ';base64,' + post_media
+                    post_dict["file"] = post_media
                 else:
-                    post_dict["file"] = 'data:' + posts_media.get(i)[1] + ';base64,' + post_media
+                    post_dict["file"] = post_media
             else:
                 post_dict["file"] = None
                 post_dict["file_name"] = None

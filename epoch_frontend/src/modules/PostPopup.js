@@ -156,13 +156,15 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                 newPost(postObject).then((resolve) => {
                     setPostButtonPrompt('Posted');
                     setSuccess(true);
-                    setRefreshFeed(true);
+
                     setSuccessMessage('Post was successful');
                     setTimeout(() => {
                         setShowPopup(false);
                         resetState();
                     }, 2000);
-                    setPosting(false)
+
+                    setRefreshFeed(true);
+                    setPosting(false);
                 })
                     .catch((error) => {
                         setErrorMessage(error);

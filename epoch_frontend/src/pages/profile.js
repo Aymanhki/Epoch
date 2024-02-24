@@ -1,4 +1,5 @@
 import {getUserInfo, getUsernameInfo} from '../services/user';
+import {getFollowingList, unfollowAccount, followAccount } from '../services/following';
 import React, {useState, useEffect, useContext} from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import {useNavigate} from "react-router-dom";
@@ -10,6 +11,8 @@ import '../styles/Profile.css'
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import Feed from "../modules/Feed";
 import EditProfilePopup from '../modules/EditProfilePopup';
+
+
 
 function Profile() {
     const { username } = useParams();
@@ -24,6 +27,20 @@ function Profile() {
     const [isFollowingPrompt, setIsFollowingPrompt] = useState('Follow');
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
     const [showEditProfilePopup, setShowEditProfilePopup] = useState(false)
+    const [ viewedId, setViewedID ] = useState({});
+
+    function clickedFollow(target, isFollowing) {
+        if(isFollowing){
+            unfollowAccount(target);
+            setIsFollowingPrompt('Follow');
+            setIsFollowing(false);
+        }
+        else {
+            followAccount(target);
+            setIsFollowingPrompt('Unfollow');
+            setIsFollowing(true);
+        }
+    }
 
     useEffect(() => {
         setIsLoading(true);
@@ -54,6 +71,7 @@ function Profile() {
                     setUserInfo(data);
                     setIsLoading(false);
                     setIsCurrentUser(false);
+                    setViewedID(data.id)
                 })
                 .catch(error => {
                     setIsLoading(false)
@@ -62,6 +80,21 @@ function Profile() {
                 });
         }
     }, [setIsLoading, setIsCurrentUser, user, username]);
+
+    useEffect(() =>{
+        if(viewedId) {
+            getFollowingList()
+                .then(data=>{
+                    for (var i in data){
+                        if (data[i].following_id == viewedId){
+                            setIsFollowing(true);
+                            setIsFollowingPrompt('Unfollow');
+                        }
+                    }
+                })
+         }
+
+    },[getFollowingList, setIsFollowing, setIsFollowingPrompt, viewedId]);
 
     if(!user || !userInfo) {
         return <Spinner />
@@ -73,7 +106,7 @@ function Profile() {
 
     return (
         <>
-            <NavBar profilePic={user.profile_pic_data} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
+            <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
             {isLoading ? (
                 <Spinner />
             ) : (
@@ -110,7 +143,7 @@ function Profile() {
                                 <BorderColorOutlinedIcon className="edit-profile-button-icon" onClick={() => setShowEditProfilePopup(!showEditProfilePopup)} />
                                 
                             ) : (
-                                <button className={"follow-button"}>{isFollowingPrompt}</button>
+                                <button className={"follow-button"} onClick = { clickedFollow.bind(this, viewedId, isFollowing) }> {isFollowingPrompt} </button>
                             )}
                         </div>
                         <div className="profile-feed">

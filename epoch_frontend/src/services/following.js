@@ -65,7 +65,6 @@ function followAccount(userToFollow) {
         credentials:'include',
         body: JSON.stringify(params)
     })
-        .then(window.location.reload(true))
         .catch(error => {
             this.setState({ errorMessage: error.toString() });
             console.error('There was an error following an account!', error);
@@ -91,7 +90,6 @@ function unfollowAccount(userToUnfollow) {
         credentials:'include',
         body: JSON.stringify(params)
     })
-        .then(window.location.reload(true))
         .catch(error => {
             this.setState({ errorMessage: error.toString() });
             console.error('There was an error unfollowing an account!', error);

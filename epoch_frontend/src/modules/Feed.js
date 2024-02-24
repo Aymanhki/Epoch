@@ -23,6 +23,8 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
 
         return {
             post_id: Math.floor(Math.random() * 100000),
+            profile_picture_type: currentUser.profile_pic_type,
+            profile_picture_name: currentUser.profile_pic_name,
             username: currentUser.username,
             profile_picture: currentUser.profile_pic_data,
             release: new Date().toDateString(),

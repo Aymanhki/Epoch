@@ -67,16 +67,18 @@ def get_user(conn, request_data, session_id):
 
         if user_fetch is not None and user_fetch.__dict__ is not None and len(user_fetch.__dict__) > 0:
             profile_pic_data = access_media_persistence().get_media(user_fetch.profile_pic_id)
-
+            profile_pic_url = None
             if profile_pic_data is not None:
                 if is_file_in_bucket(profile_pic_data.path):
-                    profile_pic_data = download_file_from_cloud(profile_pic_data.path)
+                    profile_pic_url = profile_pic_data.path
                 else:
-                    profile_pic_data = download_file_from_cloud(access_media_persistence().get_media(1).path)
+                    profile_pic_url = access_media_persistence().get_media(1).path
 
-                profile_pic_data_base64 = base64.b64encode(bytes(profile_pic_data)).decode('utf-8')
+
                 user_info_with_pic = user_fetch.__dict__
-                user_info_with_pic["profile_pic_data"] = profile_pic_data_base64
+                user_info_with_pic["profile_pic_data"] = profile_pic_url
+                user_info_with_pic["profile_pic_type"] = profile_pic_data.content_type
+                user_info_with_pic["profile_pic_name"] = profile_pic_data.file_name
                 send_response(conn, 200, "OK", body=json.dumps(user_info_with_pic).encode('UTF-8'), headers=headers)
             else:
                 send_response(conn, 200, "OK, but did not find profile picture for the user", body=json.dumps(user_fetch.__dict__).encode('UTF-8'), headers=headers)
@@ -101,16 +103,17 @@ def get_user_from_name(conn, request_data):
     
     if user_fetch is not None and user_fetch.__dict__ is not None and len(user_fetch.__dict__) > 0:
         profile_pic_data = access_media_persistence().get_media(user_fetch.profile_pic_id)
-
+        profile_pic_url = None
         if profile_pic_data is not None:
             if is_file_in_bucket(profile_pic_data.path):
-                profile_pic_data = download_file_from_cloud(profile_pic_data.path)
+                profile_pic_url = profile_pic_data.path
             else:
-                profile_pic_data = download_file_from_cloud(access_media_persistence().get_media(1).path)
+                profile_pic_url = access_media_persistence().get_media(1).path
 
-            profile_pic_data_base64 = base64.b64encode(bytes(profile_pic_data)).decode('utf-8')
             user_info_with_pic = user_fetch.__dict__
-            user_info_with_pic["profile_pic_data"] = profile_pic_data_base64
+            user_info_with_pic["profile_pic_data"] = profile_pic_url
+            user_info_with_pic["profile_pic_type"] = profile_pic_data.content_type
+            user_info_with_pic["profile_pic_name"] = profile_pic_data.file_name
             send_response(conn, 200, "OK", body=json.dumps(user_info_with_pic).encode('UTF-8'), headers=headers)
         else:
             send_response(conn, 200, "OK, but did not find profile picture for the user", body=json.dumps(user_fetch.__dict__).encode('UTF-8'), headers=headers)

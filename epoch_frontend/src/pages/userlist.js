@@ -1,25 +1,33 @@
 import {getAccountList, followAccount, unfollowAccount, getFollowingList} from "../services/following"
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {Spinner} from '../modules/Spinner'
 import {useNavigate} from "react-router-dom";
+import NavBar from "../modules/NavBar";
+import {UserContext} from "../services/UserContext";
 
-function follow(target) {
-    console.log("followed " + target);
-    followAccount(target);
-}
-
-function unfollow(target) {
-    console.log("unfollowed " + target);
-    unfollowAccount(target);
-}
 
 function Userlist() {
     const [isLoading, setIsLoading] = useState(false);
     const [followingIds, setFollowingList] = useState({});
     const [userList, setUserList] = useState({});
+    const [showNewPostPopup, setShowNewPostPopup] = useState(false);
+    const { user } = useContext(UserContext);
     const navigate = useNavigate();
 
+    function follow(target) {
+        console.log("followed " + target);
+        followAccount(target);
+        window.location.reload(true);
+    }
+    
+    function unfollow(target) {
+        console.log("unfollowed " + target);
+        unfollowAccount(target);
+        window.location.reload(true);
+    }
+
     //on load get these lists from backend
+    
     useEffect(()=>{
         (async ()=>{
             setIsLoading(true);
@@ -50,14 +58,58 @@ function Userlist() {
             navigate('/epoch/profile');
         }
     }
+    
+/*
+    useEffect(()=>{
+        setIsLoading(true);
+        getAccountList()
+        .then(data=>{
+            setUserList(data);
+            setIsLoading(false);
+        })
+        .catch(error => {
+            setIsLoading(false)
+            console.error("Error fetching user list:", error);
+            navigate('/epoch/profile/');
+        });
+    },[getAccountList, setUserList, setIsLoading, navigate]);
 
+    useEffect(()=>{
+        setIsLoading(true);
+        getFollowingList()
+        .then(data=>{
+            //setFollowingList(data);
+            var user_data = userList;
+            var following_data = data;
+            var temp = user_data;
+
+            for(var i in following_data){
+                for(var j in user_data){
+                    if(following_data[i].following_id === temp[j].user_id){
+                        following_data[i].username = temp[j].username;
+                        user_data.splice(j,1);
+                    }
+                }
+            }
+
+            //setUserList(user_data);
+            setFollowingList(following_data);
+            setIsLoading(false);
+        })
+        .catch(error => {
+            setIsLoading(false)
+            console.error("Error fetching following list:", error);
+            navigate('/epoch/profile/');
+        });
+    },[getFollowingList, setFollowingList, setUserList, setIsLoading, navigate, userList]);
+*/
     return (
         <div>
+            <NavBar profilePic={user.profile_pic_data} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
             {isLoading && followingIds ? <Spinner/>: (
                 <>
-                    <h1>Userlist Page</h1>
-                    <h2>userInfo.name you are following</h2>
-                    <h2>list accounts im following</h2>
+                    <h1>List of all Epoch Users</h1>
+                    <h2>Accounts you are following:</h2>
                     <ul>
                         {followingIds && followingIds.map && followingIds.map(following =>
                             <li key = {following.following_id}>
@@ -68,10 +120,15 @@ function Userlist() {
                                 <div>
                                     <button type="button" onClick = {unfollow.bind(this, following.following_id)}>unfollow</button>
                                 </div>
+                                <div>
+                                    <button type="button" onClick = {() => {
+                                        navigate('/epoch/'+following.username)
+                                    }}>view profile</button>
+                                </div>
                             </li>
                             )}
                     </ul>
-                    <h2>list all other accounts</h2>
+                    <h2>Accounts you are not following:</h2>
                     <ul>
                         {userList && userList.map && userList.map(account =>
                             <li key = {account.user_id}>
@@ -81,6 +138,11 @@ function Userlist() {
                                 </p>
                                 <div>
                                     <button type="button" onClick = {follow.bind(this, account.user_id)}>follow</button>
+                                </div>
+                                <div>
+                                    <button type="button" onClick = {() => {
+                                        navigate('/epoch/'+ account.username)
+                                    }}>view profile</button>
                                 </div>
                             </li>
                             )}
