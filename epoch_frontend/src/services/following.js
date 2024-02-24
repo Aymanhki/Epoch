@@ -17,7 +17,7 @@ function getAccountList() {
     const data = fetch(url, headers)
         .then(response => response.json())
         .catch(error => {
-            this.setState({ errorMessage: error.toString() });
+            //this.setState({ errorMessage: error.toString() }); // this was causing an error in rendering the rest of the profile so i commented it for now, console.error should be enough - Ayman
             console.error('There was an error getting users lists!', error);
             return false;
         });
@@ -38,7 +38,7 @@ function getFollowingList() {
     const data = fetch(url, headers)
         .then(response => response.json())
         .catch(error => {
-            this.setState({ errorMessage: error.toString() });
+            //this.setState({ errorMessage: error.toString() }); // this was causing an error in rendering the rest of the profile so i commented it for now, console.error should be enough - Ayman
             console.error('There was an error getting following lists!', error);
             return false;
         });
@@ -66,7 +66,7 @@ function followAccount(userToFollow) {
         body: JSON.stringify(params)
     })
         .catch(error => {
-            this.setState({ errorMessage: error.toString() });
+            //this.setState({ errorMessage: error.toString() }); // this was causing an error in rendering the rest of the profile so i commented it for now, console.error should be enough - Ayman
             console.error('There was an error following an account!', error);
             return false;
         });
@@ -91,7 +91,7 @@ function unfollowAccount(userToUnfollow) {
         body: JSON.stringify(params)
     })
         .catch(error => {
-            this.setState({ errorMessage: error.toString() });
+            //this.setState({ errorMessage: error.toString() }); // this was causing an error in rendering the rest of the profile so i commented it for now, console.error should be enough - Ayman
             console.error('There was an error unfollowing an account!', error);
             return false;
         });

@@ -194,6 +194,7 @@
     margin: 1rem 0;
     width: 99%;
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    position: relative;
 }
 
 .post-header {
@@ -218,6 +219,15 @@
     cursor: pointer;
     margin:0;
     padding: 0;
+}
+
+.post-media {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    width: 100%;
+    max-height: 50rem;
+    object-fit: contain;
 }
 
 .profile-photo {
@@ -323,8 +333,8 @@
     }
 
     .profile-photo-container {
-        width: 2rem;
-        height: 2rem;
+        width: 3rem;
+        height: 3rem;
     }
 
     .profile-photo {
@@ -425,5 +435,16 @@
 
     .post-header {
         border-bottom: 0.1rem solid #ffffff;
+    }
+
+        .edit-post-button-icon {
+        box-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.3);
+        background-color: #ffffff;
+        color: #333333;
+    }
+
+    .edit-post-button-icon:hover {
+        background-color: #333333;
+        color: #ffffff;
     }
 }

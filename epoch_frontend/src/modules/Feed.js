@@ -7,10 +7,9 @@ import {getAllUserPosts} from '../services/post.js'
 
 
 
-export default function Feed({feedUsername, feedUserId, isInProfile, currentUser, showNewPostPopup, setShowNewPostPopup}) {
+export default function Feed({feedUsername, feedUserId, isInProfile, currentUser, showNewPostPopup, setShowNewPostPopup, refreshFeed, setRefreshFeed}) {
     const [isLoading, setIsLoading] = useState(true);
     const [feedPosts, setFeedPosts] = useState(Array(10).fill(null));
-    const [refreshFeed, setRefreshFeed] = useState(false);
 
     const fetchImage = async () => {
         const response = await fetch(process.env.PUBLIC_URL + '/images/placeholder.png');
@@ -47,9 +46,8 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
         refreshFeedPosts();
     }, [ feedUserId, feedUsername, currentUser, isInProfile]);
 
-    useEffect(() => {
-        if(refreshFeed)
-        {
+    useEffect( () => {
+        if (refreshFeed) {
             setIsLoading(true);
             refreshFeedPosts();
         }
@@ -91,14 +89,14 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
     return (
         <>
         {isLoading ? (<Spinner/>) :
-            (<div className="feed">
+            (
+                <div className={'feed-wrapper'}>
+
                 <div className={'posts-wrapper'}>
                     {feedPosts.map((newPost, index) => <Post key={ newPost.post_id} post={newPost}/>)}
                 </div>
-                {( (!isInProfile &&feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId) ) && (<button className={`floatingPostButton ${showNewPostPopup ? 'rotate' : ''}`}
+                {( (!isInProfile &&feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId) ) && (<button className={`new-post-button ${showNewPostPopup ? 'rotate' : ''}`}
                         onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+</button>)}
-                <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
-                           username={currentUser.username} profilePic={currentUser.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
 
             </div>)}
         </>

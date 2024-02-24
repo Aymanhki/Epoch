@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json
 from ..utils import send_response, get_cors_headers, get_origin_from_headers, upload_file_to_cloud, download_file_from_cloud, is_file_in_bucket
 from ..db_controller.access_user_persistence import access_user_persistence
@@ -45,7 +45,7 @@ def new_post(conn, request_data):
     user_fetch = access_user_persistence().get_user(username)
 
     # date format is "2024-02-22T06:36:12.653Z"
-    selected_date = datetime.datetime.strptime(selected_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+    selected_date = datetime.fromisoformat(selected_date.replace('Z', '+00:00'))
 
     if user_fetch:
         user_id = user_fetch.id
