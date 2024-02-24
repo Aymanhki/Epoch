@@ -11,7 +11,7 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import Feed from "../modules/Feed";
 import EditProfilePopup from '../modules/EditProfilePopup';
 import PostPopup from "../modules/PostPopup";
-
+import {useNavigate} from "react-router-dom";
 
 
 function Profile() {
@@ -29,6 +29,7 @@ function Profile() {
     const [ viewedId, setViewedID ] = useState({});
     const [refreshFeed, setRefreshFeed] = useState(false);
     const [redirectToLogin, setRedirectToLogin] = useState(false);
+    const navigate = useNavigate();
 
     function clickedFollow(target, isFollowing) {
         if(isFollowing){
