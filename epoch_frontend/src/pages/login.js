@@ -121,7 +121,7 @@ function Login() {
                 <div className="login-form">
                     <form onSubmit={handleSubmit} data-testid="login-form">
 
-                        <h2 style={{fontSize: '32px', marginBottom: '20px', fontFamily: 'Futura', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>
+                        <h2 style={{fontSize: '32px', marginBottom: '20px', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>
                             {signingInPrompt}
                         </h2>
 
@@ -157,7 +157,6 @@ function Login() {
                                 <h2 style={{
                                     fontSize: '32px',
                                     marginBottom: '20px',
-                                    fontFamily: 'Futura',
                                     fontWeight: 'bold',
                                     textAlign: 'left',
                                     alignSelf: 'flex-start'
@@ -203,7 +202,6 @@ function Login() {
                                 <h2 style={{
                                     fontSize: '32px',
                                     marginBottom: '20px',
-                                    fontFamily: 'Futura',
                                     fontWeight: 'bold'
                                 }}>
                                     Epoch

@@ -170,7 +170,7 @@ function Register() {
                 <div className="register-container">
                 <div className="register-form">
                     <form onSubmit={handleSubmit} data-testid="register-form">
-                        <h1 style={{fontSize: '32px', marginBottom: '10px', fontFamily: 'Futura', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>{registeringPrompt}</h1>
+                        <h1 style={{fontSize: '32px', marginBottom: '10px', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>{registeringPrompt}</h1>
 
                         <div className="profile-pic-upload-container" >
 
