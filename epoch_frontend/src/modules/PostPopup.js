@@ -43,13 +43,13 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
     const {transform: inTransform, opacity: inOpacity} = useSpring({
         opacity: showPopup ? 1 : 0,
         transform: `translateY(${showPopup ? 0 : 100}vh)`,
-        config: {duration: 300, friction: 30},
+        config: {duration: 300},
     });
 
     const {transform: outTransform, opacity: outOpacity} = useSpring({
         opacity: showPopup ? 1 : 0,
-        transform: `translateY(${showPopup ? 0 : -200}%)`,
-        config: {duration: 500, friction: 50},
+        transform: `translateY(${showPopup ? 0 : -100}vh)`,
+        config: {duration: 300},
     });
 
     useEffect(() => {
@@ -130,8 +130,15 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                 if (selectedHour.includes('PM')) {
                     hours = parseInt(hours) + 12;
                 }
+                else {
+                    hours = parseInt(hours);
+                }
 
-                selectedDate = new Date(selectedYear, selectedMonth - 1, selectedDay, hours, 0, 0, 0);
+                setSelectedDay(parseInt(selectedDay))
+                setSelectedMonth(parseInt(selectedMonth))
+                setSelectedYear(parseInt(selectedYear))
+
+                selectedDate = new Date(Date.UTC(selectedYear, selectedMonth - 1, selectedDay, hours, 0, 0, 0));
 
                 if (selectedDate < new Date()) {
                     setErrorMessage('Date and time must be in the future');
@@ -161,23 +168,18 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                     setTimeout(() => {
                         setShowPopup(false);
                         resetState();
+                        setRefreshFeed(true);
                     }, 2000);
 
-                    setRefreshFeed(true);
+
                     setPosting(false);
                 })
-                    .catch((error) => {
-                        setErrorMessage(error);
-                        setError(true);
-                        setPostButtonPrompt('Post');
-                        setTimeout(() => {
-                            setShowPopup(false);
-                            resetState();
-                        }, 2000);
-                        setPosting(false)
-
-                    })
-
+                .catch((error) => {
+                    setErrorMessage(error);
+                    setError(true);
+                    setPostButtonPrompt('Post');
+                    setPosting(false)
+                })
 
             }
         }
@@ -186,11 +188,12 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
     return (
         <>
             <animated.div
-                className="post-popup"
                 style={{
-                    position: 'relative',
-                    width: '100%',
-                    height: '100%',
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
                     backgroundColor: 'rgba(0, 0, 0, 0.2)',
                     display: 'flex',
                     alignItems: 'center',
@@ -220,24 +223,17 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                             {hasUploadedFile && (
                                 <button className="remove-media" onClick={handleRemoveMedia}>+</button>
                             )}
-                            <div className={'uploaded-file-preview'} onClick={() => {
-                                if(!posting) {
-                                    if (!hasUploadedFile) {
-                                        fileInputRef.current.click()
-                                    }
-                                }
-                            }}>
+                            <div className={'uploaded-file-preview'} >
                                 <input
                                     type="file"
                                     accept="image/*, audio/*, video/*"
                                     onChange={handleFileChange}
-                                    style={{display: 'none'}}
-                                    ref={fileInputRef}
+                                    style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, opacity: 0, cursor: 'pointer', display: posting ? 'none' : 'block' }}
                                     name="file"
                                     id="file"
                                 />
 
-                                {uploadedFile ? (<SmartMedia file={uploadedFile}/>) :
+                                {uploadedFile ? (<SmartMedia file={uploadedFile} className={'media-preview'}/>) :
                                     (<img src={process.env.PUBLIC_URL + '/images/placeholder.png'} alt={'placeholder'}
                                           className={'media-preview'}/>)
                                 }

@@ -11,6 +11,7 @@ import '../styles/Profile.css'
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import Feed from "../modules/Feed";
 import EditProfilePopup from '../modules/EditProfilePopup';
+import PostPopup from "../modules/PostPopup";
 
 
 
@@ -28,6 +29,7 @@ function Profile() {
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
     const [showEditProfilePopup, setShowEditProfilePopup] = useState(false)
     const [ viewedId, setViewedID ] = useState({});
+    const [refreshFeed, setRefreshFeed] = useState(false);
 
     function clickedFollow(target, isFollowing) {
         if(isFollowing){
@@ -147,10 +149,12 @@ function Profile() {
                             )}
                         </div>
                         <div className="profile-feed">
-                            <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
+                            <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
                         </div>
                         
                     </div>
+                    <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup} username={user.username} profilePic={user.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
+
                     {showEditProfilePopup && <EditProfilePopup user={user} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
                 </div>
             )}

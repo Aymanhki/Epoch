@@ -42,7 +42,7 @@ export default function ({post}) {
 
             <div className="post-body">
                 <p className={"post-caption"}>{post.caption}</p>
-                {post.file && <div className={'file-wrapper'}><div className={'post-file'}><SmartMedia file={post.file} fileUrl={post.file} file_type={post.file_type} file_name={post.file_name} /></div></div>}
+                {post.file && <div className={'file-wrapper'}><div className={'post-file'}><SmartMedia file={post.file} fileUrl={post.file} file_type={post.file_type} file_name={post.file_name} className={"post-media"} /></div></div>}
             </div>
 
             <div className="post-footer">

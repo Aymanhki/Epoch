@@ -51,7 +51,6 @@ function EditProfilePopup({ onClose, user }) {
             .catch(error => {
                 console.log(error)
             })
-        onClose(); // Close the popup after submitting
     };
     
     return (
