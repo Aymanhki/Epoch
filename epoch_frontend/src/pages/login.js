@@ -121,7 +121,7 @@ function Login() {
                 <div className="login-form">
                     <form onSubmit={handleSubmit} data-testid="login-form">
 
-                        <h2 style={{fontSize: '32px', marginBottom: '20px', fontFamily: 'Futura', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>
+                        <h2 style={{fontSize: '32px', marginBottom: '20px', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>
                             {signingInPrompt}
                         </h2>
 
@@ -157,7 +157,6 @@ function Login() {
                                 <h2 style={{
                                     fontSize: '32px',
                                     marginBottom: '20px',
-                                    fontFamily: 'Futura',
                                     fontWeight: 'bold',
                                     textAlign: 'left',
                                     alignSelf: 'flex-start'
@@ -185,11 +184,11 @@ function Login() {
                                     setGeneralError(false);
                                 }} />
 
-                                {generalError && <span style={{color: 'red', marginLeft: '5px', marginBottom: '5px'}}>{generalErrorPrompt}</span>}
+                                {generalError && <span style={{color: 'red', marginLeft: '0.1rem', marginBottom: '0.1rem'}}>{generalErrorPrompt}</span>}
 
                                 <button type="submit" data-testid="login-button" id="login-button">{signingInPrompt}</button>
 
-                                <p style={{textAlign: 'center', marginTop: '10px'}}>
+                                <p style={{textAlign: 'center', marginTop: '0.3rem'}}>
                                     Don't have an account?{' '}
                                     <Link to="/epoch/register"
                                           style={{textDecoration: 'underline', cursor: 'pointer', color: '#ffffff'}}>
@@ -203,12 +202,12 @@ function Login() {
                                 <h2 style={{
                                     fontSize: '32px',
                                     marginBottom: '20px',
-                                    fontFamily: 'Futura',
                                     fontWeight: 'bold'
                                 }}>
                                     Epoch
                                 </h2>
-                                <p>
+
+                                <p className={"space"}>
                                     Epoch is a social media platform for time capsules. Write down your thoughts,
                                     feelings, and predictions, and send them to the future. You can also read other
                                     people's capsules and vote them up or down depending on the accuracy or likeability
