@@ -5,7 +5,9 @@ import {Spinner} from '../modules/Spinner'
 import NavBar from "../modules/NavBar";
 import {UserContext} from "../services/UserContext";
 import {getUserInfo} from "../services/user";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { TextField } from "@mui/material";
+import '../styles/UserList.css'
 
 function Userlist() {
     const [isLoading, setIsLoading] = useState(false);
@@ -113,50 +115,58 @@ function Userlist() {
     return (
         <>
             {!user ?  (navigate('/epoch/profile/')) : (
+                
                 isLoading ? <Spinner/> : (
-                    <div className="UserListContainer">
+                    <>
                         <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} />
-                        <h1>List of all Epoch Users</h1>
-
-                        <TextField className="search-bar"
-                            variant="outlined"
-                            label = "Search users."
-                            onChange={handleChange}
-                        />
+                    <div className="user-list-container">
+                        
+                        <h1 className="userlist-header">List of all Epoch Users</h1>
+                        <div className="search-bar-container">
+                            <TextField className="list-search-bar"
+                                label = "Search users.."
+                                variant= "outlined"
+                                onChange={handleChange}
+                            />
+                        </div>
                         <ul className="user-list">
                             {filteredList && searchInput ? (
                                 filteredList && filteredList.map && filteredList.map(account =>
-                                    <li key = {account.user_id} className="user-list-items">
+                                    <li key = {account.user_id} className="user-list-item">
                                         <p>
-                                            <b className="username">{account.username}: </b>
-                                            {account.isFollowing ? <b className="following-status">(following)</b>:<b> </b>}
+                                            <div className="user-list-profile">
+                                                    <AccountCircleOutlinedIcon/>
+                                                <b className="username" onClick={() => navigate('/epoch/'+ account.username)}>@{account.username} </b>
+                                                {account.isFollowing ? <b className="following-status"> (following)</b>:<b> </b>}
+                                            </div>
                                         </p>
         
                                         <div>
-                                            <button type="button" className="search-follow button" onClick = {() => {
-                                                handleFollow( account.user_id, account.isFollowing)
-                                            }}>{getFollowingPrompt(account.isFollowing)}</button>
                                             <button type="button" className="profile-button" onClick = {() => {
                                                 navigate('/epoch/'+ account.username)
                                             }}>view profile</button>
+                                            <button type="button" className="search-follow-button" onClick = {() => {
+                                                handleFollow( account.user_id, account.isFollowing)
+                                            }}>{getFollowingPrompt(account.isFollowing)}</button>
                                         </div>
                                     </li>
                                     )
                             ):(
                                 userList && userList.map && userList.map(account =>
-                                    <li key = {account.user_id} className="user-list-items">
+                                    <li key = {account.user_id} className="user-list-item">
+                                        
                                         <p>
-                                            <b className="username">{account.username}: </b>
-                                            {account.isFollowing ? <b className="following-status">(following)</b>:<b> </b>}
+                                            <div className="user-list-profile">
+                                                    <AccountCircleOutlinedIcon/>
+                                                <b className="username" onClick={() => navigate('/epoch/'+ account.username)}>@{account.username} </b>
+                                                {account.isFollowing ? <b className="following-status"> (following)</b>:<b> </b>}
+                                            </div>
                                         </p>
         
-                                        <div>
-                                            <button type="button" className="search-follow button" onClick = {() => {
+                                        <div className="list-button-container">
+                                            <button type="button" className="search-follow-button" onClick = {() => {
                                                 handleFollow( account.user_id, account.isFollowing)
                                             }}>{getFollowingPrompt(account.isFollowing)}</button>
-                                            <button type="button" className="profile-button" onClick = {() => {
-                                                navigate('/epoch/'+ account.username)
-                                            }}>view profile</button>
                                         </div>
                                     </li>
                                     )
@@ -164,7 +174,7 @@ function Userlist() {
                             
                         </ul>
                     </div>
-                    
+                 </>   
                 )
             )}
         </>
