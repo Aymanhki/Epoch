@@ -70,7 +70,7 @@ class integration_tests(unittest.TestCase):
         except Exception as e:
             print(f"Error quitting webdriver: {e}")
         global session_id
-        requests.delete("http://localhost:8080/api/delete/username/", data=json.dumps({"username": cls.username}), headers={"Content-Type": "application/json"}, cookies={"epoch_session_id": session_id})
+        response = requests.delete("http://localhost:8080/api/delete/username/", data=json.dumps({"username": cls.username}), headers={"Content-Type": "application/json"}, cookies={"epoch_session_id": session_id})
         os.kill(cls.frontend_process.pid, signal.SIGKILL)
         os.kill(cls.server_process.pid, signal.SIGINT)
         cls.frontend_process.kill()
