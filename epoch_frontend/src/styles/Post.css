@@ -188,7 +188,7 @@
 /*    color:white;*/
 /*}*/
 
-.post{
+.post {
     border-radius: 1rem;
     padding: 1rem;
     margin: 1rem 0;
@@ -196,6 +196,7 @@
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
     position: relative;
 }
+
 
 .post-header {
     display: grid;
@@ -205,10 +206,21 @@
     border-bottom: 0.1rem solid #000000;
 }
 
+.post-body {
+    overflow-wrap: break-word;
+}
+
+.post-caption {
+    margin: 0;
+    margin-top: 1rem;
+    padding: 0;
+}
+
 .post-header-left {
     display: grid;
     grid-template-columns: 3rem calc(100% - 3rem);
-    gap: 1rem
+    gap: 1rem;
+    cursor: pointer;
 }
 
 .profile-photo-container {
@@ -217,7 +229,7 @@
     overflow: hidden;
     border-radius: 50%;
     cursor: pointer;
-    margin:0;
+    margin: 0;
     padding: 0;
 }
 
@@ -230,9 +242,30 @@
     object-fit: contain;
 }
 
-.profile-photo {
+.post-full-size-profile-photo-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.full-size-image {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 1rem;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.6);
+}
+
+
+.profile-photo {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
@@ -256,6 +289,17 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    gap: 1rem;
+}
+
+.error-message {
+    color: red;
+    font-size: 1rem;
+}
+
+.updating-message {
+    color: green;
+    font-size: 1rem;
 }
 
 .edit-post-button-icon {
@@ -270,17 +314,20 @@
     color: #ffffff;
 }
 
-.save-button {
-
+.delete-post-button-icon {
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 10%;
+    color: red;
+    background-color: white;
 }
 
-.post-body {
-
+.delete-post-button-icon:hover {
+    background-color: red;
+    color: white;
 }
 
-.post-caption {
-
-}
 
 .post-file {
     max-width: 100%;
@@ -290,6 +337,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 1rem;
 }
 
 .post-footer {
@@ -317,7 +365,26 @@
     font-weight: bold;
 }
 
-@media (max-width: 768px){
+.see-more {
+    color: darkblue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.see-less {
+    color: darkblue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.hashtag {
+    color: darkblue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+@media (max-width: 768px) {
     .post-header {
         display: flex;
         align-items: center;
@@ -376,19 +443,6 @@
         background-color: #333;
         color: #ffffff;
     }
-
-    .save-button {
-
-    }
-
-    .post-body {
-
-    }
-
-    .post-caption {
-
-    }
-
     .post-file {
         max-width: 100%;
     }
@@ -423,11 +477,9 @@
         color: #ffffff;
         font-weight: bold;
     }
-
-
 }
 
-@media (prefers-color-scheme: dark){
+@media (prefers-color-scheme: dark) {
 
     .post-footer {
         border-top: 0.1rem solid #ffffff;
@@ -437,7 +489,7 @@
         border-bottom: 0.1rem solid #ffffff;
     }
 
-        .edit-post-button-icon {
+    .edit-post-button-icon {
         box-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.3);
         background-color: #ffffff;
         color: #333333;
@@ -446,5 +498,17 @@
     .edit-post-button-icon:hover {
         background-color: #333333;
         color: #ffffff;
+    }
+
+    .see-more {
+        color: lightblue;
+    }
+
+    .see-less {
+        color: lightblue;
+    }
+
+    .hashtag {
+        color: lightblue;
     }
 }

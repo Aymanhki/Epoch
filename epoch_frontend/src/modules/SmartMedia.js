@@ -3,6 +3,7 @@ import '../styles/PostPopup.css';
 import '../styles/Profile.css';
 import '../styles/Home.css';
 import "../styles/NavBar.css";
+import '../styles/Post.css';
 
 
 const SmartMedia = ({file, fileUrl, file_type, file_name, className}) => {
@@ -38,9 +39,9 @@ const SmartMedia = ({file, fileUrl, file_type, file_name, className}) => {
         if(file && file.type !== undefined && file.type !== null) {
             switch (mediaType) {
                 case 'image':
-                    return <img src={URL.createObjectURL(file)} className={className}/>;
+                    return <img src={URL.createObjectURL(file)} className={className} alt={file_name}/>;
                 case 'video':
-                    return <video src={URL.createObjectURL(file)} typeof={file.type} controls className={className}/>;
+                    return <video src={URL.createObjectURL(file)} controls className={className}/>;
                 case 'audio':
                     return <video src={URL.createObjectURL(file)} controls className={className}/>;
                 default:
@@ -51,7 +52,7 @@ const SmartMedia = ({file, fileUrl, file_type, file_name, className}) => {
                 case 'image':
                     return <img src={fileUrl} className={className}/>;
                 case 'video':
-                    return <video src={fileUrl} controls type={file_type} className={className}/>
+                    return <video src={fileUrl} controls className={className}/>
                 case 'audio':
                     return <video src={fileUrl} controls className={className}/>;
                 default:

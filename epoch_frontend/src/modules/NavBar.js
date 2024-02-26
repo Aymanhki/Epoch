@@ -7,7 +7,6 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import {useNavigate} from "react-router-dom";
 import {removeSessionCookie} from "../services/user";
-import {getUserInfo} from "../services/user";
 import {UserContext} from "../services/UserContext";
 import SmartMedia from "./SmartMedia";
 
@@ -59,7 +58,7 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
             <div className="left">
                 <div className="logo-container" onClick={() => navigate('/epoch/home')}>
                     <img
-                        src="../images/epoch-logo-400.jpeg"
+                        src = {process.env.PUBLIC_URL + "/images/epoch-logo-400.jpeg"}
                         alt="Epoch"
                         className="logo"
                         style={{width: "3rem", height: "100%"}}
