@@ -1,0 +1,28 @@
+
+.favorites-page-container{
+      display: flex;
+  justify-content:  center;
+  margin-top:  1rem;
+}
+
+.favorites-feed-wrapper{
+    width: 50%;
+}
+
+.favorites-feed{
+    margin-bottom: 5rem;
+    border-radius: 1%;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 1024px) {
+    .favorites-feed-wrapper {
+        width: 80%;
+    }
+}
+
+@media (max-width: 768px) {
+    .favorites-feed-wrapper {
+        width: 100%;
+    }
+}

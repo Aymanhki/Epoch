@@ -345,7 +345,39 @@
     align-items: center;
     justify-content: center;
     margin-top: 1rem;
+    padding-top: 1rem;
     border-top: 0.1rem solid #000000;
+    gap: 1rem;
+}
+
+.favorite-button {
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: white;
+    color: red;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    border: none;
+}
+
+.favorite-button.active {
+    background-color: red;
+    color: white;
+}
+
+.favorite-button.active:hover {
+    background-color: white;
+    color: red;
+}
+
+.favorite-button:hover {
+    background-color: red;
+    color: white;
+}
+
+.favorited-by-count {
+    font-weight: bold;
+
 }
 
 .view-comments-button {

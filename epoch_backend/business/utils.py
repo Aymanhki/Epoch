@@ -324,4 +324,12 @@ def get_post_dict(current_post, posts_media, username, profile_picture_url, prof
         post_dict["file"] = None
         post_dict["file_name"] = None
 
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT user_id FROM favorites WHERE post_id=%s", (current_post[0],))
+    favorites = cursor.fetchall()
+    connection.close()
+    post_dict["favorited_by"] = [favorite[0] for favorite in favorites]
+    post_dict["favorited_by_count"] = len(post_dict["favorited_by"])
+
     return post_dict
