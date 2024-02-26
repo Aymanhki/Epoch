@@ -9,7 +9,7 @@
     justify-content: center; /* Center horizontally */
     align-items: center;
     font-family: 'Futura', sans-serif;
-    z-index: 999;
+    z-index: 1000;
 }
 
 .edit-popup-content {
@@ -19,7 +19,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     width: 500px; /* Adjust the width as needed */
     margin: 0 auto; /* Center the popup horizontally */
-    
+
 }
 
 .close-button {

@@ -24,3 +24,6 @@ class post_persistence(ABC):
 
     def get_all_hashtag_posts(self, hashtag: str):
         pass
+
+    def get_followed_users_posts(self, user_id: int):
+        pass

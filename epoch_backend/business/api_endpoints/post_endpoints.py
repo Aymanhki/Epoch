@@ -198,3 +198,19 @@ def update_post(conn, request_data):
     else:
         send_response(conn, 404, "Could not find the username you are trying to update their post", b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))
 
+
+def get_followed_users_posts(conn, request_data):
+    headers, body = request_data.split("\r\n\r\n", 1)
+    user_id = None
+
+    for line in headers.split("\r\n"):
+        if "User-Id" in line:
+            user_id = int(line.split(" ")[1])
+
+    origin = get_origin_from_headers(headers)
+
+    if user_id is not None:
+        posts = access_post_persistence().get_followed_users_posts(user_id)
+        send_response(conn, 200, "OK", json.dumps(posts).encode('UTF-8'), headers=get_cors_headers(origin))
+    else:
+        send_response(conn, 400, "Bad Request", b"<h1>400 Bad Request</h1>", headers=get_cors_headers(origin))

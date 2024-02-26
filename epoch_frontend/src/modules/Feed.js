@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import '../styles/Feed.css';
 import {Spinner} from "./Spinner";
 import Post from "./Post";
-import {getAllUserPosts} from '../services/post.js'
+import {getAllUserPosts, getFollowedUsersPost} from '../services/post.js'
 
 
 
@@ -60,8 +60,11 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
                     setIsLoading(false);
                 });
             } else if (!isInProfile && feedUsername && currentUser.username === feedUsername) {
-                // ideally, here we would fetch the posts from the users that the current user is following (shuffle or show chronological order)
-                populateTempPosts().then(() => {
+                getFollowedUsersPost(currentUser.id).then((data) => {
+                    setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
+                    setIsLoading(false);
+                }).catch((error) => {
+                    console.error(error);
                     setIsLoading(false);
                 });
             }
@@ -73,7 +76,7 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
         }
 
         setRefreshFeed(false);
-    }, [feedUserId, feedUsername, currentUser, isInProfile, posts, populateTempPosts, setRefreshFeed]);
+    }, [feedUserId, feedUsername, currentUser, isInProfile, posts, setRefreshFeed]);
 
     useEffect(() => {
         refreshFeedPosts();
@@ -95,6 +98,7 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
                 <div className={'feed-wrapper'}>
 
                 <div className={'posts-wrapper'}>
+                    {feedPosts.length === 0 && <div className={'no-posts'}>No posts to show, follow some people or make a new post</div>}
                     {feedPosts.map((newPost, index) => <Post key={ newPost.post_id } post={newPost} postViewer={currentUser} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} />)}
                 </div>
 

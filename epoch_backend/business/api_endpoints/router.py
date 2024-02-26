@@ -6,7 +6,7 @@ from ..utils import get_cors_headers, get_origin_from_headers, send_response, ge
 from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, get_user_from_name, upload_profile_pic, update_user_info
 from ..db_controller.access_user_persistence import access_user_persistence
 from ..db_controller.access_session_persistence import access_session_persistence
-from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, update_post
+from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, update_post, get_followed_users_posts
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')
@@ -141,6 +141,12 @@ def handle_api_request(method, path, request_data, conn):
             delete_post(conn, request_data)
         elif method == "PUT":
             update_post(conn, request_data)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+
+    elif path.startswith("/api/followed/posts/"):
+        if method == "GET":
+            get_followed_users_posts(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
