@@ -6,7 +6,7 @@ from ..utils import get_cors_headers, get_origin_from_headers, send_response, ge
 from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, get_user_from_name, upload_profile_pic, update_user_info
 from ..db_controller.access_user_persistence import access_user_persistence
 from ..db_controller.access_session_persistence import access_session_persistence
-from ..api_endpoints.post_endpoints import new_post, get_all_user_posts
+from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, update_post
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')
@@ -14,21 +14,23 @@ INDEX_HTML_PATH = os.path.normpath('/index.html')
 no_auth_endpoints = [
     "/api/login/",
     "/api/register/",
-
+    "/api/user/",
     "/api/user/",
     "/api/follow/accountList/",
     "/api/follow/followingList/",
     "/api/follow/follow/",
     "/api/follow/unFollow/",
     "/api/upload/profile/1/",
+    "/api/user/posts/",
+    "/api/post/hashtag/"
 ]
 
 def handle_routing(relative_path, request_data, conn, method):
     if relative_path.startswith('/api/'):
-        if relative_path.startswith('/api/') and relative_path not in no_auth_endpoints and method != "OPTIONS":
+        if relative_path not in no_auth_endpoints and method != "OPTIONS":
             session_id = get_session_id_from_request(request_data)
+
             if access_session_persistence().get_session(session_id) is None:
-                print("\n* Unauthorized request rejected *\n")
                 send_response(conn, 401, "Unauthorized (Missing Session Cookie)", body=b"<h1>401 Unauthorized</h1>")
                 return
 
@@ -38,7 +40,7 @@ def handle_routing(relative_path, request_data, conn, method):
         if relative_path == '/':
             relative_path = INDEX_HTML_PATH
 
-        full_path = os.path.join(HOME_PATH, relative_path.lstrip('/'))  # Get the full path of the file requested by the client
+        full_path = os.path.join(HOME_PATH, relative_path.lstrip('/'))
         handle_static_request(method, conn, full_path)
 
 def handle_api_request(method, path, request_data, conn):
@@ -127,12 +129,18 @@ def handle_api_request(method, path, request_data, conn):
     elif path.startswith("/api/post/"):
         if method == "POST":
             new_post(conn, request_data)
+        elif method == "GET" and path.startswith("/api/post/hashtag/"):
+            get_all_hashtag_posts(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 
-    elif path.startswith("/api/user/download-post/"):
+    elif path.startswith("/api/user/posts/"):
         if method == "GET":
             get_all_user_posts(conn, request_data)
+        elif method == "DELETE":
+            delete_post(conn, request_data)
+        elif method == "PUT":
+            update_post(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
 

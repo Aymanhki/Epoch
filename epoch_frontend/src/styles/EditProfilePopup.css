@@ -9,6 +9,7 @@
     justify-content: center; /* Center horizontally */
     align-items: center;
     font-family: 'Futura', sans-serif;
+    z-index: 999;
 }
 
 .edit-popup-content {
@@ -46,11 +47,6 @@
 .edit-popup-content p {
     text-align: center;
 }
-
-/*.container {*/
-/*    display: flex;*/
-/*    align-items: center;*/
-/*  }*/
 
 .profile-pic {
     position:inherit;

@@ -1,0 +1,90 @@
+.user-list-container {
+    display:block;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.user-list {
+    border-radius: 1rem;
+    list-style-type: none;
+    padding: 1rem;
+    margin: 1rem;
+    width: 97%;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.user-list-profile {
+    padding:1rem;
+}
+
+.list-search-bar {
+    width: 85%;
+    margin: auto;
+    color: #ffffff;
+    background-color: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+}
+
+.search-bar-container {
+    margin: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.user-list-item {
+    display:block;
+    border-radius: 1rem;
+    padding: .7rem;
+    margin: 1rem;
+    width: 90%;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.username {
+    font-size: x-large;
+    padding:1rem;
+    cursor: pointer;
+}
+.username:hover {
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+.following-status {
+    font-size: small;
+}
+
+.search-follow-button {
+        margin-left: 3rem;
+        border-radius: 1rem;
+        padding: .7rem;
+        box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+        background-color: #ffffff;
+        color: #333333;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+.profile-button {
+    margin: 1rem;
+    visibility:hidden;
+    border-radius: 10%;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    background-color: #ffffff;
+    color: #333333;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.list-default-image{
+    font-size: xx-large;
+}
+
+.userlist-header {
+    text-align: center;
+}

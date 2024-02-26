@@ -7,6 +7,7 @@ import {useNavigate} from "react-router-dom";
 import Feed from "../modules/Feed";
 import { UserContext } from '../services/UserContext';
 import '../styles/Home.css';
+import PostPopup from "../modules/PostPopup";
 
 
 function Home() {
@@ -17,6 +18,7 @@ function Home() {
     const { user } = useContext(UserContext);
     const { updateUser } = useContext(UserContext);
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
+    const [refreshFeed, setRefreshFeed] = useState(false);
 
 
     useEffect(() => {
@@ -63,13 +65,13 @@ function Home() {
             <div className="home-page-container">
                 <div className="home-feed-wrapper">
                     <div className="home-feed" data-testid={"home-feed"} id={"home-feed"} >
-                        <Feed feedUsername={user.username} feedUserId={user.id} isInProfile={false} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>
+                        <Feed feedUsername={user.username} feedUserId={user.id} isInProfile={false} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} viewingOnly={false} posts={null}/>
                     </div>
                 </div>
             </div>
         </>
       )}
-        {/*<Feed />*/}
+        <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup} username={user.username} profilePic={user.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
     </div>
   );
 }

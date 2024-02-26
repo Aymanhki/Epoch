@@ -29,8 +29,8 @@ CREATE TABLE IF NOT EXISTS posts (
     user_id INT REFERENCES users(user_id),
     media_id INT REFERENCES media_content(media_id),
     caption TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    release TIMESTAMP
+    created_at TIMESTAMP NOT NULL,
+    release TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sessions (

@@ -245,6 +245,7 @@ def delete_by_username(conn, request_data):
     else:
         send_response(conn, 404, "Could not find the user you are trying to delete", body=b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))
 
+
 def update_user_info(conn, request_data):
     # parse out request information, userid, username, bio, profile pic
     print('******************************************')

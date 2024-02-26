@@ -55,6 +55,8 @@ class integration_tests(unittest.TestCase):
             options.add_argument("--no-sandbox")
             options.add_argument("--headless")
 
+
+
         try:
             cls.driver = webdriver.Chrome(options=options)
         except Exception as e:
