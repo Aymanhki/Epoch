@@ -8,7 +8,7 @@ import React from "react";
 import '@testing-library/jest-dom';
 import {v4} from "uuid";
 import {UserProvider} from "../services/UserContext"
-import {getAllUserPosts} from "../services/post";
+import {getAllUserPosts, getFollowedUsersPost} from "../services/post";
 import {beforeEach, jest} from "@jest/globals";
 
 global.XMLHttpRequest = jest.fn();
@@ -96,6 +96,7 @@ describe('Render Pages', () => {
     test("displays user information on home page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
         getAllUserPosts.mockResolvedValue([mockPost]);
+        getFollowedUsersPost.mockResolvedValue([mockPost]);
 
         await act(async () => {
             render(
@@ -116,6 +117,7 @@ describe('Render Pages', () => {
     test("App lands on login home page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
         getAllUserPosts.mockResolvedValue([mockPost]);
+        getFollowedUsersPost.mockResolvedValue([mockPost]);
 
         await act(async () => {
             render(<App/>);
