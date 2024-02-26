@@ -33,6 +33,7 @@ const mockUser = {
     profile_pic_data: "test",
     profile_pic: "test",
 
+
 };
 
 const mockPost = {
@@ -43,6 +44,8 @@ const mockPost = {
     created_at: "2022-01-01",
     file: "test.jpg",
     file_type: "image/jpeg",
+    favorited_by: [],
+    favorited_by_count: 0,
 }
 
 const username = v4();
