@@ -9,6 +9,8 @@ import {useNavigate} from "react-router-dom";
 import {removeSessionCookie} from "../services/user";
 import {UserContext} from "../services/UserContext";
 import SmartMedia from "./SmartMedia";
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
+
 
 const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPopup}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -83,6 +85,10 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
                     }
                 }}>
                     <PostAddOutlinedIcon/>
+                </NavLink>
+
+                <NavLink to="/epoch/favorites" className="active">
+                    <FavoriteBorderOutlinedIcon />
                 </NavLink>
 
                 <NavLink to="/epoch/search" className="active">

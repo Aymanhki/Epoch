@@ -70,7 +70,7 @@ function Favorites() {
                     {user ? (<Feed feedUsername={user.username} feedUserId={user.id} isInProfile={true}
                                       currentUser={user} showNewPostPopup={showNewPostPopup}
                                       setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                      setRefreshFeed={setRefreshFeed} posts={posts} viewingOnly={true} isInFavorites={true}/>) : (<></>)}
+                                      setRefreshFeed={setRefreshFeed} posts={posts} isInFavorites={true}/>) : (<></>)}
                 </div>
             </div>
             {user ? (<PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
