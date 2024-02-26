@@ -56,8 +56,9 @@ function Home() {
 
   return (
     <div>
-      {<NavBar profilePic={user.profile_pic_data } profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>}
 
+      {<NavBar profilePic={user.profile_pic_data } profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>}
+        <h1>Hello this should show</h1>
       {isLoading ? (
         <Spinner />
       ) : (
