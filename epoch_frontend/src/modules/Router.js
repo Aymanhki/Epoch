@@ -8,6 +8,7 @@ import Profile from '../pages/profile';
 import Userlist from '../pages/userlist';
 import {NotFound} from "../pages/notFound";
 import Hashtag from "../pages/Hashtag";
+import Favorites from "../pages/Favorites";
 
 function Router() {
     return (
@@ -20,10 +21,12 @@ function Router() {
                 <Route path="/home" element={<Navigate to="/epoch/home" />} />
                 <Route path="/userlist" element={<Navigate to="/epoch/userlist" />} />
                 <Route path="/search" element={<Navigate to="/epoch/search" />} />
+                <Route path="/favorites" element={<Navigate to="/epoch/favorites" />} />
 
                 <Route path="/hashtags/:hashtag" element={<Hashtag />} />
                 <Route path="/epoch/hashtags/:hashtag" element={<Hashtag />} />
 
+                <Route path="/epoch/favorites" element={<Favorites />} />
                 <Route path="/epoch/login" element={<Login />} />
                 <Route path="/epoch/register" element={<Register />} />
                 <Route path="/epoch/home" element={<Home />} />

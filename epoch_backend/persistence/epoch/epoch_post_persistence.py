@@ -44,6 +44,8 @@ class epoch_post_persistence(post_persistence):
             media_fetch = cursor.fetchone()
             delete_file_from_bucket(media_fetch[5])
 
+        cursor.execute("DELETE FROM favorites WHERE post_id=%s", (post_id,))
+        connection.commit()
         cursor.execute("DELETE FROM posts WHERE post_id=%s", (post_id,))
         connection.commit()
         cursor.execute("DELETE FROM media_content WHERE media_id=%s", (post_fetch[2],))
@@ -112,6 +114,44 @@ class epoch_post_persistence(post_persistence):
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM posts WHERE user_id = %s OR user_id IN (SELECT following_id FROM following WHERE user_id = %s)",(user_id, user_id))
+        posts = cursor.fetchall()
+        posts_media = get_posts_media(posts)
+        posts_users_info = get_posts_users_info(posts)
+
+        all_posts = []
+
+        for i in range(len(posts)):
+            current_post = posts[i]
+            user_info = posts_users_info.get(i)
+            post_dict = get_post_dict(current_post, posts_media, user_info[0], user_info[1], user_info[2], user_info[3], i)
+            all_posts.append(post_dict)
+
+        connection.close()
+        return all_posts
+
+
+    def favorite_post(self, post_id: int, user_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO favorites (user_id, post_id) VALUES (%s, %s)", (user_id, post_id))
+        connection.commit()
+        cursor.execute("UPDATE posts SET favorite_count = favorite_count + 1 WHERE post_id = %s", (post_id,))
+        connection.commit()
+        connection.close()
+
+    def remove_favorite_post(self, post_id: int, user_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM favorites WHERE user_id=%s AND post_id=%s", (user_id, post_id))
+        connection.commit()
+        cursor.execute("UPDATE posts SET favorite_count = favorite_count - 1 WHERE post_id = %s", (post_id,))
+        connection.commit()
+        connection.close()
+
+    def get_favorites(self, user_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM posts WHERE post_id IN (SELECT post_id FROM favorites WHERE user_id=%s)", (user_id,))
         posts = cursor.fetchall()
         posts_media = get_posts_media(posts)
         posts_users_info = get_posts_users_info(posts)

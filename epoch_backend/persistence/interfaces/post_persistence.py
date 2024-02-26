@@ -27,3 +27,12 @@ class post_persistence(ABC):
 
     def get_followed_users_posts(self, user_id: int):
         pass
+
+    def favorite_post(self, post_id: int, user_id: int):
+        pass
+
+    def remove_favorite_post(self, post_id: int, user_id: int):
+        pass
+
+    def get_favorites(self, user_id: int):
+        pass

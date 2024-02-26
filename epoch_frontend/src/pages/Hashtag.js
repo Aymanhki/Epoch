@@ -19,17 +19,10 @@ function Hashtag() {
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
     const [hashtagName, setHashtagName] = useState(location.pathname.split('/hashtags/')[1]);
     const [hashtag, setHashtag] = useState(location.hash ? location.hash : '#' + hashtagName);
-    const [showEmptyHashtag, setShowEmptyHashtag] = useState(false);
 
     const updatePosts = React.useCallback(() => {
         getAllHashtagPosts(hashtag)
             .then((newPosts) => {
-                if (newPosts.length <= 0) {
-                    setShowEmptyHashtag(true);
-                } else {
-                    setShowEmptyHashtag(false);
-                }
-
                 setPosts(newPosts);
                 setIsLoading(false);
                 setRefreshFeed(false);
@@ -86,14 +79,13 @@ function Hashtag() {
                                 <Feed feedUsername={user.username} feedUserId={user.id} isInProfile={false}
                                       currentUser={user} showNewPostPopup={showNewPostPopup}
                                       setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                      setRefreshFeed={setRefreshFeed} posts={posts}/>
+                                      setRefreshFeed={setRefreshFeed} posts={posts}  isInFavorites={false}/>
                             ) : (
                                 <Feed feedUsername={null} feedUserId={null} isInProfile={false} currentUser={null}
                                       showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}
                                       refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} viewingOnly={true}
-                                      posts={posts}/>
+                                      posts={posts}  isInFavorites={false}/>
                             )}
-                            {showEmptyHashtag && <h1>No posts found for {hashtag}</h1>}
                         </div>
                     </div>
 

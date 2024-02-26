@@ -2,13 +2,15 @@ import React, {useEffect, useState} from 'react';
 import SmartMedia from "./SmartMedia";
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import '../styles/Post.css';
 import {useNavigate} from 'react-router-dom';
 import {deletePost} from '../services/post';
 import PostPopup from "./PostPopup";
+import {favoritePost, removeFavoritePost} from "../services/post";
 
 
-export default function Post({post, postViewer, refreshFeed, setRefreshFeed}) {
+export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
     const captionCharLimit = 240;
     const timeAllowedToEditInSeconds = 180;
     const [editable, setEditable] = useState(true);
@@ -30,6 +32,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed}) {
     const [fileBlob, setFileBlob] = useState(null);
     const [updating, setUpdating] = useState(false);
     const [updatingMessage, setUpdatingMessage] = useState('');
+    const [favorited, setFavorited] = useState(false);
+    const [favoritedByCount, setFavoritedByCount] = useState(0);
 
 
     useEffect(() => {
@@ -45,8 +49,6 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed}) {
             setEditing(false);
         }
 
-
-        // parse the post release data to set the month, day, year, and hour
         const date = new Date(post.release);
         setReleaseMonth(parseInt(date.getMonth() + 1));
         setReleaseDay(parseInt(date.getDate()));
@@ -69,6 +71,42 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed}) {
         setOverlayImageUrl(imageUrl);
         setShowOverlay(true);
     };
+
+    const toggleFavorite = () => {
+        if(postViewer) {
+            if (favorited) {
+                setFavorited(false);
+                setFavoritedByCount(favoritedByCount - 1);
+                removeFavoritePost(post.post_id, postViewer.id)
+                    .then(() => {})
+                    .catch((error) => {
+                        setError(true);
+                        setErrorMessage(error);
+                        setFavorited(true);
+                        setFavoritedByCount(favoritedByCount + 1);
+                        setTimeout(() => {
+                            setError(false);
+                            setErrorMessage('');
+                        }, 5000);
+                    });
+            } else {
+                setFavorited(true);
+                setFavoritedByCount(favoritedByCount + 1);
+                favoritePost(post.post_id, postViewer.id)
+                    .then(() => {})
+                    .catch((error) => {
+                        setError(true);
+                        setFavorited(false);
+                        setFavoritedByCount(favoritedByCount - 1);
+                        setErrorMessage(error);
+                        setTimeout(() => {
+                            setError(false);
+                            setErrorMessage('');
+                        }, 5000);
+                    });
+            }
+        }
+    }
 
     const closeOverlay = () => {
         setShowOverlay(false);
@@ -152,8 +190,20 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed}) {
         setShowPostPopup(true);
     }
 
+    useEffect(() => {
+
+        if (postViewer && post.favorited_by.includes(postViewer.id)) {
+            setFavorited(true);
+        } else {
+            setFavorited(false);
+        }
+
+        setFavoritedByCount(parseInt(post.favorited_by_count));
+
+    }, [post.favorited_by, postViewer]);
+
     return (
-            <div className={`post ${showFullCaption ? 'post-expanded' : ''}`} style={{display: ( ( (postIsInThePast() || postAdmin) && (!deleted) ) ) ? 'block' : 'none'}}>
+            <div className={`post ${showFullCaption ? 'post-expanded' : ''}`} style={{display: ( ( (postIsInThePast() || postAdmin) && (!deleted) && ((isInFavorites && favorited) || !isInFavorites) ) ) ? 'block' : 'none'}}>
                 <div className="post-header">
                     <div className="post-header-left">
                         <div className={'profile-photo-container'}
@@ -170,10 +220,10 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed}) {
                     <div className="post-header-right">
                         {updating && (<p className="updating-message">{updatingMessage}</p>)}
                         {error && (<p className="error-message">{errorMessage}</p>)}
-                        {(postAdmin && editable && !editing) && (<BorderColorOutlinedIcon className="edit-post-button-icon" onClick={() => {
+                        {(postViewer && postAdmin && editable && !editing) && (<BorderColorOutlinedIcon className="edit-post-button-icon" onClick={() => {
                             onEditPost();
                         }}></BorderColorOutlinedIcon>)}
-                        {(postAdmin && !editing) && (<DeleteForeverOutlinedIcon className="delete-post-button-icon" onClick={() => {
+                        {(postViewer && postAdmin && !editing) && (<DeleteForeverOutlinedIcon className="delete-post-button-icon" onClick={() => {
                             onDeletePost(post.post_id, postViewer.id);
                         }}></DeleteForeverOutlinedIcon>)}
 
@@ -213,12 +263,17 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed}) {
                 </div>
 
                 <div className="post-footer">
-                    <p className={"view-comments-button"}>View Comments</p>
+                    <button className={"view-comments-button"}>View Comments</button>
+                    {postViewer && (
+                        <>
+                            <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`} onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
+                            <p className={'favorited-by-count'}>{favoritedByCount}</p>
+                        </>)}
                 </div>
                 {(post.file) ?
-                (showPostPopup && fileBlob) && (<PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username} profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} postFile={fileBlob} year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
+                (showPostPopup && fileBlob && postViewer && postAdmin) && (<PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username} profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} postFile={fileBlob} year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
                 :
-                (showPostPopup) && (<PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username} profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
+                (showPostPopup && postViewer && postAdmin) && (<PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username} profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
                 }
             </div>
     );

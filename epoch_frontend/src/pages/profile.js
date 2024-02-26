@@ -9,6 +9,7 @@ import {Spinner} from "../modules/Spinner";
 import {UserContext} from "../services/UserContext";
 import '../styles/Profile.css'
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import Feed from "../modules/Feed";
 import EditProfilePopup from '../modules/EditProfilePopup';
 import PostPopup from "../modules/PostPopup";
@@ -158,8 +159,12 @@ function Profile() {
                             <h3 className="profile-bio">{userInfo.bio}</h3>
                             {user !== null && (
                                 isCurrentUser ? (
-                                    <BorderColorOutlinedIcon className="edit-profile-button-icon"
-                                                             onClick={() => setShowEditProfilePopup(!showEditProfilePopup)}/>
+                                    <div className={'profile-buttons-wrapper'}>
+                                        <BorderColorOutlinedIcon className="edit-profile-button-icon"
+                                                                 onClick={() => setShowEditProfilePopup(!showEditProfilePopup)}/>
+                                        <FavoriteBorderOutlinedIcon className={'profile-favorite-button'} onClick={() => navigate('/epoch/favorites')}></FavoriteBorderOutlinedIcon>
+                                    </div>
+
                                 ) : (
                                     <button className={"follow-button"}
                                             onClick={clickedFollow.bind(this, viewedId, isFollowing)}> {isFollowingPrompt} </button>
@@ -171,12 +176,12 @@ function Profile() {
                                 <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true}
                                       currentUser={user} showNewPostPopup={showNewPostPopup}
                                       setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                      setRefreshFeed={setRefreshFeed} posts={null}/>
+                                      setRefreshFeed={setRefreshFeed} posts={null}  isInFavorites={false}/>
                             ) : (
                                 <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true}
-                                      currentUser={userInfo} showNewPostPopup={showNewPostPopup}
+                                      currentUser={null} showNewPostPopup={showNewPostPopup}
                                       setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                      setRefreshFeed={setRefreshFeed} viewingOnly={true} posts={null}/>
+                                      setRefreshFeed={setRefreshFeed} viewingOnly={true} posts={null}  isInFavorites={false}/>
                             )}
                         </div>
 

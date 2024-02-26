@@ -214,3 +214,61 @@ def get_followed_users_posts(conn, request_data):
         send_response(conn, 200, "OK", json.dumps(posts).encode('UTF-8'), headers=get_cors_headers(origin))
     else:
         send_response(conn, 400, "Bad Request", b"<h1>400 Bad Request</h1>", headers=get_cors_headers(origin))
+
+
+def favorite_post(conn, request_data):
+    headers, body = request_data.split("\r\n\r\n", 1)
+    user_id = None
+    post_id = None
+
+    for line in headers.split("\r\n"):
+        if "User-Id" in line:
+            user_id = int(line.split(" ")[1])
+        elif "Post-Id" in line:
+            post_id = int(line.split(" ")[1])
+
+    origin = get_origin_from_headers(headers)
+
+    if user_id is not None and post_id is not None:
+        access_post_persistence().favorite_post(post_id, user_id)
+        send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
+    else:
+        send_response(conn, 400, "Bad Request", b"<h1>400 Bad Request</h1>", headers=get_cors_headers(origin))
+
+
+
+def remove_favorite_post(conn, request_data):
+    headers, body = request_data.split("\r\n\r\n", 1)
+    user_id = None
+    post_id = None
+
+    for line in headers.split("\r\n"):
+        if "User-Id" in line:
+            user_id = int(line.split(" ")[1])
+        elif "Post-Id" in line:
+            post_id = int(line.split(" ")[1])
+
+    origin = get_origin_from_headers(headers)
+
+    if user_id is not None and post_id is not None:
+        access_post_persistence().remove_favorite_post(post_id, user_id)
+        send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
+    else:
+        send_response(conn, 400, "Bad Request", b"<h1>400 Bad Request</h1>", headers=get_cors_headers(origin))
+
+
+def get_favorites(conn, request_data):
+    headers, body = request_data.split("\r\n\r\n", 1)
+    user_id = None
+
+    for line in headers.split("\r\n"):
+        if "User-Id" in line:
+            user_id = int(line.split(" ")[1])
+
+    origin = get_origin_from_headers(headers)
+
+    if user_id is not None:
+        posts = access_post_persistence().get_favorites(user_id)
+        send_response(conn, 200, "OK", json.dumps(posts).encode('UTF-8'), headers=get_cors_headers(origin))
+    else:
+        send_response(conn, 400, "Bad Request", b"<h1>400 Bad Request</h1>", headers=get_cors_headers(origin))

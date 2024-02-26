@@ -6,7 +6,7 @@ from ..utils import get_cors_headers, get_origin_from_headers, send_response, ge
 from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, get_user_from_name, upload_profile_pic, update_user_info
 from ..db_controller.access_user_persistence import access_user_persistence
 from ..db_controller.access_session_persistence import access_session_persistence
-from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, update_post, get_followed_users_posts
+from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, update_post, get_followed_users_posts, favorite_post, remove_favorite_post, get_favorites
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')
@@ -149,6 +149,16 @@ def handle_api_request(method, path, request_data, conn):
             get_followed_users_posts(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+
+    elif path.startswith("/api/favorite/posts/"):
+        if method == "POST":
+            favorite_post(conn, request_data)
+        elif method == "DELETE":
+            remove_favorite_post(conn, request_data)
+        elif method == "GET":
+            get_favorites(conn, request_data)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
 
     elif path.startswith("/api/upload/profile/1/"):
         if method == "POST":

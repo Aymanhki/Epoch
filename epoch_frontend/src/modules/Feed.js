@@ -6,36 +6,55 @@ import {getAllUserPosts, getFollowedUsersPost} from '../services/post.js'
 
 
 
-export default function Feed({feedUsername, feedUserId, isInProfile, currentUser, showNewPostPopup, setShowNewPostPopup, refreshFeed, setRefreshFeed, viewingOnly, posts}) {
+export default function Feed({feedUsername, feedUserId, isInProfile, currentUser, showNewPostPopup, setShowNewPostPopup, refreshFeed, setRefreshFeed, viewingOnly, posts, isInFavorites}) {
     const [isLoading, setIsLoading] = useState(true);
     const [feedPosts, setFeedPosts] = useState(Array(10).fill(null));
 
     const refreshFeedPosts = React.useCallback(async () => {
         if(!posts) {
-            if (isInProfile && feedUserId && currentUser.id === feedUserId) {
-                getAllUserPosts(currentUser.id).then((data) => {
-                    setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
-                    setIsLoading(false);
-                }).catch((error) => {
-                    console.error(error);
-                    setIsLoading(false);
-                });
-            } else if (feedUserId && currentUser.id !== feedUserId) {
-                getAllUserPosts(feedUserId).then((data) => {
-                    setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
-                    setIsLoading(false);
-                }).catch((error) => {
-                    console.error(error);
-                    setIsLoading(false);
-                });
-            } else if (!isInProfile && feedUsername && currentUser.username === feedUsername) {
-                getFollowedUsersPost(currentUser.id).then((data) => {
-                    setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
-                    setIsLoading(false);
-                }).catch((error) => {
-                    console.error(error);
-                    setIsLoading(false);
-                });
+            if(currentUser) {
+                if (isInProfile && feedUserId && currentUser.id === feedUserId)
+                {
+                    getAllUserPosts(currentUser.id).then((data) => {
+                        setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
+                        setIsLoading(false);
+                    }).catch((error) => {
+                        console.error(error);
+                        setIsLoading(false);
+                    });
+                }
+                else if (feedUserId && currentUser.id !== feedUserId)
+                {
+                    getAllUserPosts(feedUserId).then((data) => {
+                        setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
+                        setIsLoading(false);
+                    }).catch((error) => {
+                        console.error(error);
+                        setIsLoading(false);
+                    });
+                }
+                else if (!isInProfile && feedUsername && currentUser.username === feedUsername)
+                {
+                    getFollowedUsersPost(currentUser.id).then((data) => {
+                        setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
+                        setIsLoading(false);
+                    }).catch((error) => {
+                        console.error(error);
+                        setIsLoading(false);
+                    });
+                }
+            }
+            else
+            {
+                if(feedUserId) {
+                    getAllUserPosts(feedUserId).then((data) => {
+                        setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
+                        setIsLoading(false);
+                    }).catch((error) => {
+                        console.error(error);
+                        setIsLoading(false);
+                    });
+                }
             }
         }
         else
@@ -68,10 +87,10 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
 
                 <div className={'posts-wrapper'}>
                     {feedPosts.length === 0 && <div className={'no-posts'}>No posts to show, follow some people or make a new post</div>}
-                    {feedPosts.map((newPost, index) => <Post key={ newPost.post_id } post={newPost} postViewer={currentUser} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} />)}
+                    {feedPosts.map((newPost, index) => <Post key={ newPost.post_id } post={newPost} postViewer={currentUser} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} isInFavorites={isInFavorites}/>)}
                 </div>
 
-                {( ( (!isInProfile && feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId) ) && !viewingOnly) && (<button className={`new-post-button ${showNewPostPopup ? 'rotate' : ''}`}
+                {(currentUser && ( (!isInProfile && feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId) ) && !viewingOnly) && (<button className={`new-post-button ${showNewPostPopup ? 'rotate' : ''}`}
                     onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+</button>)}
 
             </div>)}
