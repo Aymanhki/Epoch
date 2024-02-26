@@ -112,6 +112,28 @@
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
 }
 
+.profile-buttons-wrapper{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.profile-favorite-button {
+    padding: 0.5rem;
+    border-radius: 10%;
+    cursor: pointer;
+    background-color: white;
+    color: red;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    border: none;
+}
+
+.profile-favorite-button:hover {
+    background-color: red;
+    color: white;
+}
+
 @media (max-width: 1024px) {
     .profile-wrapper {
         width: 80%;

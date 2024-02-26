@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     bio TEXT,
     profile_pic INT REFERENCES media_content(media_id) NULL,
-    background_pic INT REFERENCES media_content(media_id) NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    background_pic INT REFERENCES media_content(media_id) NULL
 );
 
 
@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS posts (
     media_id INT REFERENCES media_content(media_id),
     caption TEXT,
     created_at TIMESTAMP NOT NULL,
-    release TIMESTAMP NOT NULL
+    release TIMESTAMP NOT NULL,
+    favorite_count INT DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
@@ -49,6 +50,12 @@ CREATE TABLE IF NOT EXISTS following (
     user_id INT REFERENCES users(user_id),
     following_id INT REFERENCES users(user_id),
     PRIMARY KEY (user_id, following_id)
+);
+
+CREATE TABLE IF NOT EXISTS favorites (
+    user_id INT REFERENCES users(user_id),
+    post_id INT REFERENCES posts(post_id),
+    PRIMARY KEY (user_id, post_id)
 );
 
 

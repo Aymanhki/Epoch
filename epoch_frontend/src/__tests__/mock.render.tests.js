@@ -8,7 +8,7 @@ import React from "react";
 import '@testing-library/jest-dom';
 import {v4} from "uuid";
 import {UserProvider} from "../services/UserContext"
-import {getAllUserPosts} from "../services/post";
+import {getAllUserPosts, getFollowedUsersPost} from "../services/post";
 import {beforeEach, jest} from "@jest/globals";
 
 global.XMLHttpRequest = jest.fn();
@@ -33,6 +33,7 @@ const mockUser = {
     profile_pic_data: "test",
     profile_pic: "test",
 
+
 };
 
 const mockPost = {
@@ -43,6 +44,8 @@ const mockPost = {
     created_at: "2022-01-01",
     file: "test.jpg",
     file_type: "image/jpeg",
+    favorited_by: [],
+    favorited_by_count: 0,
 }
 
 const username = v4();
@@ -96,6 +99,7 @@ describe('Render Pages', () => {
     test("displays user information on home page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
         getAllUserPosts.mockResolvedValue([mockPost]);
+        getFollowedUsersPost.mockResolvedValue([mockPost]);
 
         await act(async () => {
             render(
@@ -116,6 +120,7 @@ describe('Render Pages', () => {
     test("App lands on login home page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
         getAllUserPosts.mockResolvedValue([mockPost]);
+        getFollowedUsersPost.mockResolvedValue([mockPost]);
 
         await act(async () => {
             render(<App/>);

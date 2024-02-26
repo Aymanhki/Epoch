@@ -56,8 +56,9 @@ function Home() {
 
   return (
     <div>
-      {<NavBar profilePic={user.profile_pic_data } profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>}
 
+      {<NavBar profilePic={user.profile_pic_data } profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>}
+        <h1>Hello this should show</h1>
       {isLoading ? (
         <Spinner />
       ) : (
@@ -65,7 +66,7 @@ function Home() {
             <div className="home-page-container">
                 <div className="home-feed-wrapper">
                     <div className="home-feed" data-testid={"home-feed"} id={"home-feed"} >
-                        <Feed feedUsername={user.username} feedUserId={user.id} isInProfile={false} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} viewingOnly={false} posts={null}/>
+                        <Feed feedUsername={user.username} feedUserId={user.id} isInProfile={false} currentUser={user} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} viewingOnly={false} posts={null} isInFavorites={false}/>
                     </div>
                 </div>
             </div>
