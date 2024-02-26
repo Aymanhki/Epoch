@@ -2,32 +2,33 @@ import React from 'react'
 import {useState, useEffect} from 'react';
 import '../styles/PostPopup.css';
 import SmartMedia from "./SmartMedia";
-import {newPost} from "../services/post.js"
+import {newPost, updatePost} from "../services/post.js"
 import {useSpring, animated} from 'react-spring';
 
 
-export default function PostPopup({showPopup, setShowPopup, username, profilePic, refreshFeed, setRefreshFeed}) {
-    const [uploadedFile, setUploadedFile] = useState(null);
-    const [postText, setPostText] = useState(null);
-    const fileInputRef = React.createRef();
+export default function PostPopup({showPopup, setShowPopup, username, profilePic, refreshFeed, setRefreshFeed, editPost, caption, postFile, year, month, day, hour, postId, userId}) {
+    const [uploadedFile, setUploadedFile] = useState( (editPost && postFile) ? postFile : null);
+    const [postText, setPostText] = useState((editPost && caption) ? caption : null);
     const [postNow, setPostNow] = useState(false);
-    const [selectedYear, setSelectedYear] = useState(null);
-    const [selectedMonth, setSelectedMonth] = useState(null);
-    const [selectedDay, setSelectedDay] = useState(null);
-    const [selectedHour, setSelectedHour] = useState(null);
-    const [postButtonPrompt, setPostButtonPrompt] = useState('Post');
+    const [selectedYear, setSelectedYear] = useState((editPost && year) ? year : null);
+    const [selectedMonth, setSelectedMonth] = useState((editPost && month) ? month : null);
+    const [selectedDay, setSelectedDay] = useState((editPost && day) ? day : null);
+    const [selectedHour, setSelectedHour] = useState((editPost && hour) ? hour : null);
+    const [postButtonPrompt, setPostButtonPrompt] = useState((editPost) ? 'Save' : 'Post');
     const [error, setError] = useState(false);
     const [success, setSuccess] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [posting, setPosting] = useState(false);
     const currentYear = new Date().getFullYear();
-    const years = Array.from({length: 30}, (_, index) => currentYear + index);
+    const years = Array.from({length: 100}, (_, index) => currentYear + index);
     const months = Array.from({length: 12}, (_, index) => index + 1);
     const daysInMonth = (year, month) => new Date(year, month, 0).getDate();
     const days = Array.from({length: 31}, (_, index) => index + 1);
     const hours = ["12:00 AM", "1:00 AM", "2:00 AM", "3:00 AM", "4:00 AM", "5:00 AM", "6:00 AM", "7:00 AM", "8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM", "6:00 PM", "7:00 PM", "8:00 PM", "9:00 PM", "10:00 PM", "11:00 PM"]
-    const [hasUploadedFile, setHasUploadedFile] = useState(false);
+    const [hasUploadedFile, setHasUploadedFile] = useState((editPost && postFile) ? true : false);
+    const [editPostFileChanged, setEditPostFileChanged] = useState(false);
+    const [editPostFileRemoved, setEditPostFileRemoved] = useState(false);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -35,6 +36,10 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
         if (selectedFile) {
             setUploadedFile(selectedFile);
             setHasUploadedFile(true);
+
+            if(editPost) {
+                setEditPostFileChanged(true);
+            }
         }
 
         setError(false);
@@ -52,18 +57,22 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
         config: {duration: 300},
     });
 
+
     useEffect(() => {
-        if (showPopup || postNow) {
+        if ( postNow && !editPost) {
             setSelectedYear(null);
             setSelectedMonth(null);
             setSelectedDay(null);
             setSelectedHour(null);
         }
 
-        if (showPopup) {
+    }, [postNow, editPost]);
+
+    useEffect(() => {
+        if (showPopup && !editPost) {
             resetState();
         }
-    }, []);
+    }, [showPopup, editPost]);
 
     const resetState = () => {
         setPostButtonPrompt('Post');
@@ -98,12 +107,18 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
         if(!posting) {
             setUploadedFile(null);
             setHasUploadedFile(false);
+
+            if(editPost && postFile) {
+                setEditPostFileRemoved(true);
+            }
         }
     };
 
     const handlePost = () => {
         if(!posting) {
             let selectedDate;
+            const now = new Date();
+            const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
 
             if (!postText && !uploadedFile) {
                 setErrorMessage('Post text or media file is required');
@@ -140,7 +155,7 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
 
                 selectedDate = new Date(Date.UTC(selectedYear, selectedMonth - 1, selectedDay, hours, 0, 0, 0));
 
-                if (selectedDate < new Date()) {
+                if (selectedDate < today) {
                     setErrorMessage('Date and time must be in the future');
                     setError(true);
                     return;
@@ -149,38 +164,76 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
 
             if (!error) {
                 setPosting(true)
-                setPostButtonPrompt('Posting...');
-                const postObject = {
-                    postText: postText,
-                    file: uploadedFile,
-                    fileType: uploadedFile ? uploadedFile.type : null,
-                    fileName: uploadedFile ? uploadedFile.name : null,
-                    postNow: postNow,
-                    selectedDate: postNow ? new Date() : selectedDate,
-                    username: username,
+
+                if(!editPost) {
+                    setPostButtonPrompt('Posting...');
+                    const postObject = {
+                        postText: postText,
+                        file: uploadedFile,
+                        fileType: uploadedFile ? uploadedFile.type : null,
+                        fileName: uploadedFile ? uploadedFile.name : null,
+                        postNow: postNow,
+                        selectedDate: postNow ? today : selectedDate,
+                        createdAt: today,
+                        username: username,
+                    }
+
+                    newPost(postObject).then((resolve) => {
+                        setPostButtonPrompt('Posted');
+                        setSuccess(true);
+
+                        setSuccessMessage('Post was successful');
+                        setTimeout(() => {
+                            setShowPopup(false);
+                            resetState();
+                            setRefreshFeed(true);
+                        }, 2000);
+
+
+                        setPosting(false);
+                    })
+                        .catch((error) => {
+                            setPosting(false)
+                            resetState();
+                            setErrorMessage(error);
+                            setError(true);
+                        })
                 }
+                else {
+                    setPostButtonPrompt('Saving...');
+                    const postObject = {
+                        postText: postText,
+                        file: editPostFileChanged ? uploadedFile : null,
+                        fileType: uploadedFile ? uploadedFile.type : null,
+                        fileName: uploadedFile ? uploadedFile.name : null,
+                        oldFileRemoved: editPostFileRemoved,
+                        postNow: postNow,
+                        selectedDate: postNow ? today : selectedDate,
+                        createdAt: today,
+                        username: username,
+                        postId: postId
+                    }
 
-                newPost(postObject).then((resolve) => {
-                    setPostButtonPrompt('Posted');
-                    setSuccess(true);
+                    updatePost(postObject, userId).then((resolve) => {
+                        setPostButtonPrompt('Saved');
+                        setSuccess(true);
 
-                    setSuccessMessage('Post was successful');
-                    setTimeout(() => {
-                        setShowPopup(false);
-                        resetState();
-                        setRefreshFeed(true);
-                    }, 2000);
+                        setSuccessMessage('Post was updated');
+                        setTimeout(() => {
+                            setShowPopup(false);
+                            resetState();
+                            setRefreshFeed(true);
+                        }, 2000);
 
-
-                    setPosting(false);
-                })
-                .catch((error) => {
-                    setErrorMessage(error);
-                    setError(true);
-                    setPostButtonPrompt('Post');
-                    setPosting(false)
-                })
-
+                        setPosting(false);
+                    })
+                        .catch((error) => {
+                            setPosting(false)
+                            resetState();
+                            setErrorMessage(error);
+                            setError(true);
+                        })
+                }
             }
         }
     }
@@ -200,6 +253,7 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                     justifyContent: 'center',
                     opacity: showPopup ? inOpacity : outOpacity,
                     transform: showPopup ? inTransform : outTransform,
+                    zIndex: 1000
                 }}
             >
                 <div className={'overlay'} onClick={() => handleClosing()}/>
@@ -207,7 +261,7 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
 
                     <div className={'popup-header'}>
                         <div className={'profile-photo-container'}>
-                            <img className={'profile-photo'} src={profilePic} alt={'profile-photo'}/>
+                            <img className={'profile-photo'} src={profilePic} alt={'profile-pic'}/>
                         </div>
                         <p>{username}</p>
                     </div>
@@ -231,6 +285,7 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                                     style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, opacity: 0, cursor: 'pointer', display: posting ? 'none' : 'block' }}
                                     name="file"
                                     id="file"
+                                    disabled= {hasUploadedFile || posting}
                                 />
 
                                 {uploadedFile ? (<SmartMedia file={uploadedFile} className={'media-preview'}/>) :
@@ -240,11 +295,11 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                             </div>
                         </div>
 
-                        <div className={'schedule-checkbox-wrapper'}>
+                        {!editPost && (<div className={'schedule-checkbox-wrapper'}>
                             <input className={`schedule-checkbox ${postNow ? 'checked' : ''} ${posting ? 'disabled' : '' }`} type="checkbox"
                                    checked={postNow} onChange={handleCheckboxChange}/>
                             <label className={'schedule-checkbox-label'}>Do you want to post this now?</label>
-                        </div>
+                        </div>)}
 
                         <div className={'schedule-options'}>
 

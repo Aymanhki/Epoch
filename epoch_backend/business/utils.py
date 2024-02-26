@@ -154,9 +154,9 @@ def get_cors_headers(origin="*"):
     return {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length",
+        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id",
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length",
+        "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id",
     }
 
 
@@ -259,3 +259,69 @@ def terminate_processes_on_port(port):
 
     except Exception as e:
         print(f"Error terminating processes on port {port}: {e}")
+
+
+def get_posts_media(posts):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    posts_media = {}
+
+    for i in range(len(posts)):
+        if posts[i][2] is not None:
+            media_id = posts[i][2]
+            cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (media_id,))
+            post_media = cursor.fetchone()
+            posts_media[i] = post_media
+
+    connection.close()
+
+    return posts_media
+
+def get_post_profile_info(user_id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
+    user = cursor.fetchone()
+    username = user[2]
+    profile_picture_id = user[5]
+    cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (profile_picture_id,))
+    profile_picture = cursor.fetchone()
+    connection.close()
+    profile_picture_type = profile_picture[1]
+    profile_picture_url = profile_picture[5]
+    profile_picture_name = profile_picture[2]
+
+    return username, profile_picture_url, profile_picture_type, profile_picture_name
+
+def get_posts_users_info(posts):
+    posts_users = {}
+
+    for i in range(len(posts)):
+        user_id = posts[i][1]
+        posts_users[i] = get_post_profile_info(user_id)
+
+    return posts_users
+
+def get_post_dict(current_post, posts_media, username, profile_picture_url, profile_picture_type, profile_picture_name, i):
+    post_dict = {}
+    post_dict["post_id"] = current_post[0]
+    post_dict["profile_picture"] = profile_picture_url
+    post_dict["profile_picture_type"] = profile_picture_type
+    post_dict["profile_picture_name"] = profile_picture_name
+    post_dict["username"] = username
+    post_dict["release"] = current_post[5].strftime("%Y-%m-%d %H:%M:%S")
+    post_dict["caption"] = current_post[3]
+    post_dict["created_at"] = current_post[4].strftime("%Y-%m-%d %H:%M:%S")
+
+    if current_post[2] is not None:
+        post_media = posts_media.get(i)
+        post_media = post_media[5]
+
+        post_dict["file_type"] = posts_media.get(i)[1]
+        post_dict["file_name"] = posts_media.get(i)[2]
+        post_dict["file"] = post_media
+    else:
+        post_dict["file"] = None
+        post_dict["file_name"] = None
+
+    return post_dict

@@ -15,5 +15,12 @@ class post_persistence(ABC):
         pass
 
     @abstractmethod
+    def update_post(self, post_id: int, new_post: post):
+        pass
+
+    @abstractmethod
     def get_all_user_posts(self, user_id: int):
+        pass
+
+    def get_all_hashtag_posts(self, hashtag: str):
         pass

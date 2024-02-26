@@ -17,3 +17,9 @@ class access_post_persistence(post_persistence):
 
     def get_all_user_posts(self, user_id: int):
         return self.post_persistence.get_all_user_posts(user_id)
+
+    def get_all_hashtag_posts(self, hashtag: str):
+        return self.post_persistence.get_all_hashtag_posts(hashtag)
+
+    def update_post(self, post_id: int, new_post: post):
+        return self.post_persistence.update_post(post_id, new_post)

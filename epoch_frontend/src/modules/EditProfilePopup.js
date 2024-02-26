@@ -54,7 +54,7 @@ function EditProfilePopup({ onClose, user }) {
     };
     
     return (
-        <div className="edit-popup-overlay">
+        <div className="edit-popup-overlay" onClick={onClose}>
             <div className="edit-popup-content">
                 <button className="close-button" onClick={onClose}>Close</button>
                 <h1>Edit {user.username} Profile ID {user.id}</h1>

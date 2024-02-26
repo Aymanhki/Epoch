@@ -2,10 +2,13 @@ from ..interfaces.post_persistence import post_persistence
 from ...objects.post import post
 from ...objects.media import media
 from ...objects.user import user
-from ...business.utils import get_db_connection, download_file_from_cloud
+from ...business.utils import get_db_connection, get_posts_media, get_post_profile_info, get_post_dict, get_posts_users_info, delete_file_from_bucket
 import base64
 import json
 import datetime
+
+
+
 
 class epoch_post_persistence(post_persistence):
     def __init__(self):
@@ -15,9 +18,9 @@ class epoch_post_persistence(post_persistence):
         connection = get_db_connection()
         cursor = connection.cursor()
         if new_post.media_id is not None:
-            cursor.execute("INSERT INTO posts (user_id, media_id, caption, release) VALUES (%s, %s, %s, %s)", (new_post.user_id, new_post.media_id, new_post.caption, new_post.release))
+            cursor.execute("INSERT INTO posts (user_id, media_id, caption, created_at, release) VALUES (%s, %s, %s, %s, %s)", (new_post.user_id, new_post.media_id, new_post.caption, new_post.created_at, new_post.release))
         else:
-            cursor.execute("INSERT INTO posts (user_id, caption, release) VALUES (%s, %s, %s)", (new_post.user_id, new_post.caption, new_post.release))
+            cursor.execute("INSERT INTO posts (user_id, caption, created_at, release) VALUES (%s, %s, %s, %s)", (new_post.user_id, new_post.caption, new_post.created_at, new_post.release))
 
         connection.commit()
         connection.close()
@@ -25,7 +28,7 @@ class epoch_post_persistence(post_persistence):
     def get_post(self, post_id: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM posts WHERE id=%s", (post_id,))
+        cursor.execute("SELECT * FROM posts WHERE post_id=%s", (post_id,))
         post = cursor.fetchone()
         connection.close()
         return post
@@ -33,7 +36,17 @@ class epoch_post_persistence(post_persistence):
     def remove_post(self, post_id: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("DELETE FROM posts WHERE id=%s", (post_id,))
+        cursor.execute("SELECT * FROM posts WHERE post_id=%s", (post_id,))
+        post_fetch = cursor.fetchone()
+
+        if post_fetch[2] is not None:
+            cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (post_fetch[2],))
+            media_fetch = cursor.fetchone()
+            delete_file_from_bucket(media_fetch[5])
+
+        cursor.execute("DELETE FROM posts WHERE post_id=%s", (post_id,))
+        connection.commit()
+        cursor.execute("DELETE FROM media_content WHERE media_id=%s", (post_fetch[2],))
         connection.commit()
         connection.close()
 
@@ -42,62 +55,55 @@ class epoch_post_persistence(post_persistence):
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM posts WHERE user_id=%s", (user_id,))
         posts = cursor.fetchall()
-        posts_media = {}
-
-        for i in range(len(posts)):
-            if posts[i][2] is not None:
-                media_id = posts[i][2]
-                cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (media_id,))
-                post_media = cursor.fetchone()
-                posts_media[i] =post_media
-
-        cursor.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
-        user = cursor.fetchone()
-        username = user[2]
-        profile_picture_id = user[5]
-        cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (profile_picture_id,))
-        profile_picture = cursor.fetchone()
-        connection.close()
-        profile_picture_type = profile_picture[1]
-        #profile_picture = download_file_from_cloud(profile_picture[5])
-        #profile_picture = base64.b64encode(profile_picture).decode('utf-8')
-        profile_picture_url = profile_picture[5]
-
-
+        posts_media = get_posts_media(posts)
+        username, profile_picture_url, profile_picture_type, profile_picture_name = get_post_profile_info(user_id)
         all_posts = []
+
         for i in range(len(posts)):
             current_post = posts[i]
-            post_dict = {}
-            post_dict["post_id"] = current_post[0]
-            post_dict["profile_picture"] = profile_picture_url
-            post_dict["profile_picture_type"] = profile_picture_type
-            post_dict["profile_picture_name"] = profile_picture[2]
-            post_dict["username"] = username
-            post_dict["release"] = current_post[5].strftime("%Y-%m-%d %H:%M:%S")
-            post_dict["caption"] = current_post[3]
-            post_dict["created_at"] = current_post[4].strftime("%Y-%m-%d %H:%M:%S")
-
-            if current_post[2] is not None:
-                post_media = posts_media.get(i)
-                #post_media = download_file_from_cloud(post_media[5])
-                #post_media = base64.b64encode(post_media).decode('utf-8')
-                post_media = post_media[5]
-
-                post_dict["file_type"] = posts_media.get(i)[1]
-                post_dict["file_name"] = posts_media.get(i)[2]
-
-                if posts_media.get(i)[1].startswith("video/quicktime"):
-                    post_dict["file"] = post_media
-                else:
-                    post_dict["file"] = post_media
-            else:
-                post_dict["file"] = None
-                post_dict["file_name"] = None
-
-
+            post_dict = get_post_dict(current_post, posts_media, username, profile_picture_url, profile_picture_type, profile_picture_name, i)
             all_posts.append(post_dict)
 
+        connection.close()
         return all_posts
 
+    def get_all_hashtag_posts(self, hashtag: str):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        hashtag_pattern = f"%{hashtag}%"
+        cursor.execute("SELECT * FROM posts WHERE caption LIKE %s", (hashtag_pattern,))
+        posts = cursor.fetchall()
+        posts_media = get_posts_media(posts)
+        posts_users_info = get_posts_users_info(posts)
 
+        all_posts = []
 
+        for i in range(len(posts)):
+            current_post = posts[i]
+            user_info = posts_users_info.get(i)
+            post_dict = get_post_dict(current_post, posts_media, user_info[0], user_info[1], user_info[2], user_info[3], i)
+            all_posts.append(post_dict)
+
+        connection.close()
+        return all_posts
+
+    def update_post(self, post_id: int, new_post: post):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM posts WHERE post_id=%s", (post_id,))
+        old_post = cursor.fetchone()
+        old_post_media_id = old_post[2]
+
+        if new_post.media_id is not None and new_post.media_id != -1:
+            if (old_post_media_id is not None and new_post.media_id != old_post_media_id) or old_post_media_id is None:
+                cursor.execute("UPDATE posts SET media_id=%s, caption=%s, release=%s WHERE post_id=%s", (new_post.media_id, new_post.caption, new_post.release, post_id))
+            else:
+                cursor.execute("UPDATE posts SET caption=%s, release=%s WHERE post_id=%s", (new_post.caption, new_post.release, post_id))
+        else:
+            if old_post_media_id is not None and new_post.media_id != -1:
+                cursor.execute("UPDATE posts SET media_id=NULL, caption=%s, release=%s WHERE post_id=%s", (new_post.caption, new_post.release, post_id))
+            else:
+                cursor.execute("UPDATE posts SET caption=%s, release=%s WHERE post_id=%s", (new_post.caption, new_post.release, post_id))
+
+        connection.commit()
+        connection.close()
