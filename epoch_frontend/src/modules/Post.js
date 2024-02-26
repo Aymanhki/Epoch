@@ -130,6 +130,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed}) {
                 setError(false);
                 setErrorMessage('');
                 setDeleted(true);
+                setRefreshFeed(true);
             })
             .catch((error) => {
                 setError(true);

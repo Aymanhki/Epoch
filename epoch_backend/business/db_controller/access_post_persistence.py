@@ -23,3 +23,6 @@ class access_post_persistence(post_persistence):
 
     def update_post(self, post_id: int, new_post: post):
         return self.post_persistence.update_post(post_id, new_post)
+
+    def get_followed_users_posts(self, user_id: int):
+        return self.post_persistence.get_followed_users_posts(user_id)

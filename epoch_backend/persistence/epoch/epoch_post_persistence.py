@@ -107,3 +107,22 @@ class epoch_post_persistence(post_persistence):
 
         connection.commit()
         connection.close()
+
+    def get_followed_users_posts(self, user_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM posts WHERE user_id = %s OR user_id IN (SELECT following_id FROM following WHERE user_id = %s)",(user_id, user_id))
+        posts = cursor.fetchall()
+        posts_media = get_posts_media(posts)
+        posts_users_info = get_posts_users_info(posts)
+
+        all_posts = []
+
+        for i in range(len(posts)):
+            current_post = posts[i]
+            user_info = posts_users_info.get(i)
+            post_dict = get_post_dict(current_post, posts_media, user_info[0], user_info[1], user_info[2], user_info[3], i)
+            all_posts.append(post_dict)
+
+        connection.close()
+        return all_posts
