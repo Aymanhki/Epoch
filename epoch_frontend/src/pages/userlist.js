@@ -8,6 +8,7 @@ import {getUserInfo} from "../services/user";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { TextField } from "@mui/material";
 import '../styles/UserList.css'
+import PostPopup from "../modules/PostPopup";
 
 function Userlist() {
     const [isLoading, setIsLoading] = useState(false);
@@ -15,6 +16,7 @@ function Userlist() {
     const [filteredList, setFilteredList] = useState(null);
     const [changedStatus, changeStatus] = useState(false);
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
+    const [refreshFeed, setRefreshFeed] = useState(false);
     const { user } = useContext(UserContext);
     const { updateUser } = useContext(UserContext);
     const navigate = useNavigate();
@@ -174,6 +176,9 @@ function Userlist() {
                             
                         </ul>
                     </div>
+
+                        <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup} username={user.username} profilePic={user.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
+
                  </>   
                 )
             )}
