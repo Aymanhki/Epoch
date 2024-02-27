@@ -11,6 +11,8 @@ Epoch is a time capsule app that lets users posts things at a later date. These 
 - Alvin Avinante
 - Cedric Berard 
 
-## Project Proposal
-The project proposal can be found in the wiki:
-https://github.com/Aymanhki/Epoch/wiki/Project-Proposal
+## Project Documents
+- [Project Proposal] (https://github.com/Aymanhki/Epoch/wiki/Project-Proposal)
+- [Block Diagram] (/epoch_project_documents/Block Diagram.pdf)
+- [Testing Plan] (/epoch_project_documents/COMP 4350 - Winter 2024 - Testing Plan.pdf)
+- [Sequence Diagrams] (/epoch_project_documents/SequenceDiagrams)
