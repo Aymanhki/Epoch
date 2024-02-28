@@ -39,15 +39,18 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     useEffect(() => {
         const currentTime = new Date();
         const postTime = new Date(post.created_at);
-        const timeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
+        const initialTimeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
 
-        if (timeDifferenceInSeconds > timeAllowedToEditInSeconds) {
-            setEditable(false);
-            setEditing(false);
-        } else {
-            setEditable(true);
-            setEditing(false);
-        }
+        setEditable(initialTimeDifferenceInSeconds <= timeAllowedToEditInSeconds);
+
+        const timerInterval = setInterval(() => {
+            const currentTime = new Date();
+            const timeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
+            setEditable(timeDifferenceInSeconds <= timeAllowedToEditInSeconds);
+        }, 1000);
+
+        return () => clearInterval(timerInterval);
+
 
         const date = new Date(post.release);
         setReleaseMonth(parseInt(date.getMonth() + 1));
@@ -57,7 +60,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         let hour = date.getHours();
         let finalHour = (hour > 12) ? ((hour - 12) + ':00 PM') : (hour + ':00 AM');
         setReleaseHour(finalHour);
-    }, [post.created_at, post.release]);
+    }, [post.created_at, post.release, timeAllowedToEditInSeconds]);
 
     useEffect(() => {
         if(!showPostPopup) {
@@ -83,7 +86,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                         setError(true);
                         setErrorMessage(error);
                         setFavorited(true);
-                        setFavoritedByCount(favoritedByCount + 1);
+                        setFavoritedByCount(favoritedByCount);
                         setTimeout(() => {
                             setError(false);
                             setErrorMessage('');
@@ -97,7 +100,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     .catch((error) => {
                         setError(true);
                         setFavorited(false);
-                        setFavoritedByCount(favoritedByCount - 1);
+                        setFavoritedByCount(favoritedByCount);
                         setErrorMessage(error);
                         setTimeout(() => {
                             setError(false);

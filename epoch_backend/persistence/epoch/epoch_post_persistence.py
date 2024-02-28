@@ -36,20 +36,29 @@ class epoch_post_persistence(post_persistence):
     def remove_post(self, post_id: int):
         connection = get_db_connection()
         cursor = connection.cursor()
+
         cursor.execute("SELECT * FROM posts WHERE post_id=%s", (post_id,))
         post_fetch = cursor.fetchone()
 
-        if post_fetch[2] is not None:
-            cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (post_fetch[2],))
-            media_fetch = cursor.fetchone()
-            delete_file_from_bucket(media_fetch[5])
+        if post_fetch:
+            media_id = post_fetch[2]
+            cursor.execute(f"SELECT * FROM posts WHERE media_id=%s", (media_id,))
+            reference_count = len(cursor.fetchall())
+            cursor.execute("SELECT * FROM users WHERE profile_pic=%s", (media_id,))
+            reference_count += len(cursor.fetchall())
+            cursor.execute("SELECT * FROM users WHERE background_pic=%s", (media_id,))
+            reference_count += len(cursor.fetchall())
 
-        cursor.execute("DELETE FROM favorites WHERE post_id=%s", (post_id,))
-        connection.commit()
-        cursor.execute("DELETE FROM posts WHERE post_id=%s", (post_id,))
-        connection.commit()
-        cursor.execute("DELETE FROM media_content WHERE media_id=%s", (post_fetch[2],))
-        connection.commit()
+            if reference_count == 1:
+                cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (media_id,))
+                media_fetch = cursor.fetchone()
+                delete_file_from_bucket(media_fetch[5])
+                cursor.execute("DELETE FROM media_content WHERE media_id=%s", (media_id,))
+
+            cursor.execute("DELETE FROM favorites WHERE post_id=%s", (post_id,))
+            cursor.execute("DELETE FROM posts WHERE post_id=%s", (post_id,))
+            connection.commit()
+
         connection.close()
 
     def get_all_user_posts(self, user_id: int):
