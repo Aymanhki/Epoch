@@ -59,9 +59,8 @@ CREATE TABLE IF NOT EXISTS favorites (
 );
 
 
-INSERT INTO media_content (media_id, content_type, file_name, path)
+INSERT INTO media_content (content_type, file_name, path)
 SELECT
-    1,
     'image/png',
     'default_pfp.png',
     'https://storage.googleapis.com/epoch-cloud-storage-media/epoch-media/default_pfp.png'
