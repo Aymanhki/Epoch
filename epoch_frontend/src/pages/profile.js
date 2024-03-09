@@ -33,8 +33,8 @@ function Profile() {
     const [showOverlay, setShowOverlay] = useState(false);
     const [overlayImageUrl, setOverlayImageUrl] = useState('');
 
-    const[followerCount, setFollowerCount] = useState(0);
-    const[followingCount, setFollowingCount] = useState(0);
+    const[followerCount, setFollowerCount] = useState("....");
+    const[followingCount, setFollowingCount] = useState("....");
     const[followerList, setFollowerList] = useState({});
     const[followingList, setFollowingList] = useState({});
 
@@ -43,11 +43,14 @@ function Profile() {
             unfollowAccount(target);
             setIsFollowingPrompt('Follow');
             setIsFollowing(false);
+            setFollowerCount(followerCount - 1);
         } else {
             followAccount(target);
             setIsFollowingPrompt('Unfollow');
             setIsFollowing(true);
+            setFollowerCount(followerCount + 1);
         }
+        setIsCurrentUser(false);
     }
 
     const handleProfilePhotoClick = (imageUrl) => {
