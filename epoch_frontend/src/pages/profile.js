@@ -1,5 +1,5 @@
 import {getUserInfo, getUsernameInfo} from '../services/user';
-import {getFollowingList, unfollowAccount, followAccount} from '../services/following';
+import {getFollowingList, unfollowAccount, followAccount, profileFollowNetwork} from '../services/following';
 import React, {useState, useEffect, useContext} from 'react';
 import {useParams} from 'react-router-dom';
 import {NotFound} from "./notFound";
@@ -33,6 +33,11 @@ function Profile() {
     const [showOverlay, setShowOverlay] = useState(false);
     const [overlayImageUrl, setOverlayImageUrl] = useState('');
 
+    const[followerCount, setFollowerCount] = useState(0);
+    const[followingCount, setFollowingCount] = useState(0);
+    const[followerList, setFollowerList] = useState({});
+    const[followingList, setFollowingList] = useState({});
+
     function clickedFollow(target, isFollowing) {
         if (isFollowing) {
             unfollowAccount(target);
@@ -48,6 +53,7 @@ function Profile() {
     const handleProfilePhotoClick = (imageUrl) => {
         setOverlayImageUrl(imageUrl);
         setShowOverlay(true);
+        console.log(isCurrentUser, user, viewedId);
     };
 
     const closeOverlay = () => {
@@ -94,7 +100,7 @@ function Profile() {
 
     useEffect(() => {
         if (viewedId && user) {
-            getFollowingList()
+            getFollowingList("self")
                 .then(data => {
                     for (var i in data) {
                         if (data[i].following_id === viewedId) {
@@ -106,6 +112,27 @@ function Profile() {
         }
 
     }, [getFollowingList, setIsFollowing, setIsFollowingPrompt, viewedId]);
+
+    useEffect(() => {
+        if(isCurrentUser) {
+            profileFollowNetwork("self")
+                .then(data =>{
+                    setFollowingCount(data[0]);
+                    setFollowerCount(data[1]);
+                    setFollowingList(data[2]);
+                    setFollowerList(data[3]);
+                })
+        }
+        else if(viewedId && viewedId > -1) {
+            profileFollowNetwork(viewedId)
+                .then(data =>{
+                    setFollowingCount(data[0]);
+                    setFollowerCount(data[1]);
+                    setFollowingList(data[2]);
+                    setFollowerList(data[3]);
+                })
+        }
+    },[profileFollowNetwork, isCurrentUser, viewedId, user]);
 
     if (!user && !userInfo) {
         return <Spinner/>
@@ -169,6 +196,10 @@ function Profile() {
                                             onClick={clickedFollow.bind(this, viewedId, isFollowing)}> {isFollowingPrompt} </button>
                                 )
                             )}
+                            <body className="counts">
+                                <div className="followingCount">following: {followingCount}</div>
+                                <div className="followingCount">followers: {followerCount}</div>
+                            </body>
                         </div>
                         <div className="profile-feed">
                             {user ? (

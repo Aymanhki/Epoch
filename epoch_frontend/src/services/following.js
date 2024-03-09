@@ -49,8 +49,9 @@ function getAccountList() {
     });
 }
 
-function getFollowingList() {
+function getFollowingList(targetAcc) {
     const session_id = getCookie('epoch_session_id');
+    
     if (!session_id) {
         return;
     }
@@ -58,7 +59,7 @@ function getFollowingList() {
         var http = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        http.open("GET",`${serverUrl}/api/follow/followingList/`, true );
+        http.open("POST",`${serverUrl}/api/follow/followingList/`, true );
         http.setRequestHeader("Content-Type", "application/json");
         http.withCredentials = true;
         http.timeout = 10000;
@@ -90,14 +91,61 @@ function getFollowingList() {
             reject("following List Request aborted");
         }
 
-        http.send(JSON.stringify({session_id: session_id}));
+        http.send(JSON.stringify({session_id: session_id, target: targetAcc}));
+    });
+
+}
+
+function getFollowerList(targetAcc) {
+    const session_id = getCookie('epoch_session_id');
+    
+    if (!session_id) {
+        return;
+    }
+    return new Promise((resolve, reject) => {
+        var http = new XMLHttpRequest();
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+        http.open("POST",`${serverUrl}/api/follow/followerList/`, true );
+        http.setRequestHeader("Content-Type", "application/json");
+        http.withCredentials = true;
+        http.timeout = 10000;
+
+        http.onreadystatechange = function () {
+            if (http.readyState === 4) {
+                if (http.status === 200) {
+                    const followerList = JSON.parse(http.responseText);
+                    resolve(followerList);
+                } else {
+                    if (http.status !== 0) {
+                        reject(http.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
+                }
+            }
+        };
+
+        http.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        http.onerror = function () {
+            reject("An error occurred sending follower list request");
+        }
+
+        http.onabort = function () {
+            reject("follower List Request aborted");
+        }
+
+        http.send(JSON.stringify({session_id: session_id, target: targetAcc}));
     });
 
 }
 
 async function fillUserList() {
     var users = await getAccountList();
-    var following = await getFollowingList();
+    var following = await getFollowingList("self");
 
     for (var i in users) {
         users[i].isFollowing = false;
@@ -115,6 +163,15 @@ async function fillUserList() {
         });
     }
     return users;
+}
+
+async function profileFollowNetwork(accountID){
+    var following = await getFollowingList(accountID);
+    var followers = await getFollowerList(accountID);
+    var followerCount = followers.length;
+    var followingCount = following.length;
+
+    return [followingCount, followerCount, following, followers];
 }
 
 function followAccount(target) {
@@ -207,4 +264,4 @@ function unfollowAccount(target) {
 
 }
 
-module.exports = {followAccount, unfollowAccount, fillUserList, getFollowingList}
+module.exports = {followAccount, unfollowAccount, fillUserList, getFollowingList, profileFollowNetwork}
