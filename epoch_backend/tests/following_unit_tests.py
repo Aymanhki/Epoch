@@ -64,18 +64,18 @@ class following_unit_tests(unittest.TestCase):
         assert response[2] != None
 
     def test_3_following_list_valid_id(self):
-        response = get_following_list("valid_id", MockSessionPersistence(), MockUserPersistence())
+        response = get_following_list("valid_id", MockSessionPersistence(), MockUserPersistence(), "self")
         print(response)
         assert response[0] == 200
         assert response[2] != None
     def test_4_following_list_invalid_id(self):
-        response = get_following_list("invalid_id", MockSessionPersistence(), MockUserPersistence())
+        response = get_following_list("invalid_id", MockSessionPersistence(), MockUserPersistence(), "self")
         print(response)
         assert response[0] == 500
         assert response[1] == "Could not retrieve following list"
         assert response[2] != None
     def test_5_following_list_invalid_data(self):
-        response = get_following_list("something_wrong", MockSessionPersistence(), MockUserPersistence())
+        response = get_following_list("something_wrong", MockSessionPersistence(), MockUserPersistence(), "self")
         print(response)
         assert response[0] == 500
         assert response[1] == "No valid session"

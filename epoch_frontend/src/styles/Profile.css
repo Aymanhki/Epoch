@@ -8,7 +8,24 @@
     width: 50%;
 }
 
+.counts-wrapper{
+    display: table;
+    margin: auto;
+    justify-content: center;
+    
+}
 
+.follower-count{
+    padding: 1rem;
+    display: table-cell;
+    cursor: pointer;
+}
+
+.following-count{
+    padding: 1rem;
+    display: table-cell;
+    cursor: pointer;
+}
 
 .profile-info-wrapper {
     text-align: center;
@@ -24,6 +41,7 @@
 }
 
 .profile-pic {
+    cursor: pointer;
     position: relative;
     width: 10rem;
     height: 10rem;
@@ -36,6 +54,7 @@
 }
 
 .background-pic {
+    cursor: pointer;
     position: absolute;
     top: 0;
     left: 0;

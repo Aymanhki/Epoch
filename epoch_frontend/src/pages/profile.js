@@ -37,18 +37,21 @@ function Profile() {
     const[followingCount, setFollowingCount] = useState("....");
     const[followerList, setFollowerList] = useState({});
     const[followingList, setFollowingList] = useState({});
+    const[popupList, setPopupList] = useState({});
+    const[showPopupList, setShowPopupList] = useState(false);
+    const[showingFol, setShowingFol] = useState(true);
 
     function clickedFollow(target, isFollowing) {
         if (isFollowing) {
             unfollowAccount(target);
             setIsFollowingPrompt('Follow');
             setIsFollowing(false);
-            setFollowerCount(followerCount - 1);
+            setFollowerCount("...");
         } else {
             followAccount(target);
             setIsFollowingPrompt('Unfollow');
             setIsFollowing(true);
-            setFollowerCount(followerCount + 1);
+            setFollowerCount("...");
         }
         setIsCurrentUser(false);
     }
@@ -56,7 +59,16 @@ function Profile() {
     const handleProfilePhotoClick = (imageUrl) => {
         setOverlayImageUrl(imageUrl);
         setShowOverlay(true);
-        console.log(isCurrentUser, user, viewedId);
+    };
+
+    const handleCountClick = (countClicked) => {
+        setShowPopupList(!showPopupList);
+        if (countClicked === "following") {
+            setShowingFol(false); 
+        }
+        else {
+            setShowingFol(true);
+        }
     };
 
     const closeOverlay = () => {
@@ -64,12 +76,21 @@ function Profile() {
         setOverlayImageUrl('');
     };
 
+    const setFollowDefaults = () => {
+        setShowPopupList(false);
+        setFollowerCount("....");
+        setFollowingCount("....");
+        setPopupList({});
+        setShowingFol(false);
+    }
+
     useEffect(() => {
         setIsLoading(true);
         if (!user) {
             getUserInfo()
                 .then(data => {
                     updateUser(data);
+                    setFollowDefaults();
                     setIsLoading(false);
                 })
                 .catch(error => {
@@ -80,6 +101,7 @@ function Profile() {
     }, [setIsLoading, setIsCurrentUser, updateUser, user]);
 
     useEffect(() => {
+        setFollowDefaults();
         if (user && (user.username === username || username === "profile")) {
             setUserInfo(user);
             setIsCurrentUser(true);
@@ -114,7 +136,7 @@ function Profile() {
                 })
         }
 
-    }, [getFollowingList, setIsFollowing, setIsFollowingPrompt, viewedId]);
+    }, [setIsFollowing, setIsFollowingPrompt, viewedId, user]);
 
     useEffect(() => {
         if(isCurrentUser) {
@@ -135,7 +157,17 @@ function Profile() {
                     setFollowerList(data[3]);
                 })
         }
-    },[profileFollowNetwork, isCurrentUser, viewedId, user]);
+    },[isCurrentUser, viewedId, user, isFollowing]);
+
+    useEffect(() => {
+        if(showingFol) {
+            setPopupList(followerList);
+        }
+        else {
+            setPopupList(followingList);
+        }
+
+    },[showPopupList, followerList, followingList, showingFol]);
 
     if (!user && !userInfo) {
         return <Spinner/>
@@ -199,11 +231,28 @@ function Profile() {
                                             onClick={clickedFollow.bind(this, viewedId, isFollowing)}> {isFollowingPrompt} </button>
                                 )
                             )}
-                            <body className="counts">
-                                <div className="followingCount">following: {followingCount}</div>
-                                <div className="followingCount">followers: {followerCount}</div>
+                            <body className="counts-wrapper">
+                                <div className="following-count" onClick={() => handleCountClick("following")}>
+                                    Following: {followingCount}
+                                </div>
+                                <div className="follower-count" onClick={() => handleCountClick("followers")}>
+                                    Followers: {followerCount}
+                                </div>
                             </body>
                         </div>
+                        <ul className="popup-user-list">
+                            {showPopupList ? (
+                                    popupList && popupList.map && popupList.map (account =>
+                                    <li key = {account.user_id} className="popup-list-item">
+                                        <p>
+                                            <b className="username" onClick={() => navigate('/epoch/'+
+                                                account.username)}>@{account.username}
+                                            </b>
+                                        </p>
+                                    </li>
+                                    )
+                            ):(<body></body>)}
+                        </ul>
                         <div className="profile-feed">
                             {user ? (
                                 <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true}
