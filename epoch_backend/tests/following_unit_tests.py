@@ -1,6 +1,6 @@
 import unittest
 import pytest
-from epoch_backend.business.api_endpoints.following_endpoints import follow_user, get_account_list, get_following_list, unfollow_user
+from epoch_backend.business.api_endpoints.following_endpoints import follow_user, get_account_list, get_follower_list, get_following_list, unfollow_user
 
 class MockUserPersistence():
     def get_all_users(self, user_id):
@@ -12,6 +12,14 @@ class MockUserPersistence():
             raise Exception("invalid session id")
             
     def get_following(self, user_id):
+        if user_id == 1:
+            return "some data"
+        elif user_id == 24:
+            raise Exception("invalid user id")
+        else:
+            raise Exception("invalid session id")
+        
+    def get_followers(self, user_id):
         if user_id == 1:
             return "some data"
         elif user_id == 24:
@@ -113,6 +121,24 @@ class following_unit_tests(unittest.TestCase):
         assert response[0] == 500
         assert response[1] == "Could not unfollow user: error unfollowing"
 
+    
+    def test_13_follower_list_invalid(self):
+        response = get_follower_list("invalid_id", MockSessionPersistence(), MockUserPersistence(), "self")
+        print(response)
+        assert response[0] == 500
+        assert response[2] != None
+    
+    def test_14_follower_list_valid(self):
+        response = get_follower_list("valid_id", MockSessionPersistence(), MockUserPersistence(), "self")
+        print(response)
+        assert response[0] == 200
+        assert response[2] != None
+
+    def test_15_follower_list_notself(self):
+        response = get_follower_list("valid_id", MockSessionPersistence(), MockUserPersistence(), "1")
+        print(response)
+        assert response[0] == 200
+        assert response[2] != None
 
 if __name__ == '__main__':
     unittest.main()

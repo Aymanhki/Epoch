@@ -155,18 +155,32 @@ class webserver_tests(unittest.TestCase):
 
     def test_h_get_following(self):
         print("Getting following list...")
-
-        response = requests.get('http://localhost:8080/api/follow/followingList/', cookies={'epoch_session_id': self.get_session_id()})
+        response = requests.post('http://localhost:8080/api/follow/followingList/',
+                                 json={'target': "self"},
+                                 cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
         response_json = response.json()
         self.assertNotEqual(len(response_json), 0)
         self.assertEqual(response_json[0]['following_id'], self.get_follow_id())
         self.assertFalse('user_id' in  response_json)
+
+        response = requests.post('http://localhost:8080/api/follow/followingList/',
+                                 json={'target': '1'},
+                                 cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 200)
         print("Got following list.")
 
     def test_i_get_followers(self):
-        # not implemented yet
-        pass
+        print("Getting follower list...")
+        response = requests.post('http://localhost:8080/api/follow/followingList/', 
+                                 json={'target': "self"},
+                                 cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 200)
+        response = requests.post('http://localhost:8080/api/follow/followingList/', 
+                                 json={'target': "1"},
+                                 cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 200)
+        print("Got follower list...")
 
     def test_j_dupe_follow(self):
         print("Attempting dupe follow...")
