@@ -156,8 +156,10 @@ class epoch_user_persistence(user_persistence):
         cursor.close()
         connection.close()
         rowHeaders = [name[0] for name in cursor.description]
+        rowHeaders.append("username")
         json_data = []
         for value in result:
+            value = value + (self.get_username(int(value[0]))[0][0],)
             json_data.append(dict(zip(rowHeaders, value)))
         return json.dumps(json_data)
     
@@ -174,7 +176,7 @@ class epoch_user_persistence(user_persistence):
         rowHeaders.append("username")
         json_data = []
         for value in result:
-            value = value + ("loading...",) # adding placeholder for following username since following usernames are added to this object client side
+            value = value + (self.get_username(int(value[0]))[0][0],)
             json_data.append(dict(zip(rowHeaders, value)))
         return json.dumps(json_data)
     
