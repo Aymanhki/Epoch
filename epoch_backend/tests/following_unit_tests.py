@@ -140,6 +140,29 @@ class following_unit_tests(unittest.TestCase):
         assert response[0] == 200
         assert response[2] != None
 
+    def test_16_following_list_notself(self):
+        response = get_following_list("valid_id", MockSessionPersistence(), MockUserPersistence(), "1")
+        print(response)
+        assert response[0] == 200
+        assert response[2] != None
+
+    def test_17_follower_list_invalid_input(self):
+        response = get_follower_list("something_wrong", MockSessionPersistence(), MockUserPersistence(), "self")
+        print(response)
+        assert response[0] == 500
+        assert response[1] == "No valid session"
+        assert response[2] != None
+
+    def test_18_follow_empty_target(self):
+        response = follow_user("valid_id", None, MockSessionPersistence(), MockUserPersistence())
+        print(response)
+        assert response[0] == 500
+
+    def test_19_unfollow_empty_target(self):
+        response = unfollow_user("valid_id", None, MockSessionPersistence(), MockUserPersistence())
+        print(response)
+        assert response[0] == 500
+
 if __name__ == '__main__':
     unittest.main()
 
