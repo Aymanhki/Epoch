@@ -62,6 +62,7 @@ function Profile() {
     };
 
     const handleCountClick = (countClicked) => {
+        setPopupList({});
         setShowPopupList(!showPopupList);
         if (countClicked === "following") {
             setShowingFol(false); 
@@ -86,6 +87,7 @@ function Profile() {
 
     useEffect(() => {
         setIsLoading(true);
+        setFollowDefaults();
         if (!user) {
             getUserInfo()
                 .then(data => {
@@ -231,14 +233,14 @@ function Profile() {
                                             onClick={clickedFollow.bind(this, viewedId, isFollowing)}> {isFollowingPrompt} </button>
                                 )
                             )}
-                            <body className="counts-wrapper">
-                                <div className="following-count" onClick={() => handleCountClick("following")}>
+                            <div className="counts-wrapper">
+                                <button className="following-count" onClick={() => handleCountClick("following")} style={{backgroundColor: !showingFol && showPopupList ? "#42adf5":"#ffffff"}}>
                                     Following: {followingCount}
-                                </div>
-                                <div className="follower-count" onClick={() => handleCountClick("followers")}>
+                                </button>
+                                <button className="follower-count" onClick={() => handleCountClick("followers")} style={{backgroundColor: showingFol && showPopupList ? "#42adf5":"#ffffff"}}>
                                     Followers: {followerCount}
-                                </div>
-                            </body>
+                                </button>
+                            </div>
                         </div>
                         <ul className="popup-user-list">
                             {showPopupList ? (
