@@ -15,14 +15,27 @@
     
 }
 
+.follower-count:hover{
+    color: #878787;
+    
+}
+
 .follower-count{
     padding: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
     display: table-cell;
     cursor: pointer;
 }
 
+.following-count:hover{
+    color: #878787;
+}
+
 .following-count{
     padding: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
     display: table-cell;
     cursor: pointer;
 }
@@ -151,6 +164,26 @@
 .profile-favorite-button:hover {
     background-color: red;
     color: white;
+}
+
+.popup-user-list{
+    justify-content: center;
+    margin:auto;
+    display:block;
+    margin-bottom: 1rem;
+    border-radius: .5rem;
+    padding: 1rem;
+}
+
+.popup-list-item{
+    text-align: center;
+    justify-content: center;
+    display:block;
+    border-radius: 1rem;
+    padding: .7rem;
+    margin: 1rem;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    position: relative;
 }
 
 @media (max-width: 1024px) {
