@@ -1,14 +1,13 @@
-import {fillUserList, followAccount, unfollowAccount} from "../services/following";
+import {fillUserList} from "../services/following";
 import React, {useState, useEffect, useContext} from 'react';
 import {useNavigate} from "react-router-dom";
 import {Spinner} from '../modules/Spinner'
 import NavBar from "../modules/NavBar";
 import {UserContext} from "../services/UserContext";
-import {getUserInfo} from "../services/user";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import {TextField} from "@mui/material";
 import '../styles/UserList.css'
 import PostPopup from "../modules/PostPopup";
+import UserListModule from "../modules/UserListModule";
 
 function Userlist() {
     const [isLoading, setIsLoading] = useState(false);
@@ -27,55 +26,6 @@ function Userlist() {
     let handleChange = (event) => {
         setSearchInput(event.target.value.toLowerCase());
     };
-
-    function getFollowingPrompt(isFollowing) {
-        if (isFollowing) {
-            return "Unfollow";
-        }
-        return "Follow";
-    }
-
-    function handleFollow(target, isFollowing) {
-        if (isFollowing) {
-            unfollowAccount(target)
-                .catch(error => {
-                    console.log("Error unfollowing user:", error);
-                })
-        } else {
-            followAccount(target)
-                .catch(error => {
-                    console.log("Error following user:", error);
-                })
-        }
-
-        for (var i in userList) {
-            if (userList[i].user_id === target) {
-                userList[i].isFollowing = !isFollowing;
-            }
-        }
-
-        // userList.sort(function(a,b){
-        //     return b.isFollowing - a.isFollowing;
-        // });
-
-        setUserList(userList);
-        changeStatus(!changedStatus);
-    }
-
-    useEffect(() => {
-        setIsLoading(true);
-        if (!user) {
-            getUserInfo()
-                .then(data => {
-                    updateUser(data);
-                    setIsLoading(false);
-                })
-                .catch(error => {
-                    setIsLoading(false);
-                    updateUser(null);
-                });
-        }
-    }, [setIsLoading, updateUser, user]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -127,13 +77,6 @@ function Userlist() {
         };
     }, []);
 
-
-    useEffect(() => {
-        if (!user) {
-            navigate('/epoch/home/');
-        }
-    }, [user, navigate]);
-
     return (
         <>
             {!user ? (navigate('/epoch/home/')) : (
@@ -159,71 +102,9 @@ function Userlist() {
                                                }}
                                     />
                                 </div>
-
-
-                                <ul className="user-list">
-                                    {filteredList && searchInput ? (
-                                        filteredList && filteredList.map && filteredList.map(account =>
-                                            <li key={account.user_id} className={"user-list-items-container"}>
-
-                                                <div className="user-list-item">
-                                                    <div className="user-list-item-profile-icon-container">
-                                                        <AccountCircleOutlinedIcon/>
-                                                    </div>
-
-                                                    <div className="user-list-item-username-container">
-                                                        <b className="username"
-                                                           onClick={() => navigate('/epoch/' + account.username)}>@{account.username} </b>
-                                                    </div>
-
-                                                    <div className="user-list-item-following-status-container">
-                                                        {account.isFollowing ?
-                                                            <b className="following-status"> (following)</b> :
-                                                            <b> </b>}
-                                                    </div>
-
-                                                    <div className="user-list-item-follow-button-container">
-                                                        <button type="button" className="search-follow-button"
-                                                                onClick={() => {
-                                                                    handleFollow(account.user_id, account.isFollowing)
-                                                                }}>{getFollowingPrompt(account.isFollowing)}</button>
-                                                    </div>
-
-                                                </div>
-                                            </li>
-                                        )
-                                    ) : (
-                                        userList && userList.map && userList.map(account =>
-                                            <li key={account.user_id} className={"user-list-items-container"}>
-
-                                                <div className="user-list-item">
-                                                    <div className="user-list-item-profile-icon-container">
-                                                        <AccountCircleOutlinedIcon/>
-                                                    </div>
-
-                                                    <div className="user-list-item-username-container">
-                                                        <b className="username"
-                                                           onClick={() => navigate('/epoch/' + account.username)}>@{account.username} </b>
-                                                    </div>
-
-                                                    <div className="user-list-item-following-status-container">
-                                                        {account.isFollowing ?
-                                                            <b className="following-status"> (following)</b> :
-                                                            <b> </b>}
-                                                    </div>
-
-                                                    <div className="user-list-item-follow-button-container">
-                                                        <button type="button" className="search-follow-button"
-                                                                onClick={() => {
-                                                                    handleFollow(account.user_id, account.isFollowing)
-                                                                }}>{getFollowingPrompt(account.isFollowing)}</button>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        )
-                                    )}
-
-                                </ul>
+                                {filteredList ? <UserListModule userList={filteredList}/> : <UserListModule userList={userList}/>}
+                                
+                                
                             </div>
                         </div>
                         <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
