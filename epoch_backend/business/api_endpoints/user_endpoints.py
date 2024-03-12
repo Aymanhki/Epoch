@@ -1,5 +1,6 @@
 import datetime
 import json
+import re
 from ..utils import send_response, get_cors_headers, get_origin_from_headers, upload_file_to_cloud, download_file_from_cloud, is_file_in_bucket
 from ..db_controller.access_user_persistence import access_user_persistence
 from ..db_controller.access_media_persistence import access_media_persistence
@@ -247,7 +248,6 @@ def delete_by_username(conn, request_data):
 
 
 def update_user_info(conn, request_data):
-    # parse out request information, userid, username, bio, profile pic
     print('******************************************')
     headers, body = request_data.split("\r\n\r\n", 1)
 
@@ -259,13 +259,26 @@ def update_user_info(conn, request_data):
 
     while len(body) < content_length:
         body += conn.recv(1024).decode('UTF-8')
-    data = json.loads(body)
-    origin = get_origin_from_headers(headers)
+    try:
+        data = json.loads(body)
+        origin = get_origin_from_headers(headers)
+        print(f'{data}')
+        id = data.get('userID')
+        required_fields = ['userID', 'username', 'displayname', 'bio', 'password', 'created_at', 'profile_pic_id']
+        for field in required_fields:
+            if field not in data:
+                send_response(conn, 400, "Bad Request", body=b"Missing required fields", headers=get_cors_headers(origin))
+                return
+        if len(data.get('displayname', '')) > 255 \
+            or not re.match(r'^[a-zA-Z0-9_.@$-]{1,49}$', data.get('username', '')) \
+            or not re.match(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$', data.get('password', '')):
+            
+            send_response(conn, 400, "Bad Request", body=b"Invalid request data", headers=get_cors_headers(origin))
+            return
 
-    print(f'{data}')
-    id = data.get('userID')
-
-    new_user = user(data.get('userID'), data.get('displayname'), data.get('username'),data.get('password'),data.get('bio'), data.get('profile_pic_id'), data.get('created_at'))
-    print(new_user.__dict__)
-    access_user_persistence().update_user(id, new_user)
-    send_response(conn, 200, "OK", body=b"", headers=get_cors_headers(origin))
+        new_user = user(data.get('userID'), data.get('displayname'), data.get('username'),data.get('password'),data.get('bio'), data.get('profile_pic_id'), data.get('created_at'))
+        print(new_user.__dict__)
+        access_user_persistence().update_user(id, new_user)
+        send_response(conn, 200, "OK", body=b"", headers=get_cors_headers(origin))
+    except json.JSONDecodeError:
+        send_response(conn, 400, "Bad Request", body=b"Invalid JSON data", headers=get_cors_headers(origin))

@@ -103,7 +103,7 @@ function EditProfilePopup({ onClose, user }) {
         <div className="edit-popup-overlay">
             <div className="edit-popup-content">
                 <button className="close-button" onClick={onClose}>Close</button>
-                <h1>Edit {user.username} Profile ID {user.id}</h1>
+                <h1>Edit your profile</h1>
                 <form onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="username">Username:</label>
@@ -117,10 +117,10 @@ function EditProfilePopup({ onClose, user }) {
                     </div>
                     <div>
                         <label htmlFor="bio">Bio:</label>
-                            <textarea id="bio" name="bioField" value={formData.bio} onChange={handleInputChange} />
+                            <textarea id="bioField" name="bio" value={formData.bio} onChange={handleInputChange} />
                     </div>
                     <div>
-                        <label htmlFor="currentPassword">Current Password is {user.password}:</label>
+                        <label htmlFor="currentPassword">Current Password:</label>
                         <input type="password" id="currentPassword" name="currentPassword" value={formData.currentPassword} onChange={handleInputChange} disabled={!isPasswordChanging} />
                     </div>
                     <div>

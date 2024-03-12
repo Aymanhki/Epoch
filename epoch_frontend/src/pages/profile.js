@@ -276,7 +276,7 @@ function Profile() {
                                        refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
 
                             {showEditProfilePopup && <EditProfilePopup user={user}
-                                                                       onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
+                            onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
                         </>
                     )}
 
