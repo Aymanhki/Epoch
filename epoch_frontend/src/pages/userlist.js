@@ -104,7 +104,6 @@ function Userlist() {
             }
             setFilteredList(tempFiltered);
         }
-        console.log(filteredList);
         changeStatus(!changedStatus);
     },[searchInput, changedStatus, filteredList, userList]);
 

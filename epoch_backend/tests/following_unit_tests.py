@@ -1,6 +1,6 @@
 import unittest
 import pytest
-from epoch_backend.business.api_endpoints.following_endpoints import follow_user, get_account_list, get_following_list, unfollow_user
+from epoch_backend.business.api_endpoints.following_endpoints import follow_user, get_account_list, get_follower_list, get_following_list, unfollow_user
 
 class MockUserPersistence():
     def get_all_users(self, user_id):
@@ -12,6 +12,14 @@ class MockUserPersistence():
             raise Exception("invalid session id")
             
     def get_following(self, user_id):
+        if user_id == 1:
+            return "some data"
+        elif user_id == 24:
+            raise Exception("invalid user id")
+        else:
+            raise Exception("invalid session id")
+        
+    def get_followers(self, user_id):
         if user_id == 1:
             return "some data"
         elif user_id == 24:
@@ -64,18 +72,18 @@ class following_unit_tests(unittest.TestCase):
         assert response[2] != None
 
     def test_3_following_list_valid_id(self):
-        response = get_following_list("valid_id", MockSessionPersistence(), MockUserPersistence())
+        response = get_following_list("valid_id", MockSessionPersistence(), MockUserPersistence(), "self")
         print(response)
         assert response[0] == 200
         assert response[2] != None
     def test_4_following_list_invalid_id(self):
-        response = get_following_list("invalid_id", MockSessionPersistence(), MockUserPersistence())
+        response = get_following_list("invalid_id", MockSessionPersistence(), MockUserPersistence(), "self")
         print(response)
         assert response[0] == 500
         assert response[1] == "Could not retrieve following list"
         assert response[2] != None
     def test_5_following_list_invalid_data(self):
-        response = get_following_list("something_wrong", MockSessionPersistence(), MockUserPersistence())
+        response = get_following_list("something_wrong", MockSessionPersistence(), MockUserPersistence(), "self")
         print(response)
         assert response[0] == 500
         assert response[1] == "No valid session"
@@ -113,6 +121,47 @@ class following_unit_tests(unittest.TestCase):
         assert response[0] == 500
         assert response[1] == "Could not unfollow user: error unfollowing"
 
+    
+    def test_13_follower_list_invalid(self):
+        response = get_follower_list("invalid_id", MockSessionPersistence(), MockUserPersistence(), "self")
+        print(response)
+        assert response[0] == 500
+        assert response[2] != None
+    
+    def test_14_follower_list_valid(self):
+        response = get_follower_list("valid_id", MockSessionPersistence(), MockUserPersistence(), "self")
+        print(response)
+        assert response[0] == 200
+        assert response[2] != None
+
+    def test_15_follower_list_notself(self):
+        response = get_follower_list("valid_id", MockSessionPersistence(), MockUserPersistence(), "1")
+        print(response)
+        assert response[0] == 200
+        assert response[2] != None
+
+    def test_16_following_list_notself(self):
+        response = get_following_list("valid_id", MockSessionPersistence(), MockUserPersistence(), "1")
+        print(response)
+        assert response[0] == 200
+        assert response[2] != None
+
+    def test_17_follower_list_invalid_input(self):
+        response = get_follower_list("something_wrong", MockSessionPersistence(), MockUserPersistence(), "self")
+        print(response)
+        assert response[0] == 500
+        assert response[1] == "No valid session"
+        assert response[2] != None
+
+    def test_18_follow_empty_target(self):
+        response = follow_user("valid_id", None, MockSessionPersistence(), MockUserPersistence())
+        print(response)
+        assert response[0] == 500
+
+    def test_19_unfollow_empty_target(self):
+        response = unfollow_user("valid_id", None, MockSessionPersistence(), MockUserPersistence())
+        print(response)
+        assert response[0] == 500
 
 if __name__ == '__main__':
     unittest.main()
