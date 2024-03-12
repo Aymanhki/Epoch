@@ -9,10 +9,12 @@ import '@testing-library/jest-dom';
 import {v4} from "uuid";
 import {UserProvider} from "../services/UserContext"
 import {getAllUserPosts, getFollowedUsersPost} from "../services/post";
-import {beforeEach, jest} from "@jest/globals";
+import {beforeEach, jest, afterEach} from "@jest/globals";
 
 global.XMLHttpRequest = jest.fn();
 let mockOpen, mockSend, mockSetRequestHeader;
+let originalError = console.error;
+
 
 jest.mock("../services/user");
 jest.mock("../services/post");
@@ -32,8 +34,6 @@ const mockUser = {
     profile_pic_name: "test",
     profile_pic_data: "test",
     profile_pic: "test",
-
-
 };
 
 const mockPost = {
@@ -70,6 +70,12 @@ describe('Render Pages', () => {
         });
 
         document.cookie = 'epoch_session_id=test_session_id';
+        originalError = console.error;
+        console.error = jest.fn();
+    });
+
+    afterEach(() => {
+        console.error = originalError;
     });
 
     test("displays user information on profile page", async () => {

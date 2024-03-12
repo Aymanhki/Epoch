@@ -119,7 +119,7 @@ function Profile() {
                 })
                 .catch(error => {
                     setIsLoading(false)
-                    console.error("Error fetching user info:", error);
+                    console.log("Error fetching user info:", error);
                     setUserNotFound(true);
                 });
         }
