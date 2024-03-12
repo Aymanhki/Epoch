@@ -2,7 +2,7 @@ from ..interfaces.post_persistence import post_persistence
 from ...objects.post import post
 from ...objects.media import media
 from ...objects.user import user
-from ...business.utils import get_db_connection, get_posts_media, get_post_profile_info, get_post_dict, get_posts_users_info, delete_file_from_bucket
+from ...business.utils import get_db_connection, get_posts_media, get_profile_info, get_post_dict, get_posts_users_info, delete_file_from_bucket
 import base64
 import json
 import datetime
@@ -29,9 +29,17 @@ class epoch_post_persistence(post_persistence):
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM posts WHERE post_id=%s", (post_id,))
-        post = cursor.fetchone()
-        connection.close()
-        return post
+        fetched_post = cursor.fetchone()
+
+        if fetched_post:
+            post_media = get_posts_media([fetched_post])
+            username, profile_picture_url, profile_picture_type, profile_picture_name = get_profile_info(fetched_post[1])
+            post_dict = get_post_dict(fetched_post, post_media, username, profile_picture_url, profile_picture_type, profile_picture_name, 0)
+
+            connection.close()
+            return post_dict
+        else:
+            return None
 
     def remove_post(self, post_id: int):
         connection = get_db_connection()
@@ -58,7 +66,7 @@ class epoch_post_persistence(post_persistence):
         cursor.execute("SELECT * FROM posts WHERE user_id=%s", (user_id,))
         posts = cursor.fetchall()
         posts_media = get_posts_media(posts)
-        username, profile_picture_url, profile_picture_type, profile_picture_name = get_post_profile_info(user_id)
+        username, profile_picture_url, profile_picture_type, profile_picture_name = get_profile_info(user_id)
         all_posts = []
 
         for i in range(len(posts)):
@@ -166,3 +174,21 @@ class epoch_post_persistence(post_persistence):
 
         connection.close()
         return all_posts
+    
+    def vote_post(self, post_id: int, user_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO votes (user_id, post_id) VALUES (%s, %s)", (user_id, post_id))
+        connection.commit()
+        cursor.execute("UPDATE posts SET votes_count = votes_count + 1 WHERE post_id = %s", (post_id,))
+        connection.commit()
+        connection.close()
+
+    def remove_vote_post(self, post_id: int, user_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM votes WHERE user_id=%s AND post_id=%s", (user_id, post_id))
+        connection.commit()
+        cursor.execute("UPDATE posts SET votes_count = votes_count - 1 WHERE post_id = %s", (post_id,))
+        connection.commit()
+        connection.close()

@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS users (
     background_pic INT REFERENCES media_content(media_id) NULL
 );
 
-
 CREATE TABLE IF NOT EXISTS posts (
     post_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id),
@@ -31,7 +30,8 @@ CREATE TABLE IF NOT EXISTS posts (
     caption TEXT,
     created_at TIMESTAMP NOT NULL,
     release TIMESTAMP NOT NULL,
-    favorite_count INT DEFAULT 0 NOT NULL
+    favorite_count INT DEFAULT 0 NOT NULL,
+    votes_count INT DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
@@ -56,6 +56,20 @@ CREATE TABLE IF NOT EXISTS favorites (
     user_id INT REFERENCES users(user_id),
     post_id INT REFERENCES posts(post_id),
     PRIMARY KEY (user_id, post_id)
+);
+
+CREATE TABLE IF NOT EXISTS votes (
+    user_id INT REFERENCES users(user_id),
+    post_id INT REFERENCES posts(post_id),
+    PRIMARY KEY (user_id, post_id)
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+    comm_id SERIAL PRIMARY KEY,
+    post_id INT REFERENCES posts(post_id),
+    user_id INT REFERENCES users(user_id),
+    comment TEXT,
+    created_at TIMESTAMP NOT NULL
 );
 
 

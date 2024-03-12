@@ -5,6 +5,7 @@ import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import '../styles/Post.css';
 import {useNavigate} from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
 import {deletePost} from '../services/post';
 import PostPopup from "./PostPopup";
 import {favoritePost, removeFavoritePost} from "../services/post";
@@ -34,6 +35,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [updatingMessage, setUpdatingMessage] = useState('');
     const [favorited, setFavorited] = useState(false);
     const [favoritedByCount, setFavoritedByCount] = useState(0);
+    const location = useLocation(); // Get current location
+    const [showCommentsSection, setShowCommentsSection] = useState(false);
 
 
     useEffect(() => {
@@ -202,6 +205,13 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
     }, [post.favorited_by, postViewer]);
 
+    useEffect(() => {
+        setShowCommentsSection(location.pathname.includes('/comments'));
+    }, [location]);
+
+
+
+
     return (
             <div className={`post ${showFullCaption ? 'post-expanded' : ''}`} style={{display: ( ( (postIsInThePast() || postAdmin) && (!deleted) && ((isInFavorites && favorited) || !isInFavorites) ) ) ? 'block' : 'none'}}>
                 <div className="post-header">
@@ -263,7 +273,10 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                 </div>
 
                 <div className="post-footer">
-                    <button className={"view-comments-button"}>View Comments</button>
+                    {!showCommentsSection && (
+                        <button className={"view-comments-button"} onClick={() => navigate(`/epoch/comments/${post.post_id}`)}>View Comments</button>
+                    )}
+                    
                     {postViewer && (
                         <>
                             <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`} onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>

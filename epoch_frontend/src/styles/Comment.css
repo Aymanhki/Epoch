@@ -1,0 +1,163 @@
+.comments {
+    border-radius: 1rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    width: 99%;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center; 
+   
+}
+
+.comment-header-left {
+    flex: 0 0 auto;
+    margin-right: 1rem;
+}
+
+.comment-profile-photo-container {
+    width: 100px; 
+    height: 100px; 
+    border-radius: 50%; 
+    overflow: hidden; 
+}
+
+.comment-profile-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+}
+
+.comment-header-right {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column; 
+}
+
+.comment-header-info {
+    margin-bottom: 0.5rem; 
+}
+
+.comment-username {
+    margin: 0;
+    cursor: pointer;
+}
+
+.comment-date {
+    margin-bottom: 5px;
+    font-size: 0.8rem;
+}
+
+.comment-text {
+    margin: 0;
+    overflow-wrap: break-word;
+}
+
+
+@media (max-width: 768px) {
+    .post-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 1rem;
+      border-bottom: 0.1rem solid #000000;
+    }
+  
+    .post-header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+  
+    .profile-photo-container {
+      width: 3rem;
+      height: 3rem;
+    }
+  
+    .profile-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  
+    .post-header-info {
+      margin: 0;
+      padding: 0;
+    }
+  
+    .post-username {
+      font-weight: bold;
+      margin: 0;
+      padding: 0;
+    }
+  
+    .post-date {
+      margin: 0;
+      padding: 0;
+    }
+  
+    .post-header-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+  
+    .edit-post-button-icon {
+      box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+      padding: 0.5rem;
+      cursor: pointer;
+      border-radius: 10%;
+    }
+  
+    .edit-post-button-icon:hover {
+      background-color: #333;
+      color: #ffffff;
+    }
+  
+    .post-file {
+      max-width: 100%;
+    }
+  
+    .file-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  
+    .post-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1rem;
+      border-top: 0.1rem solid #000000;
+    }
+  
+    .view-comments-button {
+      padding: 0.5rem 1rem;
+      border-radius: 1rem;
+      background-color: #ffffff;
+      color: #222222;
+      box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+  
+    .view-comments-button:hover {
+      background-color: #333;
+      color: #ffffff;
+      font-weight: bold;
+    }
+}
+
+  
+  /* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .new-post-button {
+        background-color: #ffffff;
+        color: #222222;
+    }
+}
