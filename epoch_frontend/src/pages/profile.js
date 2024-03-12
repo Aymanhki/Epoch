@@ -257,10 +257,18 @@ function Profile() {
                             )
                         )}
                         <div className="counts-wrapper">
-                            <button className="following-count" onClick={() => handleCountClick("following")}>
+                            <button className="following-count" onClick={() => {
+                                if (followingCount > 0) {
+                                    handleCountClick("following")
+                                }
+                            }}>
                                 Following: {followingCount}
                             </button>
-                            <button className="follower-count" onClick={() => handleCountClick("followers")}>
+                            <button className="follower-count" onClick={() => {
+                                if(followerCount > 0) {
+                                    handleCountClick("followers")
+                                }
+                            }}>
                                 Followers: {followerCount}
                             </button>
                         </div>
@@ -284,40 +292,37 @@ function Profile() {
             </div>
         )}
 
-        {/* UserListModal */}
 
 
-                <animated.div
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100vw',
-                        height: '100vh',
-                        backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transform: showUserListModal ? inTransform : outTransform,
-                        zIndex: 1000
-                    }}
-                >
-                    <div className="modal-overlay" onClick={() => setShowUserListModal(false)}></div>
 
-                    <div className="user-list-modal">
-                        <ul className="popup-user-list">
-                            {popupList && popupList.map && popupList.map(account =>
-                                <li key={account.user_id} className="popup-list-item">
-                                    <p>
-                                        <b className="username"
-                                           onClick={() => navigate('/epoch/' + account.username)}>@{account.username}</b>
-                                    </p>
-                                </li>
-                            )}
-                        </ul>
-                    </div>
+            <animated.div
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transform: showUserListModal ? inTransform : outTransform,
+                    zIndex: 1000
+                }}
+            >
+                <div className="modal-overlay" onClick={() => setShowUserListModal(false)}></div>
 
-                </animated.div>
+                <div className="user-list-modal">
+                    <ul className="popup-user-list">
+                        {popupList && popupList.map && popupList.map(account =>
+                            <li key={account.user_id} className="popup-list-item">
+                                <p className="username" onClick={() => navigate('/epoch/' + account.username)}>@{account.username}</p>
+                            </li>
+                        )}
+                    </ul>
+                </div>
+
+            </animated.div>
 
 
             {
