@@ -20,7 +20,6 @@ class access_user_persistence(user_persistence):
         self.user_persistence.remove_user(username)
 
     def update_user(self, id_to_update: int, data):
-        # TODO make this update the persistent data
         self.user_persistence.update_user(id_to_update, data)
 
     def get_all_users(self, user_id: int):

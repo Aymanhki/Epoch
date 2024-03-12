@@ -32,7 +32,6 @@ function Profile() {
     const navigate = useNavigate();
     const [showOverlay, setShowOverlay] = useState(false);
     const [overlayImageUrl, setOverlayImageUrl] = useState('');
-
     const [followerCount, setFollowerCount] = useState("....");
     const [followingCount, setFollowingCount] = useState("....");
     const [followerList, setFollowerList] = useState({});
@@ -92,7 +91,6 @@ function Profile() {
                 .then(data => {
                     updateUser(data);
                     setFollowDefaults();
-                    setIsLoading(false);
                 })
                 .catch(error => {
                     setIsLoading(false);
@@ -106,18 +104,16 @@ function Profile() {
         if (user && (user.username === username || username === "profile")) {
             setUserInfo(user);
             setIsCurrentUser(true);
-            setIsLoading(false);
         } else if (username !== "profile") {
             setIsLoading(true);
             getUsernameInfo(username)
                 .then(data => {
                     setUserInfo(data);
-                    setIsLoading(false);
                     setIsCurrentUser(false);
                     setViewedID(data.id)
                 })
                 .catch(error => {
-                    setIsLoading(false)
+                    setIsLoading(false);
                     console.log("Error fetching user info:", error);
                     setUserNotFound(true);
                 });
@@ -147,6 +143,11 @@ function Profile() {
                     setFollowerCount(data[1]);
                     setFollowingList(data[2]);
                     setFollowerList(data[3]);
+                    setIsLoading(false);
+                })
+                .catch(error => {
+                    console.log("Error fetching follower list:", error);
+                    setUserNotFound(true);
                 })
         } else if (viewedId && viewedId > -1) {
             profileFollowNetwork(viewedId)
@@ -155,7 +156,13 @@ function Profile() {
                     setFollowerCount(data[1]);
                     setFollowingList(data[2]);
                     setFollowerList(data[3]);
+                    setIsLoading(false);
                 })
+                .catch(error => {
+                        console.log("Error fetching follower list:", error);
+                        setUserNotFound(true);
+                    }
+                )
         }
     }, [isCurrentUser, viewedId, user, isFollowing]);
 
@@ -165,7 +172,6 @@ function Profile() {
         } else {
             setPopupList(followingList);
         }
-
     }, [showPopupList, followerList, followingList, showingFol]);
 
     if (!user && !userInfo) {
