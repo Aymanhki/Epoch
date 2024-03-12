@@ -15,28 +15,17 @@
 
 }
 
-.follower-count:hover {
-    color: #878787;
-
-}
-
 .follower-count {
-    padding: 1rem;
+
     margin-left: 1rem;
     margin-right: 1rem;
-    display: table-cell;
     cursor: pointer;
 }
 
-.following-count:hover {
-    color: #878787;
-}
-
 .following-count {
-    padding: 1rem;
+
     margin-left: 1rem;
     margin-right: 1rem;
-    display: table-cell;
     cursor: pointer;
 }
 
@@ -172,10 +161,11 @@
 }
 
 .popup-list-item {
-
-
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
 }
-
 
 .user-list-modal {
     position: absolute;
@@ -183,8 +173,9 @@
     padding: 1rem;
     background-color: white;
     width: 50%;
-    max-height: 100%;
+    max-height: 50%;
     z-index: 1000;
+    overflow-y: auto;
 }
 
 .popup-user-list {
@@ -196,12 +187,19 @@
     padding: 8px 0;
 }
 
+.popup-list-item .p {
+    margin: 0;
+    padding: 0;
+}
+
 .popup-list-item .username {
     cursor: pointer;
     color: #333;
+    padding-left: 1rem;
+    margin-left: 1rem;
+    height: 100%;
 }
 
-/* Overlay */
 .modal-overlay {
     position: absolute;
     top: 0;
@@ -212,9 +210,6 @@
     border-radius: 0.5rem;
     z-index: 1000;
 }
-
-
-
 
 @media (max-width: 1024px) {
     .profile-wrapper {
@@ -230,6 +225,14 @@
         height: 8rem;
         top: 15rem;
         margin-bottom: 15rem;
+    }
+
+    .user-list-modal {
+        width: 80%;
+    }
+
+    .counts-wrapper {
+        margin-bottom: 1rem;
     }
 }
 
@@ -282,6 +285,11 @@
     .follow-button:hover {
         font-size: 0.5rem;
     }
+
+    .user-list-modal {
+        width: 90%;
+    }
+
 }
 
 @media (prefers-color-scheme: dark) {
