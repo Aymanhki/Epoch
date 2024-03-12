@@ -46,16 +46,14 @@ class integration_tests(unittest.TestCase):
     def setUpClass(cls):
         terminate_processes_on_port(3000)
         terminate_processes_on_port(8080)
-        cls.server_process = subprocess.Popen(["python3", "main.py"], cwd=cls.backend_dir, creationflags=subprocess.CREATE_NEW_CONSOLE)
-        cls.frontend_process = subprocess.Popen(["npm", "start"], cwd=cls.frontend_dir, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        cls.server_process = subprocess.Popen(["python3", "main.py"], cwd=cls.backend_dir)
+        cls.frontend_process = subprocess.Popen(["npm", "start"], cwd=cls.frontend_dir)
         time.sleep(servers_wait_time)
         options = webdriver.ChromeOptions()
 
         if os.environ.get("CI") == "true":
             options.add_argument("--no-sandbox")
             options.add_argument("--headless")
-
-
 
         try:
             cls.driver = webdriver.Chrome(options=options)
