@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { updateUser } from '../services/user';
+import React, {useState} from 'react';
+import {updateUser} from '../services/user';
 import '../styles/EditProfilePopup.css';
 
-function EditProfilePopup({ onClose, user }) {
+function EditProfilePopup({onClose, user}) {
     const [formData, setFormData] = useState({
         username: user.username,
         displayname: user.name,
         bio: user.bio
     });
     const [isPasswordChanging, setIsPasswordChanging] = useState(false);
-    
+
     // Handler to update form data
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData({
             ...formData,
             [name]: value
@@ -23,7 +23,7 @@ function EditProfilePopup({ onClose, user }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Implement logic to submit updated data
-        
+
         let invalidUsername = false;
         let invalidDisplayname = false;
         let invalidPassword = false;
@@ -37,7 +37,7 @@ function EditProfilePopup({ onClose, user }) {
             invalidUsername = true;
             return;
         }
-        if (formData.displayname <= 0 || formData.displayname > 255){
+        if (formData.displayname <= 0 || formData.displayname > 255) {
             alert('Name must be between 1 and 254 characters');
             invalidDisplayname = true;
             highlightField('displaynameField');
@@ -50,30 +50,28 @@ function EditProfilePopup({ onClose, user }) {
             bio: formData.bio,
             password: user.password,
             created_at: user.created_at,
-            profile_pic_id:  user.profile_pic_id,
+            profile_pic_id: user.profile_pic_id,
             background_pic_id: user.background_pic_id
         };
-        if (isPasswordChanging){
+        if (isPasswordChanging) {
             //verify that the current password is correct
-            if(formData.currentPassword != user.password){
+            if (formData.currentPassword != user.password) {
                 alert('Current password is not correct');
                 highlightField('currentPassword');
                 invalidPassword = true;
                 return;
-            }
-            else {
+            } else {
                 if (!formData.newPassword.match(passwordRegex)) {
                     alert('Password must be between 1 and 254 characters, at least one uppercase letter, one lowercase letter, one number, and one special character');
                     highlightField('newPassword');
                     invalidPassword = true;
                     return
-                }
-                else {
+                } else {
                     newData.password = formData.newPassword
                 }
             }
         }
-        if (!invalidUsername && !invalidDisplayname && !invalidPassword){
+        if (!invalidUsername && !invalidDisplayname && !invalidPassword) {
 
             updateUser(user.id, newData)
                 .then(resolve => {
@@ -107,25 +105,30 @@ function EditProfilePopup({ onClose, user }) {
                 <form onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="username">Username:</label>
-                        <input type="text" id="usernameField" name="username" value={formData.username} onChange={handleInputChange} />
+                        <input type="text" id="usernameField" name="username" value={formData.username}
+                               onChange={handleInputChange}/>
                     </div>
                     <div>
                         <label htmlFor="displayname">Display Name:</label>
-                        
-                            <input type="text" id="displaynameField" name="displayname" value={formData.displayname} onChange={handleInputChange} />
-                        
+
+                        <input type="text" id="displaynameField" name="displayname" value={formData.displayname}
+                               onChange={handleInputChange}/>
+
                     </div>
                     <div>
                         <label htmlFor="bio">Bio:</label>
-                            <textarea id="bioField" name="bio" value={formData.bio} onChange={handleInputChange} />
+                        <textarea id="bioField" name="bio" value={formData.bio} onChange={handleInputChange}/>
                     </div>
                     <div>
                         <label htmlFor="currentPassword">Current Password:</label>
-                        <input type="password" id="currentPassword" name="currentPassword" value={formData.currentPassword} onChange={handleInputChange} disabled={!isPasswordChanging} />
+                        <input type="password" id="currentPassword" name="currentPassword"
+                               value={formData.currentPassword} onChange={handleInputChange}
+                               disabled={!isPasswordChanging}/>
                     </div>
                     <div>
                         <label htmlFor="newPassword">New Password:</label>
-                        <input type="password" id="newPassword" name="newPassword" value={formData.newPassword} onChange={handleInputChange} disabled={!isPasswordChanging} />
+                        <input type="password" id="newPassword" name="newPassword" value={formData.newPassword}
+                               onChange={handleInputChange} disabled={!isPasswordChanging}/>
                     </div>
                     {!isPasswordChanging && (
                         <button type="button" onClick={handlePasswordChangeStart}>Change Password</button>

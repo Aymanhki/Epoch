@@ -2,6 +2,7 @@ from epoch_backend.persistence.interfaces.media_persistence import media_persist
 from epoch_backend.objects.media import media
 from epoch_backend.business.services import services
 
+
 class access_media_persistence(media_persistence):
     def __init__(self):
         self.media_persistence = services.get_media_persistence()

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from ...objects.user import user
 
+
 class user_persistence(ABC):
     @abstractmethod
     def get_user(self, username: str):

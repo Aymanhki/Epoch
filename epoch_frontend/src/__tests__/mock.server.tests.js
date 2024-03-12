@@ -1,4 +1,4 @@
-import { getUserInfo, tryLogin, registerUser, deleteUser, uploadProfilePic, removeSessionCookie } from "../services/user";
+import {getUserInfo, tryLogin, registerUser, deleteUser, uploadProfilePic, removeSessionCookie} from "../services/user";
 import {beforeEach, jest} from "@jest/globals";
 
 global.XMLHttpRequest = jest.fn();

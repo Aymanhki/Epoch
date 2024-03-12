@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from ...objects.media import media
 
+
 class media_persistence(ABC):
     @abstractmethod
     def add_media(self, new_media: media):

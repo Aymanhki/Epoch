@@ -13,7 +13,7 @@ function getAccountList() {
         var http = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        http.open("GET",`${serverUrl}/api/follow/accountList/`, true );
+        http.open("GET", `${serverUrl}/api/follow/accountList/`, true);
         http.setRequestHeader("Content-Type", "application/json");
         http.withCredentials = true;
         http.timeout = 10000;
@@ -51,7 +51,7 @@ function getAccountList() {
 
 function getFollowingList(targetAcc) {
     const session_id = getCookie('epoch_session_id');
-    
+
     if (!session_id) {
         return;
     }
@@ -59,7 +59,7 @@ function getFollowingList(targetAcc) {
         var http = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        http.open("POST",`${serverUrl}/api/follow/followingList/`, true );
+        http.open("POST", `${serverUrl}/api/follow/followingList/`, true);
         http.setRequestHeader("Content-Type", "application/json");
         http.withCredentials = true;
         http.timeout = 10000;
@@ -98,7 +98,7 @@ function getFollowingList(targetAcc) {
 
 function getFollowerList(targetAcc) {
     const session_id = getCookie('epoch_session_id');
-    
+
     if (!session_id) {
         return;
     }
@@ -106,7 +106,7 @@ function getFollowerList(targetAcc) {
         var http = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        http.open("POST",`${serverUrl}/api/follow/followerList/`, true );
+        http.open("POST", `${serverUrl}/api/follow/followerList/`, true);
         http.setRequestHeader("Content-Type", "application/json");
         http.withCredentials = true;
         http.timeout = 10000;
@@ -152,20 +152,20 @@ async function fillUserList() {
     }
     for (var k in following) {
         for (var j in users) {
-            if (users[j].user_id === following[k].following_id){
+            if (users[j].user_id === following[k].following_id) {
                 users[j].isFollowing = true;
             }
         }
     }
-    if(users.length>0){
-        users.sort(function(a,b){
+    if (users.length > 0) {
+        users.sort(function (a, b) {
             return b.isFollowing - a.isFollowing;
         });
     }
     return users;
 }
 
-async function profileFollowNetwork(accountID){
+async function profileFollowNetwork(accountID) {
     var following = await getFollowingList(accountID);
     var followers = await getFollowerList(accountID);
     var followerCount = followers.length;
@@ -183,7 +183,7 @@ function followAccount(target) {
         var http = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        http.open("POST",`${serverUrl}/api/follow/follow/`, true );
+        http.open("POST", `${serverUrl}/api/follow/follow/`, true);
         http.setRequestHeader("Content-Type", "application/json");
         http.withCredentials = true;
         http.timeout = 10000;
@@ -228,7 +228,7 @@ function unfollowAccount(target) {
         var http = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        http.open("POST",`${serverUrl}/api/follow/unfollow/`, true );
+        http.open("POST", `${serverUrl}/api/follow/unfollow/`, true);
         http.setRequestHeader("Content-Type", "application/json");
         http.withCredentials = true;
         http.timeout = 10000;

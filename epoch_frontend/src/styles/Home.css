@@ -1,16 +1,16 @@
 .home-page-container {
-  display: flex;
-  justify-content:  center;
-  margin-top:  1rem;
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
 }
 
 .home-feed-wrapper {
-  width: 50%;
+    width: 50%;
 }
 
-.home-feed{
+.home-feed {
     margin-bottom: 5rem;
-    border-radius: 1%;
+    border-radius: 0.5rem;
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
 }
 

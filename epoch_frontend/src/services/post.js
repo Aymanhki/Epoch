@@ -404,4 +404,14 @@ function getFavoritePosts(userId) {
 
 }
 
-module.exports = {newPost, getAllUserPosts, getAllHashtagPosts, deletePost, updatePost, getFollowedUsersPost, favoritePost, removeFavoritePost, getFavoritePosts};
+module.exports = {
+    newPost,
+    getAllUserPosts,
+    getAllHashtagPosts,
+    deletePost,
+    updatePost,
+    getFollowedUsersPost,
+    favoritePost,
+    removeFavoritePost,
+    getFavoritePosts
+};

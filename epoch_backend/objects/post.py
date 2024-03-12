@@ -1,4 +1,3 @@
-
 class post:
     def __init__(self, user_id, media_id, caption, release, created_at):
         self.user_id = user_id

@@ -32,14 +32,13 @@ function Profile() {
     const navigate = useNavigate();
     const [showOverlay, setShowOverlay] = useState(false);
     const [overlayImageUrl, setOverlayImageUrl] = useState('');
-
-    const[followerCount, setFollowerCount] = useState("....");
-    const[followingCount, setFollowingCount] = useState("....");
-    const[followerList, setFollowerList] = useState({});
-    const[followingList, setFollowingList] = useState({});
-    const[popupList, setPopupList] = useState({});
-    const[showPopupList, setShowPopupList] = useState(false);
-    const[showingFol, setShowingFol] = useState(true);
+    const [followerCount, setFollowerCount] = useState("....");
+    const [followingCount, setFollowingCount] = useState("....");
+    const [followerList, setFollowerList] = useState({});
+    const [followingList, setFollowingList] = useState({});
+    const [popupList, setPopupList] = useState({});
+    const [showPopupList, setShowPopupList] = useState(false);
+    const [showingFol, setShowingFol] = useState(true);
 
     function clickedFollow(target, isFollowing) {
         if (isFollowing) {
@@ -65,9 +64,8 @@ function Profile() {
         setPopupList({});
         setShowPopupList(!showPopupList);
         if (countClicked === "following") {
-            setShowingFol(false); 
-        }
-        else {
+            setShowingFol(false);
+        } else {
             setShowingFol(true);
         }
     };
@@ -93,7 +91,6 @@ function Profile() {
                 .then(data => {
                     updateUser(data);
                     setFollowDefaults();
-                    setIsLoading(false);
                 })
                 .catch(error => {
                     setIsLoading(false);
@@ -107,19 +104,17 @@ function Profile() {
         if (user && (user.username === username || username === "profile")) {
             setUserInfo(user);
             setIsCurrentUser(true);
-            setIsLoading(false);
         } else if (username !== "profile") {
             setIsLoading(true);
             getUsernameInfo(username)
                 .then(data => {
                     setUserInfo(data);
-                    setIsLoading(false);
                     setIsCurrentUser(false);
                     setViewedID(data.id)
                 })
                 .catch(error => {
-                    setIsLoading(false)
-                    console.error("Error fetching user info:", error);
+                    setIsLoading(false);
+                    console.log("Error fetching user info:", error);
                     setUserNotFound(true);
                 });
         }
@@ -141,35 +136,43 @@ function Profile() {
     }, [setIsFollowing, setIsFollowingPrompt, viewedId, user]);
 
     useEffect(() => {
-        if(isCurrentUser) {
+        if (isCurrentUser) {
             profileFollowNetwork("self")
-                .then(data =>{
+                .then(data => {
                     setFollowingCount(data[0]);
                     setFollowerCount(data[1]);
                     setFollowingList(data[2]);
                     setFollowerList(data[3]);
+                    setIsLoading(false);
                 })
-        }
-        else if(viewedId && viewedId > -1) {
+                .catch(error => {
+                    console.log("Error fetching follower list:", error);
+                    setUserNotFound(true);
+                })
+        } else if (viewedId && viewedId > -1) {
             profileFollowNetwork(viewedId)
-                .then(data =>{
+                .then(data => {
                     setFollowingCount(data[0]);
                     setFollowerCount(data[1]);
                     setFollowingList(data[2]);
                     setFollowerList(data[3]);
+                    setIsLoading(false);
                 })
+                .catch(error => {
+                        console.log("Error fetching follower list:", error);
+                        setUserNotFound(true);
+                    }
+                )
         }
-    },[isCurrentUser, viewedId, user, isFollowing]);
+    }, [isCurrentUser, viewedId, user, isFollowing]);
 
     useEffect(() => {
-        if(showingFol) {
+        if (showingFol) {
             setPopupList(followerList);
-        }
-        else {
+        } else {
             setPopupList(followingList);
         }
-
-    },[showPopupList, followerList, followingList, showingFol]);
+    }, [showPopupList, followerList, followingList, showingFol]);
 
     if (!user && !userInfo) {
         return <Spinner/>
@@ -224,8 +227,10 @@ function Profile() {
                             {user !== null && (
                                 isCurrentUser ? (
                                     <div className={'profile-buttons-wrapper'}>
-                                        <BorderColorOutlinedIcon className="edit-profile-button-icon" onClick={() => setShowEditProfilePopup(!showEditProfilePopup)}/>
-                                        <FavoriteBorderOutlinedIcon className={'profile-favorite-button'} onClick={() => navigate('/epoch/favorites')}></FavoriteBorderOutlinedIcon>
+                                        <BorderColorOutlinedIcon className="edit-profile-button-icon"
+                                                                 onClick={() => setShowEditProfilePopup(!showEditProfilePopup)}/>
+                                        <FavoriteBorderOutlinedIcon className={'profile-favorite-button'}
+                                                                    onClick={() => navigate('/epoch/favorites')}></FavoriteBorderOutlinedIcon>
                                     </div>
 
                                 ) : (
@@ -234,38 +239,41 @@ function Profile() {
                                 )
                             )}
                             <div className="counts-wrapper">
-                                <button className="following-count" onClick={() => handleCountClick("following")} style={{backgroundColor: !showingFol && showPopupList ? "#42adf5":"#ffffff"}}>
+                                <button className="following-count" onClick={() => handleCountClick("following")}
+                                        style={{backgroundColor: !showingFol && showPopupList ? "#42adf5" : "#ffffff"}}>
                                     Following: {followingCount}
                                 </button>
-                                <button className="follower-count" onClick={() => handleCountClick("followers")} style={{backgroundColor: showingFol && showPopupList ? "#42adf5":"#ffffff"}}>
+                                <button className="follower-count" onClick={() => handleCountClick("followers")}
+                                        style={{backgroundColor: showingFol && showPopupList ? "#42adf5" : "#ffffff"}}>
                                     Followers: {followerCount}
                                 </button>
                             </div>
                         </div>
                         <ul className="popup-user-list">
                             {showPopupList ? (
-                                    popupList && popupList.map && popupList.map (account =>
-                                    <li key = {account.user_id} className="popup-list-item">
+                                popupList && popupList.map && popupList.map(account =>
+                                    <li key={account.user_id} className="popup-list-item">
                                         <p>
-                                            <b className="username" onClick={() => navigate('/epoch/'+
+                                            <b className="username" onClick={() => navigate('/epoch/' +
                                                 account.username)}>@{account.username}
                                             </b>
                                         </p>
                                     </li>
-                                    )
-                            ):(<body></body>)}
+                                )
+                            ) : (<body></body>)}
                         </ul>
                         <div className="profile-feed">
                             {user ? (
                                 <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true}
                                       currentUser={user} showNewPostPopup={showNewPostPopup}
                                       setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                      setRefreshFeed={setRefreshFeed} posts={null}  isInFavorites={false}/>
+                                      setRefreshFeed={setRefreshFeed} posts={null} isInFavorites={false}/>
                             ) : (
                                 <Feed feedUsername={userInfo.username} feedUserId={userInfo.id} isInProfile={true}
                                       currentUser={null} showNewPostPopup={showNewPostPopup}
                                       setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                      setRefreshFeed={setRefreshFeed} viewingOnly={true} posts={null}  isInFavorites={false}/>
+                                      setRefreshFeed={setRefreshFeed} viewingOnly={true} posts={null}
+                                      isInFavorites={false}/>
                             )}
                         </div>
 
@@ -278,7 +286,7 @@ function Profile() {
                                        refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
 
                             {showEditProfilePopup && <EditProfilePopup user={user}
-                            onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
+                                                                       onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
                         </>
                     )}
 
