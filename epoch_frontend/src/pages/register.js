@@ -6,7 +6,6 @@ import {Spinner} from '../modules/Spinner';
 import {useNavigate} from 'react-router-dom';
 
 
-
 function Register() {
     const [name, setName] = useState('');
     const [username, setUsername] = useState('');
@@ -48,35 +47,29 @@ function Register() {
         const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
 
 
-        if(!password.match(passwordRegex)) {
+        if (!password.match(passwordRegex)) {
             setPasswordError(true);
             setPasswordErrorPrompt('Password must be between 1 and 254 characters, at least one uppercase letter, one lowercase letter, one number, and one special character');
             wrongPassword = true;
-        }
-        else
-        {
+        } else {
             setPasswordError(false);
             wrongPassword = false;
         }
 
-        if(!username.match(usernameRegex)) {
+        if (!username.match(usernameRegex)) {
             setUsernameError(true);
             setUsernameErrorPrompt('Username must be between 1 and 50 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -');
             wrongUsername = true;
-        }
-        else
-        {
+        } else {
             setUsernameError(false);
             wrongUsername = false;
         }
 
-        if(name.length <= 0 || name.length > 255) {
+        if (name.length <= 0 || name.length > 255) {
             setNameError(true);
             setNameErrorPrompt('Name must be between 1 and 254 characters');
             wrongName = true;
-        }
-        else
-        {
+        } else {
             setNameError(false);
             wrongName = false;
         }
@@ -168,94 +161,110 @@ function Register() {
         <div>
             {isLoading ? <Spinner/> :
                 <div className="register-container">
-                <div className="register-form">
-                    <form onSubmit={handleSubmit} data-testid="register-form">
-                        <h1 style={{fontSize: '32px', marginBottom: '10px', fontWeight: 'bold', textAlign: 'left', alignSelf: 'flex-start'}}>{registeringPrompt}</h1>
+                    <div className="register-form">
+                        <form onSubmit={handleSubmit} data-testid="register-form">
+                            <h1 style={{
+                                fontSize: '32px',
+                                marginBottom: '10px',
+                                fontWeight: 'bold',
+                                textAlign: 'left',
+                                alignSelf: 'flex-start'
+                            }}>{registeringPrompt}</h1>
 
-                        <div className="profile-pic-upload-container" >
+                            <div className="profile-pic-upload-container">
 
-                            <div className="profile-pic-upload" >
-                                {profilePic ? (
-                                    <img
-                                        src={typeof profilePic === 'string' ? profilePic : URL.createObjectURL(profilePic)}
-                                        alt="Profile Pic"/>
-                                ) : (
-                                    <img src={process.env.PUBLIC_URL + '/images/default_pfp.png'}
-                                         alt="Default Profile Pic"/>
-                                )}
+                                <div className="profile-pic-upload">
+                                    {profilePic ? (
+                                        <img
+                                            src={typeof profilePic === 'string' ? profilePic : URL.createObjectURL(profilePic)}
+                                            alt="Profile Pic"/>
+                                    ) : (
+                                        <img src={process.env.PUBLIC_URL + '/images/default_pfp.png'}
+                                             alt="Default Profile Pic"/>
+                                    )}
+                                </div>
+
+                                <div className="plus-sign" onClick={() => {
+                                    fileInputRef.current.click();
+                                }}>+
+                                </div>
+
+                                <input
+                                    type="file"
+                                    id="profilePic"
+                                    name="profilePic"
+                                    accept="image/*"
+                                    ref={fileInputRef} // Attach the ref to the file input
+                                    style={{display: 'none'}} // Hide the file input
+                                    onChange={handleProfilePicChange}
+
+                                />
                             </div>
 
-                            <div className="plus-sign" onClick={() => {fileInputRef.current.click(); }}>+</div>
 
-                            <input
-                                type="file"
-                                id="profilePic"
-                                name="profilePic"
-                                accept="image/*"
-                                ref={fileInputRef} // Attach the ref to the file input
-                                style={{display: 'none'}} // Hide the file input
-                                onChange={handleProfilePicChange}
+                            <label htmlFor="name">Name {nameError &&
+                                <span style={{color: 'red'}}>* {nameErrorPrompt}</span>}
+                            </label>
 
-                            />
-                        </div>
+                            <input type="text" id="name" name="name" data-testid="name-input-field" value={name}
+                                   onChange={(e) => {
+                                       setName(e.target.value);
+                                       setNameError(false);
+                                       setGeneralError(false);
+                                   }}/>
 
+                            <label htmlFor="bio">Bio</label>
+                            <textarea className="bio-textarea" id="bio" name="bio" value={bio}
+                                      onChange={(e) => setBio(e.target.value)}/>
 
-                        <label htmlFor="name">Name {nameError && <span style={{color: 'red'}}>* {nameErrorPrompt}</span>}
-                        </label>
+                            <label htmlFor="username">Username {usernameError &&
+                                <span style={{color: 'red'}}>* {usernameErrorPrompt}</span>}
+                            </label>
 
-                        <input type="text" id="name" name="name" data-testid="name-input-field" value={name} onChange={(e) => {
-                            setName(e.target.value);
-                            setNameError(false);
-                            setGeneralError(false);
-                        }} />
+                            <input type="text" id="username" name="username" data-testid="username-input-field"
+                                   value={username} onChange={(e) => {
+                                setUsername(e.target.value);
+                                setUsernameError(false);
+                                setGeneralError(false);
+                            }}/>
 
-                        <label htmlFor="bio">Bio</label>
-                        <textarea className="bio-textarea" id="bio" name="bio" value={bio}
-                                  onChange={(e) => setBio(e.target.value)}/>
+                            <label htmlFor="password">Password {passwordError &&
+                                <span style={{color: 'red'}}>* {passwordErrorPrompt}</span>}
+                            </label>
 
-                        <label htmlFor="username">Username {usernameError && <span style={{color: 'red'}}>* {usernameErrorPrompt}</span>}
-                        </label>
+                            <input type="password" id="password" name="password" data-testid="password-input-field"
+                                   value={password} onChange={(e) => {
+                                setPassword(e.target.value);
+                                setPasswordError(false);
+                                setGeneralError(false);
+                            }}/>
 
-                        <input type="text" id="username" name="username" data-testid="username-input-field" value={username} onChange={(e) => {
-                            setUsername(e.target.value);
-                            setUsernameError(false);
-                            setGeneralError(false);
-                        }} />
+                            {generalError &&
+                                <span style={{
+                                    color: 'red',
+                                    marginLeft: '5px',
+                                    marginBottom: '5px'
+                                }}>{generalErrorPrompt}</span>}
 
-                        <label htmlFor="password">Password {passwordError && <span style={{color: 'red'}}>* {passwordErrorPrompt}</span>}
-                        </label>
+                            <button type="submit" className={"register-button"} id={"register-button"}
+                                    data-testid="register-button">{registeringPrompt}</button>
 
-                        <input type="password" id="password" name="password" data-testid="password-input-field" value={password} onChange={(e) => {
-                            setPassword(e.target.value);
-                            setPasswordError(false);
-                            setGeneralError(false);
-                        }} />
-
-                        {generalError &&
-                            <span style={{
-                                color: 'red',
-                                marginLeft: '5px',
-                                marginBottom: '5px'
-                            }}>{generalErrorPrompt}</span>}
-
-                        <button type="submit" className={"register-button"} id={"register-button"} data-testid="register-button">{registeringPrompt}</button>
-
-                        <p style={{textAlign: 'center', marginTop: '10px'}}>
-                            Already have an account?{' '}
-                            <Link
-                                to="/epoch/login"
-                                style={{
-                                    textDecoration: 'underline',
-                                    cursor: 'pointer',
-                                }}
-                                className={"register-link"}
-                            >
-                                Log in here
-                            </Link>
-                        </p>
-                    </form>
+                            <p style={{textAlign: 'center', marginTop: '10px'}}>
+                                Already have an account?{' '}
+                                <Link
+                                    to="/epoch/login"
+                                    style={{
+                                        textDecoration: 'underline',
+                                        cursor: 'pointer',
+                                    }}
+                                    className={"register-link"}
+                                >
+                                    Log in here
+                                </Link>
+                            </p>
+                        </form>
+                    </div>
                 </div>
-            </div>
             }
         </div>
     );

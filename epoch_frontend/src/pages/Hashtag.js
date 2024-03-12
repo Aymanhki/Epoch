@@ -79,12 +79,12 @@ function Hashtag() {
                                 <Feed feedUsername={user.username} feedUserId={user.id} isInProfile={false}
                                       currentUser={user} showNewPostPopup={showNewPostPopup}
                                       setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                      setRefreshFeed={setRefreshFeed} posts={posts}  isInFavorites={false}/>
+                                      setRefreshFeed={setRefreshFeed} posts={posts} isInFavorites={false}/>
                             ) : (
                                 <Feed feedUsername={null} feedUserId={null} isInProfile={false} currentUser={null}
                                       showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}
                                       refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} viewingOnly={true}
-                                      posts={posts}  isInFavorites={false}/>
+                                      posts={posts} isInFavorites={false}/>
                             )}
                         </div>
                     </div>

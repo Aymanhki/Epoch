@@ -12,66 +12,66 @@ import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 
 
-import { IconButton, Fab } from "@mui/material";
+import {IconButton, Fab} from "@mui/material";
 
 export default function OldPost() {
-  // To show OldPost pop up
-  const [showPost, setShowPost] = React.useState(false)
-  const onClick = () => setShowPost(true)
+    // To show OldPost pop up
+    const [showPost, setShowPost] = React.useState(false)
+    const onClick = () => setShowPost(true)
 
-  const [open, setOpen] = React.useState(false);
-  const handleClick = () => {
-    setOpen(!open);
-  };
+    const [open, setOpen] = React.useState(false);
+    const handleClick = () => {
+        setOpen(!open);
+    };
 
-  return (
-    <div className='post'>
+    return (
+        <div className='post'>
 
-      <OldPostPopup trigger={showPost} setTrigger={setShowPost}>
-        <div className="postInputBox">
+            <OldPostPopup trigger={showPost} setTrigger={setShowPost}>
+                <div className="postInputBox">
 
-            <div className="postWrapper">
+                    <div className="postWrapper">
 
-              <div className="postTop">
-                <img className='postProfileImage' src='' alt='' />
-                <input placeholder='What is your prediction?' className='postInput' />
-              </div>
+                        <div className="postTop">
+                            <img className='postProfileImage' src='' alt=''/>
+                            <input placeholder='What is your prediction?' className='postInput'/>
+                        </div>
 
-              <hr className='shareHr'/>
-              <div className="postBottom">
-                <div className="postOptions">
-                  <div className="postOption">
-                    <span className='postOptionText'>Photo or Video</span>
-                    <PermMediaIcon htmlColor='tomato' className='postIcon'/>
-                  </div>
+                        <hr className='shareHr'/>
+                        <div className="postBottom">
+                            <div className="postOptions">
+                                <div className="postOption">
+                                    <span className='postOptionText'>Photo or Video</span>
+                                    <PermMediaIcon htmlColor='tomato' className='postIcon'/>
+                                </div>
 
-                  <div className="postOption">
-                    {/* <span className='postOptionText'>Time</span> */}
-                    <ListItemButton onClick={handleClick}>
-                      <ListItemText primary="Time" />
-                      <AccessTimeIcon htmlColor='green' className='postIcon' />
-                    </ListItemButton>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                      <List component= "div" disablePadding>
-                        <ListItemText primary="1 Hour" />
-                        <ListItemText primary="1 Day" />
-                        <ListItemText primary="1 Week" />
-                        <ListItemText primary="1 Year" />
-                        <ListItemText primary="Custom" />
-                      </List>
-                    </Collapse>
-                  </div>
-                  <div className="postOption">
-                    <span className='postOptionText'>Emoji</span>
-                    <EmojiEmotionsIcon htmlColor='goldenrod' className='postIcon'/>
-                  </div>
+                                <div className="postOption">
+                                    {/* <span className='postOptionText'>Time</span> */}
+                                    <ListItemButton onClick={handleClick}>
+                                        <ListItemText primary="Time"/>
+                                        <AccessTimeIcon htmlColor='green' className='postIcon'/>
+                                    </ListItemButton>
+                                    <Collapse in={open} timeout="auto" unmountOnExit>
+                                        <List component="div" disablePadding>
+                                            <ListItemText primary="1 Hour"/>
+                                            <ListItemText primary="1 Day"/>
+                                            <ListItemText primary="1 Week"/>
+                                            <ListItemText primary="1 Year"/>
+                                            <ListItemText primary="Custom"/>
+                                        </List>
+                                    </Collapse>
+                                </div>
+                                <div className="postOption">
+                                    <span className='postOptionText'>Emoji</span>
+                                    <EmojiEmotionsIcon htmlColor='goldenrod' className='postIcon'/>
+                                </div>
+                            </div>
+                            <button className='shareButton'>Post</button>
+                        </div>
+                    </div>
                 </div>
-                <button className='shareButton'>Post</button>
-              </div>
-            </div>
+            </OldPostPopup>
         </div>
-      </OldPostPopup>
-    </div>
-  )
+    )
 }
 

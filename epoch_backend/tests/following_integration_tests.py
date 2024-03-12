@@ -10,7 +10,6 @@ import os
 import time
 import threading
 
-
 session_id: str = None
 user_id: int = None
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
@@ -23,6 +22,7 @@ os.chdir(script_dir)
 
 from epoch_backend.business.webserver import webserver
 from epoch_backend.business.utils import start_db_tables, get_google_credentials, terminate_processes_on_port
+
 
 class following_integration_tests(unittest.TestCase):
     server_thread = None
@@ -67,7 +67,7 @@ class following_integration_tests(unittest.TestCase):
     def get_user_id(self):
         global user_id
         return user_id
-    
+
     def set_follow_id(self, value: int):
         global user_to_follow_id
         user_to_follow_id = value
@@ -100,22 +100,23 @@ class following_integration_tests(unittest.TestCase):
 
     def test_1_get_all_user(self):
         print("Getting all followable acccounts...")
-        response = requests.get('http://localhost:8080/api/follow/accountList/', cookies={'epoch_session_id': self.get_session_id()})
+        response = requests.get('http://localhost:8080/api/follow/accountList/',
+                                cookies={'epoch_session_id': self.get_session_id()})
         print("response:", response)
         self.assertEqual(response.status_code, 200)
         response_json = response.json()
-        print (response_json[0]["user_id"])
+        print(response_json[0]["user_id"])
         if len(response_json) > 0:
             self.set_follow_id(int(response_json[0]["user_id"]))
             print("Got all followable acccounts.")
         else:
             print("tests will not work with no other accounts in the db")
             self.assertTrue(False)
-        
 
     def test_2_get_following_empty(self):
         print("Getting empty following list...")
-        response = requests.get('http://localhost:8080/api/follow/followingList/', cookies={'epoch_session_id': self.get_session_id()})
+        response = requests.get('http://localhost:8080/api/follow/followingList/',
+                                cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
         response_json = response.json()
         self.assertEqual(len(response_json), 0)
@@ -125,20 +126,21 @@ class following_integration_tests(unittest.TestCase):
         print("Following user...")
         response = requests.post('http://localhost:8080/api/follow/follow/',
                                  json={'userToFollow': self.get_follow_id()},
-                                  cookies={'epoch_session_id': self.get_session_id()})
+                                 cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
         response_json = response.json()
-        self.assertTrue('user_id' in  response_json)
+        self.assertTrue('user_id' in response_json)
         print("Followed user.")
 
     def test_4_get_following(self):
         print("Getting following list...")
-        response = requests.get('http://localhost:8080/api/follow/followingList/', cookies={'epoch_session_id': self.get_session_id()})
+        response = requests.get('http://localhost:8080/api/follow/followingList/',
+                                cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
         response_json = response.json()
         self.assertNotEqual(len(response_json), 0)
         self.assertEqual(response_json[0]['following_id'], self.get_follow_id())
-        self.assertFalse('user_id' in  response_json)
+        self.assertFalse('user_id' in response_json)
         print("Got following list.")
 
     def test_5_get_followers(self):
@@ -149,7 +151,7 @@ class following_integration_tests(unittest.TestCase):
         print("Attempting dupe follow...")
         response = requests.post('http://localhost:8080/api/follow/follow/',
                                  json={'userToFollow': self.user_to_follow_id},
-                                  cookies={'epoch_session_id': self.get_session_id()})
+                                 cookies={'epoch_session_id': self.get_session_id()})
         self.assertNotEqual(response.status_code, 200)
         print("Attempted dupe follow.")
 
@@ -157,10 +159,11 @@ class following_integration_tests(unittest.TestCase):
         print("Unfollowing user...")
         response = requests.post('http://localhost:8080/api/follow/unfollow/',
                                  json={'userToUnfollow': self.get_follow_id()},
-                                  cookies={'epoch_session_id': self.get_session_id()})
+                                 cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
         response_json = response.json()
-        response = requests.get('http://localhost:8080/api/follow/followingList/', cookies={'epoch_session_id': self.get_session_id()})
+        response = requests.get('http://localhost:8080/api/follow/followingList/',
+                                cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
         response_json = response.json()
         self.assertEqual(len(response_json), 0)

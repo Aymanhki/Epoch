@@ -145,12 +145,9 @@ import requests
 import json
 import pytest
 
-# Use Path for cross-platform file path handling
-TEST_PROFILE_PIC_BINARY = bytearray(
-    open(Path(__file__).parent / "test.jpg", "rb").read()
-)
-script_dir = str(Path(__file__).resolve().parent)
-os.chdir(script_dir)  # Set current directory to script directory
+TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
+script_dir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(script_dir)
 
 servers_wait_time = 10
 default_element_wait_timeout = 60
@@ -169,8 +166,8 @@ class integration_tests(unittest.TestCase):
     web_server = None
     frontend_process = None
     driver = None
-    frontend_dir = Path("../../epoch_frontend").resolve()
-    backend_dir = Path("../../epoch_backend").resolve()
+    frontend_dir = os.path.join("..", "..", "epoch_frontend")
+    backend_dir = os.path.join("..", "..", "epoch_backend")
     username = str(uuid.uuid4())
     password = str(uuid.uuid4()) + "A1!"
     name = str(uuid.uuid4())
@@ -210,22 +207,15 @@ class integration_tests(unittest.TestCase):
             print(f"Error quitting webdriver: {e}")
 
         global session_id
-        if session_id:
-            response = requests.delete(
-                "http://localhost:8080/api/delete/username/",
-                data=json.dumps({"username": cls.username}),
-                headers={"Content-Type": "application/json"},
-                cookies={"epoch_session_id": session_id},
-            )
-
-        if cls.frontend_process:
-            cls.frontend_process.terminate()
-            cls.frontend_process.wait()
-
-        if cls.server_process:
-            cls.server_process.terminate()
-            cls.server_process.wait()
-
+        response = requests.delete("http://localhost:8080/api/delete/username/",
+                                   data=json.dumps({"username": cls.username}),
+                                   headers={"Content-Type": "application/json"},
+                                   cookies={"epoch_session_id": session_id})
+        os.kill(cls.frontend_process.pid, signal.SIGKILL)
+        os.kill(cls.server_process.pid, signal.SIGINT)
+        cls.frontend_process.kill()
+        time.sleep(servers_wait_time)
+        cls.server_process.kill()
         time.sleep(servers_wait_time)
 
         terminate_processes_on_port(3000)
@@ -235,8 +225,7 @@ class integration_tests(unittest.TestCase):
         driver = self.driver
         driver.get("http://localhost:3000/register")
         WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.ID, "register-button") is not None
-        )
+            lambda driver: driver.find_element(By.ID, "register-button") is not None)
         username = driver.find_element(By.NAME, "username")
         username.send_keys(self.username)
         password = driver.find_element(By.NAME, "password")
@@ -246,29 +235,22 @@ class integration_tests(unittest.TestCase):
         bio = driver.find_element(By.NAME, "bio")
         bio.send_keys(self.bio)
         profile_pic = driver.find_element(By.ID, "profilePic")
-        profile_pic.send_keys(os.path.abspath("test.jpg"))
+        profile_pic.send_keys(os.path.abspath('test.jpg'))
         WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(
-                By.CSS_SELECTOR, ".profile-pic-upload img"
-            ).get_attribute("src")
-            != "default_image_src"
-        )
+            lambda driver: driver.find_element(By.CSS_SELECTOR, ".profile-pic-upload img").get_attribute(
+                "src") != "default_image_src")
         register = driver.find_element(By.ID, "register-button")
         register.click()
         WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.get_cookie("epoch_session_id") is not None
-        )
-        WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: self.name in driver.page_source
-        )
+            lambda driver: driver.get_cookie("epoch_session_id") is not None)
+        WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: self.name in driver.page_source)
         driver.delete_cookie("epoch_session_id")
 
     def test_1_login(self):
         driver = self.driver
         driver.get("http://localhost:3000/login")
         WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.ID, "login-button") is not None
-        )
+            lambda driver: driver.find_element(By.ID, "login-button") is not None)
         username = driver.find_element(By.NAME, "username")
         username.send_keys(self.username)
         password = driver.find_element(By.NAME, "password")
@@ -276,24 +258,20 @@ class integration_tests(unittest.TestCase):
         login = driver.find_element(By.ID, "login-button")
         login.click()
         WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.get_cookie("epoch_session_id") is not None
-        )
+            lambda driver: driver.get_cookie("epoch_session_id") is not None)
         WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None
-        )
+            lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
 
     def test_2_logout(self):
         driver = self.driver
         driver.get("http://localhost:3000/")
         WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None
-        )
+            lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
         set_session_id(driver.get_cookie("epoch_session_id")["value"])
         driver.delete_cookie("epoch_session_id")
         driver.get("http://localhost:3000/")
         WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.ID, "login-button") is not None
-        )
+            lambda driver: driver.find_element(By.ID, "login-button") is not None)
 
 
 if __name__ == "__main__":

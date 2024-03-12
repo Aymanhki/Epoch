@@ -1,6 +1,7 @@
 from datetime import datetime
 import json
-from ..utils import send_response, get_cors_headers, get_origin_from_headers, upload_file_to_cloud, download_file_from_cloud, is_file_in_bucket
+from ..utils import send_response, get_cors_headers, get_origin_from_headers, upload_file_to_cloud, \
+    download_file_from_cloud, is_file_in_bucket
 from ..db_controller.access_user_persistence import access_user_persistence
 from ..db_controller.access_media_persistence import access_media_persistence
 from ..db_controller.access_post_persistence import access_post_persistence
@@ -11,6 +12,7 @@ from epoch_backend.objects.user import user
 from epoch_backend.objects.post import post
 import uuid
 import base64
+
 
 def new_post(conn, request_data):
     headers, body = request_data.split('\r\n\r\n', 1)
@@ -61,13 +63,15 @@ def new_post(conn, request_data):
                 access_post_persistence().add_post(new_post)
                 send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
             else:
-                send_response(conn, 500, "Internal Server Error", b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
+                send_response(conn, 500, "Internal Server Error", b"<h1>500 Internal Server Error</h1>",
+                              headers=get_cors_headers(origin))
         else:
             new_post = post(user_id, None, post_text, selected_date, created_at)
             access_post_persistence().add_post(new_post)
             send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
     else:
-        send_response(conn, 404, "Could not find the username you are trying to post", b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))
+        send_response(conn, 404, "Could not find the username you are trying to post", b"<h1>404 Not Found</h1>",
+                      headers=get_cors_headers(origin))
 
 
 def get_all_user_posts(conn, request_data):
@@ -101,7 +105,6 @@ def get_all_hashtag_posts(conn, request_data):
 
     origin = get_origin_from_headers(headers)
 
-
     if hashtag is not None:
         posts = access_post_persistence().get_all_hashtag_posts(hashtag)
         send_response(conn, 200, "OK", json.dumps(posts).encode('UTF-8'), headers=get_cors_headers(origin))
@@ -129,11 +132,14 @@ def delete_post(conn, request_data):
                 access_post_persistence().remove_post(post_id)
                 send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
             else:
-                send_response(conn, 401, "This user is not authorised to delete this post", b"<h1>401 Unauthorized</h1>", headers=get_cors_headers(origin))
+                send_response(conn, 401, "This user is not authorised to delete this post",
+                              b"<h1>401 Unauthorized</h1>", headers=get_cors_headers(origin))
         else:
-            send_response(conn, 404, "The post you are trying to delete is not found", b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))
+            send_response(conn, 404, "The post you are trying to delete is not found", b"<h1>404 Not Found</h1>",
+                          headers=get_cors_headers(origin))
     else:
-        send_response(conn, 400, "Your request is either missing the post id or the user id", b"<h1>400 Bad Request</h1>", headers=get_cors_headers(origin))
+        send_response(conn, 400, "Your request is either missing the post id or the user id",
+                      b"<h1>400 Bad Request</h1>", headers=get_cors_headers(origin))
 
 
 def update_post(conn, request_data):
@@ -172,7 +178,6 @@ def update_post(conn, request_data):
     oldeFileRemoved = bool(data.get("oldFileRemoved"))
     user_fetch = access_user_persistence().get_user(username)
 
-
     if user_fetch and user_fetch.id == user_id:
         if file_base64:
             file_bytes = base64.b64decode(file_base64)
@@ -185,7 +190,8 @@ def update_post(conn, request_data):
                 access_post_persistence().update_post(post_id, new_post)
                 send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
             else:
-                send_response(conn, 500, "Internal Server Error", b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
+                send_response(conn, 500, "Internal Server Error", b"<h1>500 Internal Server Error</h1>",
+                              headers=get_cors_headers(origin))
 
         elif oldeFileRemoved:
             new_post = post(user_id, None, post_text, selected_date, created_at)
@@ -196,7 +202,8 @@ def update_post(conn, request_data):
             access_post_persistence().update_post(post_id, new_post)
             send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
     else:
-        send_response(conn, 404, "Could not find the username you are trying to update their post", b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))
+        send_response(conn, 404, "Could not find the username you are trying to update their post",
+                      b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))
 
 
 def get_followed_users_posts(conn, request_data):
@@ -234,7 +241,6 @@ def favorite_post(conn, request_data):
         send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
     else:
         send_response(conn, 400, "Bad Request", b"<h1>400 Bad Request</h1>", headers=get_cors_headers(origin))
-
 
 
 def remove_favorite_post(conn, request_data):

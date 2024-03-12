@@ -8,8 +8,6 @@ import json
 import datetime
 
 
-
-
 class epoch_post_persistence(post_persistence):
     def __init__(self):
         pass
@@ -18,9 +16,12 @@ class epoch_post_persistence(post_persistence):
         connection = get_db_connection()
         cursor = connection.cursor()
         if new_post.media_id is not None:
-            cursor.execute("INSERT INTO posts (user_id, media_id, caption, created_at, release) VALUES (%s, %s, %s, %s, %s)", (new_post.user_id, new_post.media_id, new_post.caption, new_post.created_at, new_post.release))
+            cursor.execute(
+                "INSERT INTO posts (user_id, media_id, caption, created_at, release) VALUES (%s, %s, %s, %s, %s)",
+                (new_post.user_id, new_post.media_id, new_post.caption, new_post.created_at, new_post.release))
         else:
-            cursor.execute("INSERT INTO posts (user_id, caption, created_at, release) VALUES (%s, %s, %s, %s)", (new_post.user_id, new_post.caption, new_post.created_at, new_post.release))
+            cursor.execute("INSERT INTO posts (user_id, caption, created_at, release) VALUES (%s, %s, %s, %s)",
+                           (new_post.user_id, new_post.caption, new_post.created_at, new_post.release))
 
         connection.commit()
         connection.close()
@@ -44,20 +45,29 @@ class epoch_post_persistence(post_persistence):
     def remove_post(self, post_id: int):
         connection = get_db_connection()
         cursor = connection.cursor()
+
         cursor.execute("SELECT * FROM posts WHERE post_id=%s", (post_id,))
         post_fetch = cursor.fetchone()
 
-        if post_fetch[2] is not None:
-            cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (post_fetch[2],))
-            media_fetch = cursor.fetchone()
-            delete_file_from_bucket(media_fetch[5])
+        if post_fetch:
+            media_id = post_fetch[2]
+            cursor.execute(f"SELECT * FROM posts WHERE media_id=%s", (media_id,))
+            reference_count = len(cursor.fetchall())
+            cursor.execute("SELECT * FROM users WHERE profile_pic=%s", (media_id,))
+            reference_count += len(cursor.fetchall())
+            cursor.execute("SELECT * FROM users WHERE background_pic=%s", (media_id,))
+            reference_count += len(cursor.fetchall())
 
-        cursor.execute("DELETE FROM favorites WHERE post_id=%s", (post_id,))
-        connection.commit()
-        cursor.execute("DELETE FROM posts WHERE post_id=%s", (post_id,))
-        connection.commit()
-        cursor.execute("DELETE FROM media_content WHERE media_id=%s", (post_fetch[2],))
-        connection.commit()
+            if reference_count == 1:
+                cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (media_id,))
+                media_fetch = cursor.fetchone()
+                delete_file_from_bucket(media_fetch[5])
+                cursor.execute("DELETE FROM media_content WHERE media_id=%s", (media_id,))
+
+            cursor.execute("DELETE FROM favorites WHERE post_id=%s", (post_id,))
+            cursor.execute("DELETE FROM posts WHERE post_id=%s", (post_id,))
+            connection.commit()
+
         connection.close()
 
     def get_all_user_posts(self, user_id: int):
@@ -71,7 +81,8 @@ class epoch_post_persistence(post_persistence):
 
         for i in range(len(posts)):
             current_post = posts[i]
-            post_dict = get_post_dict(current_post, posts_media, username, profile_picture_url, profile_picture_type, profile_picture_name, i)
+            post_dict = get_post_dict(current_post, posts_media, username, profile_picture_url, profile_picture_type,
+                                      profile_picture_name, i)
             all_posts.append(post_dict)
 
         connection.close()
@@ -91,7 +102,8 @@ class epoch_post_persistence(post_persistence):
         for i in range(len(posts)):
             current_post = posts[i]
             user_info = posts_users_info.get(i)
-            post_dict = get_post_dict(current_post, posts_media, user_info[0], user_info[1], user_info[2], user_info[3], i)
+            post_dict = get_post_dict(current_post, posts_media, user_info[0], user_info[1], user_info[2], user_info[3],
+                                      i)
             all_posts.append(post_dict)
 
         connection.close()
@@ -106,14 +118,18 @@ class epoch_post_persistence(post_persistence):
 
         if new_post.media_id is not None and new_post.media_id != -1:
             if (old_post_media_id is not None and new_post.media_id != old_post_media_id) or old_post_media_id is None:
-                cursor.execute("UPDATE posts SET media_id=%s, caption=%s, release=%s WHERE post_id=%s", (new_post.media_id, new_post.caption, new_post.release, post_id))
+                cursor.execute("UPDATE posts SET media_id=%s, caption=%s, release=%s WHERE post_id=%s",
+                               (new_post.media_id, new_post.caption, new_post.release, post_id))
             else:
-                cursor.execute("UPDATE posts SET caption=%s, release=%s WHERE post_id=%s", (new_post.caption, new_post.release, post_id))
+                cursor.execute("UPDATE posts SET caption=%s, release=%s WHERE post_id=%s",
+                               (new_post.caption, new_post.release, post_id))
         else:
             if old_post_media_id is not None and new_post.media_id != -1:
-                cursor.execute("UPDATE posts SET media_id=NULL, caption=%s, release=%s WHERE post_id=%s", (new_post.caption, new_post.release, post_id))
+                cursor.execute("UPDATE posts SET media_id=NULL, caption=%s, release=%s WHERE post_id=%s",
+                               (new_post.caption, new_post.release, post_id))
             else:
-                cursor.execute("UPDATE posts SET caption=%s, release=%s WHERE post_id=%s", (new_post.caption, new_post.release, post_id))
+                cursor.execute("UPDATE posts SET caption=%s, release=%s WHERE post_id=%s",
+                               (new_post.caption, new_post.release, post_id))
 
         connection.commit()
         connection.close()
@@ -121,7 +137,9 @@ class epoch_post_persistence(post_persistence):
     def get_followed_users_posts(self, user_id: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM posts WHERE user_id = %s OR user_id IN (SELECT following_id FROM following WHERE user_id = %s)",(user_id, user_id))
+        cursor.execute(
+            "SELECT * FROM posts WHERE user_id = %s OR user_id IN (SELECT following_id FROM following WHERE user_id = %s)",
+            (user_id, user_id))
         posts = cursor.fetchall()
         posts_media = get_posts_media(posts)
         posts_users_info = get_posts_users_info(posts)
@@ -131,12 +149,12 @@ class epoch_post_persistence(post_persistence):
         for i in range(len(posts)):
             current_post = posts[i]
             user_info = posts_users_info.get(i)
-            post_dict = get_post_dict(current_post, posts_media, user_info[0], user_info[1], user_info[2], user_info[3], i)
+            post_dict = get_post_dict(current_post, posts_media, user_info[0], user_info[1], user_info[2], user_info[3],
+                                      i)
             all_posts.append(post_dict)
 
         connection.close()
         return all_posts
-
 
     def favorite_post(self, post_id: int, user_id: int):
         connection = get_db_connection()
@@ -159,7 +177,8 @@ class epoch_post_persistence(post_persistence):
     def get_favorites(self, user_id: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM posts WHERE post_id IN (SELECT post_id FROM favorites WHERE user_id=%s)", (user_id,))
+        cursor.execute("SELECT * FROM posts WHERE post_id IN (SELECT post_id FROM favorites WHERE user_id=%s)",
+                       (user_id,))
         posts = cursor.fetchall()
         posts_media = get_posts_media(posts)
         posts_users_info = get_posts_users_info(posts)
@@ -169,7 +188,8 @@ class epoch_post_persistence(post_persistence):
         for i in range(len(posts)):
             current_post = posts[i]
             user_info = posts_users_info.get(i)
-            post_dict = get_post_dict(current_post, posts_media, user_info[0], user_info[1], user_info[2], user_info[3], i)
+            post_dict = get_post_dict(current_post, posts_media, user_info[0], user_info[1], user_info[2], user_info[3],
+                                      i)
             all_posts.append(post_dict)
 
         connection.close()

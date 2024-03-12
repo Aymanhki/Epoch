@@ -2,6 +2,7 @@ from epoch_backend.persistence.interfaces.post_persistence import post_persisten
 from epoch_backend.objects.post import post
 from epoch_backend.business.services import services
 
+
 class access_post_persistence(post_persistence):
     def __init__(self):
         self.post_persistence = services.get_post_persistence()

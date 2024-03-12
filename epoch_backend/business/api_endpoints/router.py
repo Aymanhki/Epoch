@@ -1,13 +1,14 @@
 import json
 import os
 
-from ..api_endpoints.following_endpoints import follow_user, get_account_list, get_following_list, unfollow_user
+from ..api_endpoints.following_endpoints import follow_user, get_account_list, get_follower_list, get_following_list, unfollow_user
 from ..utils import get_cors_headers, get_origin_from_headers, send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
 from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, get_user_from_name, upload_profile_pic, update_user_info
 from ..db_controller.access_user_persistence import access_user_persistence
 from ..db_controller.access_session_persistence import access_session_persistence
 from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, update_post, get_followed_users_posts, favorite_post, remove_favorite_post, get_favorites, vote_post, remove_vote_post
 from ..api_endpoints.comment_endpoints import new_comment, get_all_comments_post, delete_comment
+from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, update_post, get_followed_users_posts, favorite_post, remove_favorite_post, get_favorites
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')
@@ -25,6 +26,7 @@ no_auth_endpoints = [
     "/api/user/posts/",
     "/api/post/hashtag/"
 ]
+
 
 def handle_routing(relative_path, request_data, conn, method):
     if relative_path.startswith('/api/'):
@@ -44,6 +46,7 @@ def handle_routing(relative_path, request_data, conn, method):
         full_path = os.path.join(HOME_PATH, relative_path.lstrip('/'))
         handle_static_request(method, conn, full_path)
 
+
 def handle_api_request(method, path, request_data, conn):
     if method == "OPTIONS":  # Handle CORS preflight request
         send_cors_options_response(request_data, conn)
@@ -58,7 +61,7 @@ def handle_api_request(method, path, request_data, conn):
             get_user(conn, request_data, session_id)
 
         elif method == "DELETE":
-            pass # log out logic
+            pass  # log out logic
 
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
@@ -100,9 +103,9 @@ def handle_api_request(method, path, request_data, conn):
         while len(body) < content_length:
             body += conn.recv(1024).decode('UTF-8')
         # get data from body and headers
-        if content_length > 0: 
+        if content_length > 0:
             data = json.loads(body)
-        
+
         origin = get_origin_from_headers(headers)
         session_id = get_session_id_from_request(request_data)
         # init response 
@@ -110,21 +113,35 @@ def handle_api_request(method, path, request_data, conn):
         # handle specific request
         if path == "/api/follow/accountList/" and method == 'GET':
             response = get_account_list(session_id, access_session_persistence(), access_user_persistence())
+
         elif path == "/api/follow/followingList/" and method == 'GET':
-            response = get_following_list(session_id, access_session_persistence(), access_user_persistence())
+            response = get_following_list(session_id, access_session_persistence(), access_user_persistence(), "self")
+
+        elif path == "/api/follow/followingList/" and method == 'POST':
+            if content_length > 0:
+                target = data["target"]
+            response = get_following_list(session_id, access_session_persistence(), access_user_persistence(), target)
+
+        elif path == "/api/follow/followerList/" and method == 'POST':
+            if content_length > 0:
+                target = data["target"]
+            response = get_follower_list(session_id, access_session_persistence(), access_user_persistence(), target)
+
         elif path == "/api/follow/follow/" and method == 'POST':
-            if content_length>0:
+            if content_length > 0:
                 toFollow = data["userToFollow"]
                 response = follow_user(session_id, toFollow, access_session_persistence(), access_user_persistence())
             else:
-                response = [500, "Server error: no request body",b"<h1>500 Internal Server Error</h1>"]
+                response = [500, "Server error: no request body", b"<h1>500 Internal Server Error</h1>"]
+
         elif path == "/api/follow/unfollow/" and method == 'POST':
-            if content_length>0:
+            if content_length > 0:
                 toUnfollow = data["userToUnfollow"]
-                response = unfollow_user(session_id, toUnfollow, access_session_persistence(), access_user_persistence())
+                response = unfollow_user(session_id, toUnfollow, access_session_persistence(),
+                                         access_user_persistence())
             else:
-                response = [500, "Server error: no request body",b"<h1>500 Internal Server Error</h1>"]
-        
+                response = [500, "Server error: no request body", b"<h1>500 Internal Server Error</h1>"]
+
         send_response(conn, response[0], response[1], response[2], headers=get_cors_headers(origin))
 
     elif path.startswith("/api/post/"):
@@ -193,6 +210,7 @@ def handle_api_request(method, path, request_data, conn):
         send_response(conn, 404, "Not Found", body=b"<h1>404 Not Found</h1>")
 
     return
+
 
 def handle_static_request(method, conn, path):
     absolute_path = os.path.abspath(path)

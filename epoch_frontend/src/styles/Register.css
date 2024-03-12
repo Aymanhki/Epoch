@@ -3,8 +3,8 @@
 
 .register-container {
     -webkit-appearance: none;
-    -moz-appearance:    none;
-    appearance:         none;
+    -moz-appearance: none;
+    appearance: none;
     display: flex;
     height: 100vh;
     justify-content: center;
@@ -14,8 +14,8 @@
 
 .register-form {
     -webkit-appearance: none;
-    -moz-appearance:    none;
-    appearance:         none;
+    -moz-appearance: none;
+    appearance: none;
     padding: 20px;
     background-color: #fff;
     border-radius: 10px;
@@ -32,8 +32,8 @@
 
 input {
     -webkit-appearance: none;
-    -moz-appearance:    none;
-    appearance:         none;
+    -moz-appearance: none;
+    appearance: none;
     padding: 10px;
     margin-bottom: 20px;
     border: 0;
@@ -71,10 +71,10 @@ label {
     cursor: pointer;
 }
 
-.bio-textarea{
+.bio-textarea {
     -webkit-appearance: none;
-    -moz-appearance:    none;
-    appearance:         none;
+    -moz-appearance: none;
+    appearance: none;
     margin-bottom: 20px;
     padding: 10px;
     border: 0;
@@ -141,7 +141,7 @@ label {
 
 .register-button {
 
-    background-color: #1a2a6c ;
+    background-color: #1a2a6c;
     color: #fff;
     padding: 10px;
     cursor: pointer;
@@ -163,8 +163,7 @@ label {
     border: 1px solid #1a2a6c;
 }
 
-.register-link
-{
+.register-link {
     color: #1a2a6c;
 
 }
@@ -205,8 +204,7 @@ label {
         box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
     }
 
-    .register-link
-    {
+    .register-link {
         color: #ffffff;
     }
 

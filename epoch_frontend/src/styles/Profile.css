@@ -8,7 +8,37 @@
     width: 50%;
 }
 
+.counts-wrapper {
+    display: table;
+    margin: auto;
+    justify-content: center;
 
+}
+
+.follower-count:hover {
+    color: #878787;
+
+}
+
+.follower-count {
+    padding: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    display: table-cell;
+    cursor: pointer;
+}
+
+.following-count:hover {
+    color: #878787;
+}
+
+.following-count {
+    padding: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    display: table-cell;
+    cursor: pointer;
+}
 
 .profile-info-wrapper {
     text-align: center;
@@ -24,6 +54,7 @@
 }
 
 .profile-pic {
+    cursor: pointer;
     position: relative;
     width: 10rem;
     height: 10rem;
@@ -36,6 +67,7 @@
 }
 
 .background-pic {
+    cursor: pointer;
     position: absolute;
     top: 0;
     left: 0;
@@ -48,22 +80,22 @@
 
 .full-size-profile-photo-overlay {
     position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
 }
 
 .full-size-image {
     max-width: 90%;
-  max-height: 90%;
-  border-radius: 1rem;
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.6);
+    max-height: 90%;
+    border-radius: 1rem;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.6);
 }
 
 .profile-name {
@@ -112,7 +144,7 @@
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
 }
 
-.profile-buttons-wrapper{
+.profile-buttons-wrapper {
     display: flex;
     justify-content: center;
     margin-bottom: 1rem;
@@ -132,6 +164,26 @@
 .profile-favorite-button:hover {
     background-color: red;
     color: white;
+}
+
+.popup-user-list {
+    justify-content: center;
+    margin: auto;
+    display: block;
+    margin-bottom: 1rem;
+    border-radius: .5rem;
+    padding: 1rem;
+}
+
+.popup-list-item {
+    text-align: center;
+    justify-content: center;
+    display: block;
+    border-radius: 1rem;
+    padding: .7rem;
+    margin: 1rem;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    position: relative;
 }
 
 @media (max-width: 1024px) {

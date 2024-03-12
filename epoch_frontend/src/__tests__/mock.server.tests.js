@@ -1,4 +1,4 @@
-import { getUserInfo, tryLogin, registerUser, deleteUser, uploadProfilePic, removeSessionCookie } from "../services/user";
+import {getUserInfo, tryLogin, registerUser, deleteUser, uploadProfilePic, removeSessionCookie} from "../services/user";
 import {beforeEach, jest} from "@jest/globals";
 
 global.XMLHttpRequest = jest.fn();
@@ -54,7 +54,6 @@ describe('User Actions', () => {
             done();
         });
     });
-
 
     test('Correct request for user info', async () => {
         getUserInfo().then(result => {
@@ -212,7 +211,6 @@ describe('Server Failures', () => {
         const xhr = new global.XMLHttpRequest();
         xhr.onabort();
     });
-
 
     test('Delete user triggers timeout', async () => {
         deleteUser(userId).catch(error => {

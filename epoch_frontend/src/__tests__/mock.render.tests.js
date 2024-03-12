@@ -9,13 +9,17 @@ import '@testing-library/jest-dom';
 import {v4} from "uuid";
 import {UserProvider} from "../services/UserContext"
 import {getAllUserPosts, getFollowedUsersPost} from "../services/post";
-import {beforeEach, jest} from "@jest/globals";
+import {profileFollowNetwork, getFollowingList, getFollowerList } from "../services/following";
+import {beforeEach, jest, afterEach} from "@jest/globals";
 
 global.XMLHttpRequest = jest.fn();
 let mockOpen, mockSend, mockSetRequestHeader;
+let originalError = console.error;
+
 
 jest.mock("../services/user");
 jest.mock("../services/post");
+jest.mock("../services/following");
 
 const mockUser = {
     name: "Test User",
@@ -32,8 +36,6 @@ const mockUser = {
     profile_pic_name: "test",
     profile_pic_data: "test",
     profile_pic: "test",
-
-
 };
 
 const mockPost = {
@@ -47,6 +49,7 @@ const mockPost = {
     favorited_by: [],
     favorited_by_count: 0,
 }
+
 
 const username = v4();
 const password = v4() + "A1!";
@@ -70,12 +73,21 @@ describe('Render Pages', () => {
         });
 
         document.cookie = 'epoch_session_id=test_session_id';
+        originalError = console.error;
+        console.error = jest.fn();
+    });
+
+    afterEach(() => {
+        console.error = originalError;
     });
 
     test("displays user information on profile page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
         getUsernameInfo.mockResolvedValue(mockUser);
         getAllUserPosts.mockResolvedValue([mockPost]);
+        getFollowingList.mockResolvedValue([]);
+        getFollowerList.mockResolvedValue([]);
+        profileFollowNetwork.mockResolvedValue([[], [], 0, 0]);
 
 
         await act(async () => {

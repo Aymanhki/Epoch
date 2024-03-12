@@ -2,6 +2,7 @@ from epoch_backend.persistence.interfaces.session_persistence import session_per
 from epoch_backend.objects.session import session
 from epoch_backend.business.services import services
 
+
 class access_session_persistence(session_persistence):
     def __init__(self):
         self.session_persistence = services.get_session_persistence()

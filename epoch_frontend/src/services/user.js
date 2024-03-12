@@ -1,4 +1,3 @@
-
 function tryLogin(username, password) {
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
@@ -70,10 +69,10 @@ function getUserInfo() {
                 if (xhr.status === 200) {
                     const userData = JSON.parse(xhr.responseText);
 
-                   // if (userData.profile_pic_data) {
-                   //      const profilePicData = userData.profile_pic_data;
-                   //      userData.profile_pic_data = `data:image/png;base64,${profilePicData}`;
-                   //  }
+                    // if (userData.profile_pic_data) {
+                    //      const profilePicData = userData.profile_pic_data;
+                    //      userData.profile_pic_data = `data:image/png;base64,${profilePicData}`;
+                    //  }
 
                     resolve(userData);
                 } else {
@@ -168,14 +167,10 @@ function uploadProfilePic(file, userId) {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     resolve(true);
-                }
-                else
-                {
+                } else {
                     if (xhr.status !== 0) {
                         reject(xhr.statusText);
-                    }
-                    else
-                    {
+                    } else {
                         reject("Connection refused: The server is not running or unreachable");
                     }
                 }
@@ -259,7 +254,6 @@ function deleteUser(userId) {
         xhr.timeout = 10000;
 
 
-
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
@@ -291,8 +285,8 @@ function deleteUser(userId) {
     });
 }
 
-function updateUser(userId, newUserInfo){
-   return new Promise((resolve, reject) => {
+function updateUser(userId, newUserInfo) {
+    return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
@@ -333,5 +327,13 @@ function updateUser(userId, newUserInfo){
 }
 
 
-
-module.exports = {tryLogin, getUserInfo, removeSessionCookie, uploadProfilePic, registerUser, deleteUser, getUsernameInfo, updateUser};
+module.exports = {
+    tryLogin,
+    getUserInfo,
+    removeSessionCookie,
+    uploadProfilePic,
+    registerUser,
+    deleteUser,
+    getUsernameInfo,
+    updateUser
+};

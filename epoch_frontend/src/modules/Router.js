@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes, Navigate, useParams } from 'react-router-dom';
+import {BrowserRouter, Route, Routes, Navigate, useParams} from 'react-router-dom';
 
 import Login from '../pages/login';
 import Register from '../pages/register';
@@ -15,14 +15,14 @@ function Router() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Navigate to="/epoch/login" />} />
-                <Route path="/epoch" element={<Navigate to="/epoch/login" />} />
-                <Route path="/login" element={<Navigate to="/epoch/login" />} />
-                <Route path="/register" element={<Navigate to="/epoch/register" />} />
-                <Route path="/home" element={<Navigate to="/epoch/home" />} />
-                <Route path="/userlist" element={<Navigate to="/epoch/userlist" />} />
-                <Route path="/search" element={<Navigate to="/epoch/search" />} />
-                <Route path="/favorites" element={<Navigate to="/epoch/favorites" />} />
+                <Route path="/" element={<Navigate to="/epoch/login"/>}/>
+                <Route path="/epoch" element={<Navigate to="/epoch/login"/>}/>
+                <Route path="/login" element={<Navigate to="/epoch/login"/>}/>
+                <Route path="/register" element={<Navigate to="/epoch/register"/>}/>
+                <Route path="/home" element={<Navigate to="/epoch/home"/>}/>
+                <Route path="/userlist" element={<Navigate to="/epoch/userlist"/>}/>
+                <Route path="/search" element={<Navigate to="/epoch/search"/>}/>
+                <Route path="/favorites" element={<Navigate to="/epoch/favorites"/>}/>
 
                 <Route path="/hashtags/:hashtag" element={<Hashtag />} />
                 <Route path="/epoch/hashtags/:hashtag" element={<Hashtag />} />
@@ -39,16 +39,16 @@ function Router() {
                 
 
                 {/* Catch-all route for 404 */}
-                <Route path="*" element={<NotFound />} />
+                <Route path="*" element={<NotFound/>}/>
             </Routes>
         </BrowserRouter>
     );
 }
 
 function ProfileRedirect() {
-    const { username } = useParams();
+    const {username} = useParams();
 
-    if (username.includes( "hashtags") || username.includes("#")){
+    if (username.includes("hashtags") || username.includes("#")) {
         return <Hashtag/>;
     } 
     else if (username.includes("comments")){

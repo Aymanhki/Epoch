@@ -7,6 +7,7 @@ from .api_endpoints.router import handle_routing
 from .api_endpoints.user_endpoints import upload_profile_pic
 from .api_endpoints.post_endpoints import new_post
 
+
 class webserver:
     def __init__(self, host='0.0.0.0', port=8080):
 
@@ -85,7 +86,6 @@ class webserver:
             if closed_thread_position > 0:
                 print(f"Closed thread at position {closed_thread_position}.")
             print(f"Total alive threads: {num_threads_after_cleanup}")
-
 
     def stop(self):
         try:

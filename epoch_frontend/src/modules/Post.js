@@ -42,15 +42,18 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     useEffect(() => {
         const currentTime = new Date();
         const postTime = new Date(post.created_at);
-        const timeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
+        const initialTimeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
 
-        if (timeDifferenceInSeconds > timeAllowedToEditInSeconds) {
-            setEditable(false);
-            setEditing(false);
-        } else {
-            setEditable(true);
-            setEditing(false);
-        }
+        setEditable(initialTimeDifferenceInSeconds <= timeAllowedToEditInSeconds);
+
+        const timerInterval = setInterval(() => {
+            const currentTime = new Date();
+            const timeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
+            setEditable(timeDifferenceInSeconds <= timeAllowedToEditInSeconds);
+        }, 1000);
+
+        return () => clearInterval(timerInterval);
+
 
         const date = new Date(post.release);
         setReleaseMonth(parseInt(date.getMonth() + 1));
@@ -60,10 +63,10 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         let hour = date.getHours();
         let finalHour = (hour > 12) ? ((hour - 12) + ':00 PM') : (hour + ':00 AM');
         setReleaseHour(finalHour);
-    }, [post.created_at, post.release]);
+    }, [post.created_at, post.release, timeAllowedToEditInSeconds]);
 
     useEffect(() => {
-        if(!showPostPopup) {
+        if (!showPostPopup) {
             setUpdating(false);
             setUpdatingMessage('');
             setEditing(false);
@@ -76,17 +79,18 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     };
 
     const toggleFavorite = () => {
-        if(postViewer) {
+        if (postViewer) {
             if (favorited) {
                 setFavorited(false);
                 setFavoritedByCount(favoritedByCount - 1);
                 removeFavoritePost(post.post_id, postViewer.id)
-                    .then(() => {})
+                    .then(() => {
+                    })
                     .catch((error) => {
                         setError(true);
                         setErrorMessage(error);
                         setFavorited(true);
-                        setFavoritedByCount(favoritedByCount + 1);
+                        setFavoritedByCount(favoritedByCount);
                         setTimeout(() => {
                             setError(false);
                             setErrorMessage('');
@@ -96,11 +100,12 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                 setFavorited(true);
                 setFavoritedByCount(favoritedByCount + 1);
                 favoritePost(post.post_id, postViewer.id)
-                    .then(() => {})
+                    .then(() => {
+                    })
                     .catch((error) => {
                         setError(true);
                         setFavorited(false);
-                        setFavoritedByCount(favoritedByCount - 1);
+                        setFavoritedByCount(favoritedByCount);
                         setErrorMessage(error);
                         setTimeout(() => {
                             setError(false);
@@ -176,7 +181,10 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             .catch((error) => {
                 setError(true);
                 setErrorMessage(error);
-                setTimeout(() => { setError(false); setErrorMessage(''); }, 5000);
+                setTimeout(() => {
+                    setError(false);
+                    setErrorMessage('');
+                }, 5000);
             });
     }
 
@@ -213,64 +221,61 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
 
     return (
-            <div className={`post ${showFullCaption ? 'post-expanded' : ''}`} style={{display: ( ( (postIsInThePast() || postAdmin) && (!deleted) && ((isInFavorites && favorited) || !isInFavorites) ) ) ? 'block' : 'none'}}>
-                <div className="post-header">
-                    <div className="post-header-left">
-                        <div className={'profile-photo-container'}
-                             onClick={() => handleProfilePhotoClick(post.profile_picture)}>
-                            <SmartMedia fileUrl={post.profile_picture} file_type={post.profile_picture_type}
-                                        file_name={post.profile_picture_name} alt="Profile" className="profile-photo"/>
-                        </div>
-                        <div className="post-header-info" >
-                            <h3 className={'post-username'} onClick={() => navigate(`/${post.username}`)}>{post.username}</h3>
-                            <p className={'post-date'}>{post.release}</p>
-                        </div>
+        <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
+             style={{display: (((postIsInThePast() || postAdmin) && (!deleted) && ((isInFavorites && favorited) || !isInFavorites))) ? 'block' : 'none'}}>
+            <div className="post-header">
+                <div className="post-header-left">
+                    <div className={'profile-photo-container'}
+                         onClick={() => handleProfilePhotoClick(post.profile_picture)}>
+                        <SmartMedia fileUrl={post.profile_picture} file_type={post.profile_picture_type}
+                                    file_name={post.profile_picture_name} alt="Profile" className="profile-photo"/>
                     </div>
+                    <div className="post-header-info">
+                        <h3 className={'post-username'}
+                            onClick={() => navigate(`/${post.username}`)}>{post.username}</h3>
+                        <p className={'post-date'}>{post.release}</p>
+                    </div>
+                </div>
 
-                    <div className="post-header-right">
-                        {updating && (<p className="updating-message">{updatingMessage}</p>)}
-                        {error && (<p className="error-message">{errorMessage}</p>)}
-                        {(postViewer && postAdmin && editable && !editing) && (<BorderColorOutlinedIcon className="edit-post-button-icon" onClick={() => {
+                <div className="post-header-right">
+                    {updating && (<p className="updating-message">{updatingMessage}</p>)}
+                    {error && (<p className="error-message">{errorMessage}</p>)}
+                    {(postViewer && postAdmin && editable && !editing) && (
+                        <BorderColorOutlinedIcon className="edit-post-button-icon" onClick={() => {
                             onEditPost();
                         }}></BorderColorOutlinedIcon>)}
-                        {(postViewer && postAdmin && !editing) && (<DeleteForeverOutlinedIcon className="delete-post-button-icon" onClick={() => {
+                    {(postViewer && postAdmin && !editing) && (
+                        <DeleteForeverOutlinedIcon className="delete-post-button-icon" onClick={() => {
                             onDeletePost(post.post_id, postViewer.id);
                         }}></DeleteForeverOutlinedIcon>)}
 
-                    </div>
                 </div>
+            </div>
 
-                <div className="post-body">
-                    <p className={"post-caption"}>
-                        {showFullCaption ? renderCaptionWithHashtags(post.caption) : (
-                            <>
-                                {renderCaptionWithHashtags(truncatedCaption)}
-                                <span className="see-more" onClick={toggleCaptionVisibility}>
+            <div className="post-body">
+                <p className={"post-caption"}>
+                    {showFullCaption ? renderCaptionWithHashtags(post.caption) : (
+                        <>
+                            {renderCaptionWithHashtags(truncatedCaption)}
+                            <span className="see-more" onClick={toggleCaptionVisibility}>
                                     See more
                                 </span>
-                            </>
-                        )}
-                        {(showFullCaption && post.caption.length >= captionCharLimit) && (
-                            <>
-                                {' '}
-                                <span className="see-less" onClick={toggleSeeLess}>
+                        </>
+                    )}
+                    {(showFullCaption && post.caption.length >= captionCharLimit) && (
+                        <>
+                            {' '}
+                            <span className="see-less" onClick={toggleSeeLess}>
                                     See less
                                 </span>
-                            </>
-                        )}
-                    </p>
-                    {(post.file && showFullCaption) && <div className={'file-wrapper'}>
-                        <div className={'post-file'}><SmartMedia file={post.file} fileUrl={post.file}
-                                                                 file_type={post.file_type}
-                                                                 file_name={post.file_name} className={"post-media"}/></div>
-                    </div>}
-
-                    {showOverlay && (
-                        <div className={'post-full-size-profile-photo-overlay'} onClick={closeOverlay}>
-                            <img src={overlayImageUrl} alt="Full Size" className="full-size-image"/>
-                        </div>
+                        </>
                     )}
-                </div>
+                </p>
+                {(post.file && showFullCaption) && <div className={'file-wrapper'}>
+                    <div className={'post-file'}><SmartMedia file={post.file} fileUrl={post.file}
+                                                             file_type={post.file_type}
+                                                             file_name={post.file_name} className={"post-media"}/></div>
+                </div>}
 
                 <div className="post-footer">
                     {!showCommentsSection && (
@@ -288,6 +293,37 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                 :
                 (showPostPopup && postViewer && postAdmin) && (<PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username} profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
                 }
+                {showOverlay && (
+                    <div className={'post-full-size-profile-photo-overlay'} onClick={closeOverlay}>
+                        <img src={overlayImageUrl} alt="Full Size" className="full-size-image"/>
+                    </div>
+                )}
             </div>
+
+            <div className="post-footer">
+                <button className={"view-comments-button"}>View Comments</button>
+                {postViewer && (
+                    <>
+                        <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`}
+                                                    onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
+                        <p className={'favorited-by-count'}>{favoritedByCount}</p>
+                    </>)}
+            </div>
+            {(post.file) ?
+                (showPostPopup && fileBlob && postViewer && postAdmin) && (
+                    <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
+                               profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
+                               setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} postFile={fileBlob}
+                               year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour}
+                               postId={post.post_id} userId={postViewer.id}/>)
+                :
+                (showPostPopup && postViewer && postAdmin) && (
+                    <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
+                               profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
+                               setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear}
+                               month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id}
+                               userId={postViewer.id}/>)
+            }
+        </div>
     );
 }

@@ -17,18 +17,18 @@ function Favorites() {
     const [refreshFeed, setRefreshFeed] = useState(true);
 
     const updatePosts = React.useCallback(() => {
-        if(user) {
-        getFavoritePosts(user.id)
-            .then(data => {
-                setPosts(data);
-                setIsLoading(false);
-                setRefreshFeed(false);
-            })
-            .catch(error => {
-                console.log(error);
-                setIsLoading(false);
-                setRefreshFeed(false);
-            });
+        if (user) {
+            getFavoritePosts(user.id)
+                .then(data => {
+                    setPosts(data);
+                    setIsLoading(false);
+                    setRefreshFeed(false);
+                })
+                .catch(error => {
+                    console.log(error);
+                    setIsLoading(false);
+                    setRefreshFeed(false);
+                });
         }
     }, [user]);
 
@@ -51,35 +51,36 @@ function Favorites() {
         }
     }, [updatePosts, refreshFeed]);
 
-    if(!user) {
+    if (!user) {
         return (
-            <Spinner />
+            <Spinner/>
         );
     }
 
-  return (
-      <>
-      {user && <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
-             showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>}
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <div className={"favorites-page-container"}>
-            <div className={"favorites-feed-wrapper"}>
-                <div className={"favorites-feed"}>
-                    {user ? (<Feed feedUsername={user.username} feedUserId={user.id} isInProfile={true}
-                                      currentUser={user} showNewPostPopup={showNewPostPopup}
-                                      setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                      setRefreshFeed={setRefreshFeed} posts={posts} isInFavorites={true}/>) : (<></>)}
+    return (
+        <>
+            {user && <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
+                             showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>}
+            {isLoading ? (
+                <Spinner/>
+            ) : (
+                <div className={"favorites-page-container"}>
+                    <div className={"favorites-feed-wrapper"}>
+                        <div className={"favorites-feed"}>
+                            {user ? (<Feed feedUsername={user.username} feedUserId={user.id} isInProfile={true}
+                                           currentUser={user} showNewPostPopup={showNewPostPopup}
+                                           setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
+                                           setRefreshFeed={setRefreshFeed} posts={posts}
+                                           isInFavorites={true}/>) : (<></>)}
+                        </div>
+                    </div>
+                    {user ? (<PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
+                                        username={user.username} profilePic={user.profile_pic_data}
+                                        refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>) : (<></>)}
                 </div>
-            </div>
-            {user ? (<PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
-                        username={user.username} profilePic={user.profile_pic_data}
-                        refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>) : (<></>)}
-        </div>
-      )}
-      </>
-  );
+            )}
+        </>
+    );
 }
 
 export default Favorites;

@@ -41,7 +41,7 @@
     border-radius: 4px;
     box-sizing: border-box;
     font-size: 16px;
-    resize: none; 
+    resize: none;
 }
 
 .edit-popup-content p {
@@ -49,5 +49,5 @@
 }
 
 .profile-pic {
-    position:inherit;
+    position: inherit;
 }

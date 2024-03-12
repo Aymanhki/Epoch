@@ -4,6 +4,7 @@ from ..persistence.epoch.epoch_media_persistence import epoch_media_persistence
 from ..persistence.epoch.epoch_post_persistence import epoch_post_persistence
 from ..persistence.epoch.epoch_comment_persistence import epoch_comment_persistence
 
+
 class services:
     @staticmethod
     def get_user_persistence():
@@ -17,6 +18,7 @@ class services:
     def get_media_persistence():
         return epoch_media_persistence()
     
+
     @staticmethod
     def get_post_persistence():
         return epoch_post_persistence()

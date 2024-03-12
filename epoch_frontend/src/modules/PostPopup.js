@@ -6,8 +6,24 @@ import {newPost, updatePost} from "../services/post.js"
 import {useSpring, animated} from 'react-spring';
 
 
-export default function PostPopup({showPopup, setShowPopup, username, profilePic, refreshFeed, setRefreshFeed, editPost, caption, postFile, year, month, day, hour, postId, userId}) {
-    const [uploadedFile, setUploadedFile] = useState( (editPost && postFile) ? postFile : null);
+export default function PostPopup({
+                                      showPopup,
+                                      setShowPopup,
+                                      username,
+                                      profilePic,
+                                      refreshFeed,
+                                      setRefreshFeed,
+                                      editPost,
+                                      caption,
+                                      postFile,
+                                      year,
+                                      month,
+                                      day,
+                                      hour,
+                                      postId,
+                                      userId
+                                  }) {
+    const [uploadedFile, setUploadedFile] = useState((editPost && postFile) ? postFile : null);
     const [postText, setPostText] = useState((editPost && caption) ? caption : null);
     const [postNow, setPostNow] = useState(false);
     const [selectedYear, setSelectedYear] = useState((editPost && year) ? year : null);
@@ -37,7 +53,7 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
             setUploadedFile(selectedFile);
             setHasUploadedFile(true);
 
-            if(editPost) {
+            if (editPost) {
                 setEditPostFileChanged(true);
             }
         }
@@ -59,7 +75,7 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
 
 
     useEffect(() => {
-        if ( postNow && !editPost) {
+        if (postNow && !editPost) {
             setSelectedYear(null);
             setSelectedMonth(null);
             setSelectedDay(null);
@@ -90,32 +106,32 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
     }
 
     const handleClosing = () => {
-        if(!posting) {
+        if (!posting) {
             setUploadedFile(null);
             setShowPopup(false);
         }
     }
 
     const handleCheckboxChange = (e) => {
-        if(!posting) {
+        if (!posting) {
             setPostNow(e.target.checked);
             setError(false);
         }
     };
 
     const handleRemoveMedia = () => {
-        if(!posting) {
+        if (!posting) {
             setUploadedFile(null);
             setHasUploadedFile(false);
 
-            if(editPost && postFile) {
+            if (editPost && postFile) {
                 setEditPostFileRemoved(true);
             }
         }
     };
 
     const handlePost = () => {
-        if(!posting) {
+        if (!posting) {
             let selectedDate;
             const now = new Date();
             const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
@@ -144,8 +160,7 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
 
                 if (selectedHour.includes('PM')) {
                     hours = parseInt(hours) + 12;
-                }
-                else {
+                } else {
                     hours = parseInt(hours);
                 }
 
@@ -165,7 +180,7 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
             if (!error) {
                 setPosting(true)
 
-                if(!editPost) {
+                if (!editPost) {
                     setPostButtonPrompt('Posting...');
                     const postObject = {
                         postText: postText,
@@ -198,8 +213,7 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                             setErrorMessage(error);
                             setError(true);
                         })
-                }
-                else {
+                } else {
                     setPostButtonPrompt('Saving...');
                     const postObject = {
                         postText: postText,
@@ -267,7 +281,8 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                     </div>
 
                     <div className={'popup-body'}>
-                        <textarea placeholder={'What\'s on your mind?'} disabled={posting} className={`post-input-textarea ${posting ? 'disabled' : ''}` }
+                        <textarea placeholder={'What\'s on your mind?'} disabled={posting}
+                                  className={`post-input-textarea ${posting ? 'disabled' : ''}`}
                                   value={postText || ''} onChange={(e) => {
                             setPostText(e.target.value);
                             setError(false);
@@ -277,15 +292,24 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                             {hasUploadedFile && (
                                 <button className="remove-media" onClick={handleRemoveMedia}>+</button>
                             )}
-                            <div className={'uploaded-file-preview'} >
+                            <div className={'uploaded-file-preview'}>
                                 <input
                                     type="file"
                                     accept="image/*, audio/*, video/*"
                                     onChange={handleFileChange}
-                                    style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, opacity: 0, cursor: 'pointer', display: posting ? 'none' : 'block' }}
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        opacity: 0,
+                                        cursor: 'pointer',
+                                        display: posting ? 'none' : 'block'
+                                    }}
                                     name="file"
                                     id="file"
-                                    disabled= {hasUploadedFile || posting}
+                                    disabled={hasUploadedFile || posting}
                                 />
 
                                 {uploadedFile ? (<SmartMedia file={uploadedFile} className={'media-preview'}/>) :
@@ -296,8 +320,10 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                         </div>
 
                         {!editPost && (<div className={'schedule-checkbox-wrapper'}>
-                            <input className={`schedule-checkbox ${postNow ? 'checked' : ''} ${posting ? 'disabled' : '' }`} type="checkbox"
-                                   checked={postNow} onChange={handleCheckboxChange}/>
+                            <input
+                                className={`schedule-checkbox ${postNow ? 'checked' : ''} ${posting ? 'disabled' : ''}`}
+                                type="checkbox"
+                                checked={postNow} onChange={handleCheckboxChange}/>
                             <label className={'schedule-checkbox-label'}>Do you want to post this now?</label>
                         </div>)}
 
@@ -308,7 +334,8 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                                     setSelectedYear(e.target.value);
                                     setSelectedDay(null);
                                     setError(false);
-                                }} className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`} disabled={postNow}>
+                                }} className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`}
+                                        disabled={postNow}>
                                     <option value="">Select Year</option>
                                     {years.map((year) => (
                                         <option key={year} value={year}>
@@ -320,7 +347,8 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                                     setSelectedMonth(e.target.value);
                                     setSelectedDay(null);
                                     setError(false);
-                                }} className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`} disabled={postNow}>
+                                }} className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`}
+                                        disabled={postNow}>
                                     <option value="">Select Month</option>
                                     {months.map((month) => (
                                         <option key={month} value={month}>
@@ -331,7 +359,8 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                                 <select value={selectedDay || ''} onChange={(e) => {
                                     setSelectedDay(e.target.value);
                                     setError(false);
-                                }} className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`} disabled={postNow}>
+                                }} className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`}
+                                        disabled={postNow}>
                                     <option value="">Select Day</option>
                                     {days.slice(0, daysInMonth(selectedYear, selectedMonth)).map((day) => (
                                         <option key={day} value={day}>
@@ -342,7 +371,8 @@ export default function PostPopup({showPopup, setShowPopup, username, profilePic
                                 <select value={selectedHour || ''} onChange={(e) => {
                                     setSelectedHour(e.target.value);
                                     setError(false);
-                                }} className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`} disabled={postNow}>
+                                }} className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`}
+                                        disabled={postNow}>
                                     <option value="">Select Hour</option>
                                     {hours.map((hour) => (
                                         <option key={hour} value={hour}>
