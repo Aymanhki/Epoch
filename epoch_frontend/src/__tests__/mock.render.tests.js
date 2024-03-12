@@ -9,6 +9,7 @@ import '@testing-library/jest-dom';
 import {v4} from "uuid";
 import {UserProvider} from "../services/UserContext"
 import {getAllUserPosts, getFollowedUsersPost} from "../services/post";
+import {profileFollowNetwork, getFollowingList, getFollowerList } from "../services/following";
 import {beforeEach, jest, afterEach} from "@jest/globals";
 
 global.XMLHttpRequest = jest.fn();
@@ -18,6 +19,7 @@ let originalError = console.error;
 
 jest.mock("../services/user");
 jest.mock("../services/post");
+jest.mock("../services/following");
 
 const mockUser = {
     name: "Test User",
@@ -47,6 +49,7 @@ const mockPost = {
     favorited_by: [],
     favorited_by_count: 0,
 }
+
 
 const username = v4();
 const password = v4() + "A1!";
@@ -82,6 +85,9 @@ describe('Render Pages', () => {
         getUserInfo.mockResolvedValue(mockUser);
         getUsernameInfo.mockResolvedValue(mockUser);
         getAllUserPosts.mockResolvedValue([mockPost]);
+        getFollowingList.mockResolvedValue([]);
+        getFollowerList.mockResolvedValue([]);
+        profileFollowNetwork.mockResolvedValue([[], [], 0, 0]);
 
 
         await act(async () => {
