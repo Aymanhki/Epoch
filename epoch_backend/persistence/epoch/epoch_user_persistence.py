@@ -90,8 +90,7 @@ class epoch_user_persistence(user_persistence):
         rowHeaders = [name[0] for name in cursor.description]
         json_data = []
         for value in result:
-            if (len(value[0]) < 25):  # there are session ids in the database :(
-                json_data.append(dict(zip(rowHeaders, value)))
+            json_data.append(dict(zip(rowHeaders, value)))
 
         return json.dumps(json_data)
 
