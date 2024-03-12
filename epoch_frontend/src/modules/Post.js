@@ -5,6 +5,7 @@ import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import '../styles/Post.css';
 import {useNavigate} from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
 import {deletePost} from '../services/post';
 import PostPopup from "./PostPopup";
 import {favoritePost, removeFavoritePost} from "../services/post";
@@ -34,6 +35,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [updatingMessage, setUpdatingMessage] = useState('');
     const [favorited, setFavorited] = useState(false);
     const [favoritedByCount, setFavoritedByCount] = useState(0);
+    const location = useLocation(); // Get current location
+    const [showCommentsSection, setShowCommentsSection] = useState(false);
 
 
     useEffect(() => {
@@ -210,6 +213,13 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
     }, [post.favorited_by, postViewer]);
 
+    useEffect(() => {
+        setShowCommentsSection(location.pathname.includes('/comments'));
+    }, [location]);
+
+
+
+
     return (
         <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
              style={{display: (((postIsInThePast() || postAdmin) && (!deleted) && ((isInFavorites && favorited) || !isInFavorites))) ? 'block' : 'none'}}>
@@ -267,6 +277,22 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                                                              file_name={post.file_name} className={"post-media"}/></div>
                 </div>}
 
+                <div className="post-footer">
+                    {!showCommentsSection && (
+                        <button className={"view-comments-button"} onClick={() => navigate(`/epoch/comments/${post.post_id}`)}>View Comments</button>
+                    )}
+                    
+                    {postViewer && (
+                        <>
+                            <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`} onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
+                            <p className={'favorited-by-count'}>{favoritedByCount}</p>
+                        </>)}
+                </div>
+                {(post.file) ?
+                (showPostPopup && fileBlob && postViewer && postAdmin) && (<PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username} profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} postFile={fileBlob} year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
+                :
+                (showPostPopup && postViewer && postAdmin) && (<PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username} profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
+                }
                 {showOverlay && (
                     <div className={'post-full-size-profile-photo-overlay'} onClick={closeOverlay}>
                         <img src={overlayImageUrl} alt="Full Size" className="full-size-image"/>

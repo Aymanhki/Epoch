@@ -9,6 +9,7 @@ import Userlist from '../pages/userlist';
 import {NotFound} from "../pages/notFound";
 import Hashtag from "../pages/Hashtag";
 import Favorites from "../pages/Favorites";
+import Comments from "../pages/Comments";
 
 function Router() {
     return (
@@ -23,17 +24,19 @@ function Router() {
                 <Route path="/search" element={<Navigate to="/epoch/search"/>}/>
                 <Route path="/favorites" element={<Navigate to="/epoch/favorites"/>}/>
 
-                <Route path="/hashtags/:hashtag" element={<Hashtag/>}/>
-                <Route path="/epoch/hashtags/:hashtag" element={<Hashtag/>}/>
+                <Route path="/hashtags/:hashtag" element={<Hashtag />} />
+                <Route path="/epoch/hashtags/:hashtag" element={<Hashtag />} />
+                <Route path="/epoch/comments/:post-id" element={<Comments />} />
 
-                <Route path="/epoch/favorites" element={<Favorites/>}/>
-                <Route path="/epoch/login" element={<Login/>}/>
-                <Route path="/epoch/register" element={<Register/>}/>
-                <Route path="/epoch/home" element={<Home/>}/>
-                <Route path="/epoch/:username" element={<ProfileRedirect/>}/>
-                <Route path="/epoch/userlist" element={<Userlist/>}/>
-                <Route path="/epoch/search" element={<Userlist/>}/>
-                <Route path="/:username" element={<ProfileRedirect/>}/>
+                <Route path="/epoch/favorites" element={<Favorites />} />
+                <Route path="/epoch/login" element={<Login />} />
+                <Route path="/epoch/register" element={<Register />} />
+                <Route path="/epoch/home" element={<Home />} />
+                <Route path="/epoch/:username" element={<ProfileRedirect />} />
+                <Route path="/epoch/userlist" element={<Userlist/>} />
+                <Route path="/epoch/search" element={<Userlist/>} />
+                <Route path="/:username" element={<ProfileRedirect />} />
+                
 
                 {/* Catch-all route for 404 */}
                 <Route path="*" element={<NotFound/>}/>
@@ -47,8 +50,13 @@ function ProfileRedirect() {
 
     if (username.includes("hashtags") || username.includes("#")) {
         return <Hashtag/>;
-    } else {
-        return <Profile/>;
+    } 
+    else if (username.includes("comments")){
+        return <Comments/>
+    }
+    else
+    {
+        return <Profile />;
     }
 }
 

@@ -154,9 +154,9 @@ def get_cors_headers(origin="*"):
     return {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id",
+        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment_Id",
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id",
+        "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment-Id",
     }
 
 
@@ -277,8 +277,7 @@ def get_posts_media(posts):
 
     return posts_media
 
-
-def get_post_profile_info(user_id):
+def get_profile_info(user_id):
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
@@ -300,7 +299,7 @@ def get_posts_users_info(posts):
 
     for i in range(len(posts)):
         user_id = posts[i][1]
-        posts_users[i] = get_post_profile_info(user_id)
+        posts_users[i] = get_profile_info(user_id)
 
     return posts_users
 
@@ -337,3 +336,17 @@ def get_post_dict(current_post, posts_media, username, profile_picture_url, prof
     post_dict["favorited_by_count"] = len(post_dict["favorited_by"])
 
     return post_dict
+
+
+def get_comment_dict(curr_comment, username, profile_picture_url, profile_picture_type, profile_picture_name):
+    comment_dict = {}
+    comment_dict["comm_id"] = curr_comment[0]
+    comment_dict["post_id"] = curr_comment[1]
+    comment_dict["profile_picture"] = profile_picture_url
+    comment_dict["profile_picture_type"] = profile_picture_type
+    comment_dict["profile_picture_name"] = profile_picture_name
+    comment_dict["username"] = username
+    comment_dict["comment"] = curr_comment[3]
+    comment_dict["created_at"] = curr_comment[4].strftime("%Y-%m-%d %H:%M:%S")
+
+    return comment_dict

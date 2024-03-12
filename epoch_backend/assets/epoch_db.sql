@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS users
     background_pic INT REFERENCES media_content (media_id) NULL
 );
 
+
 CREATE TABLE IF NOT EXISTS posts
 (
     post_id        SERIAL PRIMARY KEY,
@@ -33,7 +34,8 @@ CREATE TABLE IF NOT EXISTS posts
     caption        TEXT,
     created_at     TIMESTAMP     NOT NULL,
     release        TIMESTAMP     NOT NULL,
-    favorite_count INT DEFAULT 0 NOT NULL
+    favorite_count INT DEFAULT 0 NOT NULL,
+    votes_count    INT DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sessions
@@ -64,13 +66,20 @@ CREATE TABLE IF NOT EXISTS favorites
     PRIMARY KEY (user_id, post_id)
 );
 
-INSERT INTO media_content (content_type, file_name, path)
-SELECT 'image/png',
-       'default_pfp.png',
-       'https://storage.googleapis.com/epoch-cloud-storage-media/epoch-media/default_pfp.png'
-WHERE NOT EXISTS (SELECT 1
-                  FROM media_content
-                  WHERE media_id = 1);
+CREATE TABLE IF NOT EXISTS votes (
+    user_id INT REFERENCES users(user_id),
+    post_id INT REFERENCES posts(post_id),
+    PRIMARY KEY (user_id, post_id)
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+    comm_id SERIAL PRIMARY KEY,
+    post_id INT REFERENCES posts(post_id),
+    user_id INT REFERENCES users(user_id),
+    comment TEXT,
+    created_at TIMESTAMP NOT NULL
+);
+
 
 INSERT INTO users (name, username, password, created_at, profile_pic)
 SELECT 'Test User' || i,
