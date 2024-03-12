@@ -1,16 +1,14 @@
 import json
 import os
 
-from ..api_endpoints.following_endpoints import follow_user, get_account_list, get_follower_list, get_following_list, \
-    unfollow_user
-from ..utils import get_cors_headers, get_origin_from_headers, send_response, get_last_modified, guess_file_type, \
-    get_session_id_from_request, send_cors_options_response
-from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, \
-    get_user_from_name, upload_profile_pic, update_user_info
+from ..api_endpoints.following_endpoints import follow_user, get_account_list, get_follower_list, get_following_list, unfollow_user
+from ..utils import get_cors_headers, get_origin_from_headers, send_response, get_last_modified, guess_file_type, get_session_id_from_request, send_cors_options_response
+from ..api_endpoints.user_endpoints import delete_by_user_id, delete_by_username, post_user, get_user, register_user, get_user_from_name, upload_profile_pic, update_user_info
 from ..db_controller.access_user_persistence import access_user_persistence
 from ..db_controller.access_session_persistence import access_session_persistence
-from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, \
-    update_post, get_followed_users_posts, favorite_post, remove_favorite_post, get_favorites
+from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, update_post, get_followed_users_posts, favorite_post, remove_favorite_post, get_favorites, vote_post, remove_vote_post
+from ..api_endpoints.comment_endpoints import new_comment, get_all_comments_post, delete_comment
+from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, update_post, get_followed_users_posts, favorite_post, remove_favorite_post, get_favorites
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')
@@ -185,6 +183,29 @@ def handle_api_request(method, path, request_data, conn):
             upload_profile_pic(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+    # Comment paths
+    elif path.startswith("/api/comments/post"):
+        if method == "POST":
+            new_comment(conn, request_data)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
+    elif path.startswith("/api/comments/delete"):
+        if method == "DELETE":
+            delete_comment(conn, request_data)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
+    elif path.startswith("/api/comments/get"):
+        if method == "GET":
+            get_all_comments_post(conn, request_data)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
+    elif path.startswith("/api/vote/post"):
+        if method == "POST":
+            vote_post(conn, request_data)
+        elif method == "DELETE":
+            remove_vote_post(conn, request_data)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
     else:
         send_response(conn, 404, "Not Found", body=b"<h1>404 Not Found</h1>")
 

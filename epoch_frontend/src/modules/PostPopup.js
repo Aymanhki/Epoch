@@ -277,7 +277,7 @@ export default function PostPopup({
                         <div className={'profile-photo-container'}>
                             <img className={'profile-photo'} src={profilePic} alt={'profile-pic'}/>
                         </div>
-                        <p>{username}</p>
+                        <p className={'popup-header-username'}>{username}</p>
                     </div>
 
                     <div className={'popup-body'}>

@@ -1,0 +1,17 @@
+.post-comments-page{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.post-comments-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 800px; /* Set maximum width to limit the width */
+    padding: 1rem;
+    margin: auto; /* Center horizontally */
+}

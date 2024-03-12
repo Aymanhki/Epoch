@@ -49,8 +49,13 @@
     object-fit: cover;
 }
 
+.popup-header-username{
+    margin-left: 10px;
+}
+
 .popup-body {
     max-height: 50vh;
+    overflow-x: hidden;
     display: grid;
     padding: 1rem;
     grid-template-columns: 1fr 1fr;
@@ -122,9 +127,12 @@
 .uploaded-file-preview {
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    cursor: pointer;
     border: none;
     object-fit: contain;
     border-radius: 1rem;
+    
 }
 
 .media-preview {

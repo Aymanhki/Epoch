@@ -36,3 +36,9 @@ class access_post_persistence(post_persistence):
 
     def get_favorites(self, user_id: int):
         return self.post_persistence.get_favorites(user_id)
+
+    def vote_post(self, post_id: int, user_id: int):
+        return self.post_persistence.vote_post(post_id, user_id)
+    
+    def remove_vote_post(self, post_id: int, user_id: int):
+        return self.post_persistence.remove_vote_post(post_id, user_id)

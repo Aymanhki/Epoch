@@ -22,18 +22,32 @@ class post_persistence(ABC):
     @abstractmethod
     def get_all_user_posts(self, user_id: int):
         pass
-
+    
+    @abstractmethod
     def get_all_hashtag_posts(self, hashtag: str):
         pass
-
+    
+    @abstractmethod
     def get_followed_users_posts(self, user_id: int):
         pass
 
+    @abstractmethod
     def favorite_post(self, post_id: int, user_id: int):
         pass
 
+    @abstractmethod
     def remove_favorite_post(self, post_id: int, user_id: int):
         pass
 
+    @abstractmethod
     def get_favorites(self, user_id: int):
         pass
+    
+    @abstractmethod
+    def vote_post(self, post_id: int, user_id:int):
+        pass
+
+    @abstractmethod
+    def remove_vote_post(self, post_id: int, user_id: int):
+        pass
+
