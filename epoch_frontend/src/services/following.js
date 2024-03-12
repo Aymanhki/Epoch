@@ -264,4 +264,4 @@ function unfollowAccount(target) {
 
 }
 
-module.exports = {followAccount, unfollowAccount, fillUserList, getFollowingList, profileFollowNetwork}
+module.exports = {followAccount, unfollowAccount, fillUserList, getFollowingList, profileFollowNetwork, getFollowerList, getAccountList};
