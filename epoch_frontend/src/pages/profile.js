@@ -222,7 +222,7 @@ function Profile() {
                             {user !== null && (
                                 isCurrentUser ? (
                                     <div className={'profile-buttons-wrapper'}>
-                                        {/*<BorderColorOutlinedIcon className="edit-profile-button-icon" onClick={() => setShowEditProfilePopup(!showEditProfilePopup)}/>*/}
+                                        <BorderColorOutlinedIcon className="edit-profile-button-icon" onClick={() => setShowEditProfilePopup(!showEditProfilePopup)}/>
                                         <FavoriteBorderOutlinedIcon className={'profile-favorite-button'} onClick={() => navigate('/epoch/favorites')}></FavoriteBorderOutlinedIcon>
                                     </div>
 
@@ -276,7 +276,7 @@ function Profile() {
                                        refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
 
                             {showEditProfilePopup && <EditProfilePopup user={user}
-                                                                       onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
+                            onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
                         </>
                     )}
 
