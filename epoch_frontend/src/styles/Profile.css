@@ -167,24 +167,54 @@
 }
 
 .popup-user-list {
-    justify-content: center;
-    margin: auto;
-    display: block;
-    margin-bottom: 1rem;
-    border-radius: .5rem;
-    padding: 1rem;
+    list-style: none;
+    padding: 0;
 }
 
 .popup-list-item {
-    text-align: center;
-    justify-content: center;
-    display: block;
-    border-radius: 1rem;
-    padding: .7rem;
-    margin: 1rem;
-    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
-    position: relative;
+
+
 }
+
+
+.user-list-modal {
+    position: absolute;
+    border-radius: 1rem;
+    padding: 1rem;
+    background-color: white;
+    width: 50%;
+    max-height: 100%;
+    z-index: 1000;
+}
+
+.popup-user-list {
+    list-style: none;
+    padding: 0;
+}
+
+.popup-list-item {
+    padding: 8px 0;
+}
+
+.popup-list-item .username {
+    cursor: pointer;
+    color: #333;
+}
+
+/* Overlay */
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    z-index: 1000;
+}
+
+
+
 
 @media (max-width: 1024px) {
     .profile-wrapper {
@@ -273,5 +303,20 @@
     .edit-profile-button-icon:hover {
         background-color: #333333;
         color: #ffffff;
+    }
+
+    .user-list-modal-container {
+        background-color: #333333;
+        color: white;
+    }
+
+    .popup-list-item .username {
+        cursor: pointer;
+        color: #ffffff;
+    }
+
+    .user-list-modal {
+        background-color: #333333;
+        color: white;
     }
 }
