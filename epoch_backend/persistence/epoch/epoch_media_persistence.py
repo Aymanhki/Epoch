@@ -2,6 +2,7 @@ from ..interfaces.media_persistence import media_persistence
 from ...objects.media import media
 from ...business.utils import get_db_connection
 
+
 class epoch_media_persistence(media_persistence):
     def __init__(self):
         pass
@@ -12,7 +13,8 @@ class epoch_media_persistence(media_persistence):
 
         if new_media.associated_user is not None:
             query = "INSERT INTO media_content (content_type, file_name, associated_user, path) VALUES (%s, %s, %s, %s)"
-            cursor.execute(query, (new_media.content_type, new_media.file_name, new_media.associated_user, new_media.path))
+            cursor.execute(query,
+                           (new_media.content_type, new_media.file_name, new_media.associated_user, new_media.path))
         else:
             query = "INSERT INTO media_content (content_type, file_name, path) VALUES (%s, %s, %s)"
             cursor.execute(query, (new_media.content_type, new_media.file_name, new_media.path))
@@ -52,6 +54,3 @@ class epoch_media_persistence(media_persistence):
             new_media = media(result[1], result[2], result[4], result[5])
 
         return new_media
-
-
-

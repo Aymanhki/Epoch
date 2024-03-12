@@ -5,16 +5,26 @@ import Post from "./Post";
 import {getAllUserPosts, getFollowedUsersPost} from '../services/post.js'
 
 
-
-export default function Feed({feedUsername, feedUserId, isInProfile, currentUser, showNewPostPopup, setShowNewPostPopup, refreshFeed, setRefreshFeed, viewingOnly, posts, isInFavorites}) {
+export default function Feed({
+                                 feedUsername,
+                                 feedUserId,
+                                 isInProfile,
+                                 currentUser,
+                                 showNewPostPopup,
+                                 setShowNewPostPopup,
+                                 refreshFeed,
+                                 setRefreshFeed,
+                                 viewingOnly,
+                                 posts,
+                                 isInFavorites
+                             }) {
     const [isLoading, setIsLoading] = useState(true);
     const [feedPosts, setFeedPosts] = useState(Array(10).fill(null));
 
     const refreshFeedPosts = React.useCallback(async () => {
-        if(!posts) {
-            if(currentUser) {
-                if (isInProfile && feedUserId && currentUser.id === feedUserId)
-                {
+        if (!posts) {
+            if (currentUser) {
+                if (isInProfile && feedUserId && currentUser.id === feedUserId) {
                     getAllUserPosts(currentUser.id).then((data) => {
                         setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
                         setIsLoading(false);
@@ -22,9 +32,7 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
                         console.error(error);
                         setIsLoading(false);
                     });
-                }
-                else if (feedUserId && currentUser.id !== feedUserId)
-                {
+                } else if (feedUserId && currentUser.id !== feedUserId) {
                     getAllUserPosts(feedUserId).then((data) => {
                         setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
                         setIsLoading(false);
@@ -32,9 +40,7 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
                         console.error(error);
                         setIsLoading(false);
                     });
-                }
-                else if (!isInProfile && feedUsername && currentUser.username === feedUsername)
-                {
+                } else if (!isInProfile && feedUsername && currentUser.username === feedUsername) {
                     getFollowedUsersPost(currentUser.id).then((data) => {
                         setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
                         setIsLoading(false);
@@ -43,10 +49,8 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
                         setIsLoading(false);
                     });
                 }
-            }
-            else
-            {
-                if(feedUserId) {
+            } else {
+                if (feedUserId) {
                     getAllUserPosts(feedUserId).then((data) => {
                         setFeedPosts(data.sort((a, b) => new Date(b.release) - new Date(a.release)));
                         setIsLoading(false);
@@ -56,9 +60,7 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
                     });
                 }
             }
-        }
-        else
-        {
+        } else {
             setFeedPosts(posts.sort((a, b) => new Date(b.release) - new Date(a.release)));
             setIsLoading(false);
         }
@@ -68,9 +70,9 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
 
     useEffect(() => {
         refreshFeedPosts();
-    }, [ feedUserId, feedUsername, currentUser, isInProfile, refreshFeedPosts]);
+    }, [feedUserId, feedUsername, currentUser, isInProfile, refreshFeedPosts]);
 
-    useEffect( () => {
+    useEffect(() => {
         if (refreshFeed) {
             setIsLoading(true);
             refreshFeedPosts();
@@ -78,22 +80,27 @@ export default function Feed({feedUsername, feedUserId, isInProfile, currentUser
     }, [refreshFeed, refreshFeedPosts]);
 
 
-
     return (
         <>
-        {isLoading ? (<Spinner/>) :
-            (
-                <div className={'feed-wrapper'}>
+            {isLoading ? (<Spinner/>) :
+                (
+                    <div className={'feed-wrapper'}>
 
-                <div className={'posts-wrapper'}>
-                    {feedPosts.length === 0 && <div className={'no-posts'}>No posts to show, follow some people or make a new post</div>}
-                    {feedPosts.map((newPost, index) => <Post key={ newPost.post_id } post={newPost} postViewer={currentUser} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} isInFavorites={isInFavorites}/>)}
-                </div>
+                        <div className={'posts-wrapper'}>
+                            {feedPosts.length === 0 &&
+                                <div className={'no-posts'}>No posts to show, follow some people or make a new
+                                    post</div>}
+                            {feedPosts.map((newPost, index) => <Post key={newPost.post_id} post={newPost}
+                                                                     postViewer={currentUser} refreshFeed={refreshFeed}
+                                                                     setRefreshFeed={setRefreshFeed}
+                                                                     isInFavorites={isInFavorites}/>)}
+                        </div>
 
-                {(currentUser && ( (!isInProfile && feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId) ) && !viewingOnly) && (<button className={`new-post-button ${showNewPostPopup ? 'rotate' : ''}`}
-                    onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+</button>)}
+                        {(currentUser && ((!isInProfile && feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId)) && !viewingOnly) && (
+                            <button className={`new-post-button ${showNewPostPopup ? 'rotate' : ''}`}
+                                    onClick={() => setShowNewPostPopup(!showNewPostPopup)}>+</button>)}
 
-            </div>)}
+                    </div>)}
         </>
     )
 }

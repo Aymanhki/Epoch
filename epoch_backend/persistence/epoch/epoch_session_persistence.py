@@ -3,6 +3,7 @@ from ...objects.session import session
 from ...business.utils import get_db_connection
 from datetime import datetime, timedelta
 
+
 class epoch_session_persistence(session_persistence):
     def __init__(self):
         pass

@@ -58,7 +58,7 @@ label {
 }
 
 .label-white {
-  color: #fff; /* Set label color to white */
+    color: #fff; /* Set label color to white */
 }
 
 input {
@@ -124,38 +124,38 @@ button:hover {
 }
 
 @media (prefers-color-scheme: dark) {
-  body {
-    background-color: #222222;
-    color: #ffffff;
-  }
+    body {
+        background-color: #222222;
+        color: #ffffff;
+    }
 
-  .login-container {
-    background: linear-gradient(to top, #555555, #000000, #000000, #000000, #000000, #555555);
-  }
+    .login-container {
+        background: linear-gradient(to top, #555555, #000000, #000000, #000000, #000000, #555555);
+    }
 
-  .login-form {
-    color: #ffffff
-  }
+    .login-form {
+        color: #ffffff
+    }
 
-  input,
-  button {
-    border: 1px solid #ffffff;
-      color: #222222;
-  }
+    input,
+    button {
+        border: 1px solid #ffffff;
+        color: #222222;
+    }
 
-  .description-box {
-    background-color: #222222;
-    color: #fff;
-  }
+    .description-box {
+        background-color: #222222;
+        color: #fff;
+    }
 
-  .app-description {
-    background-color: transparent;
-  }
+    .app-description {
+        background-color: transparent;
+    }
 
-  button {
-    background-color: #fff;
-    color: #222222;
-  }
+    button {
+        background-color: #fff;
+        color: #222222;
+    }
 
     button:hover {
         background-color: #222222;
@@ -163,6 +163,6 @@ button:hover {
     }
 
     .label-white {
-      color: #fff; /* Set label color to white */
+        color: #fff; /* Set label color to white */
     }
 }

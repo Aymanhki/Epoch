@@ -1,8 +1,8 @@
 import React from 'react';
-import { screen, act, render, fireEvent, waitFor } from '@testing-library/react';
+import {screen, act, render, fireEvent, waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Router from "../modules/Router.js";
-import { v4 } from 'uuid';
+import {v4} from 'uuid';
 
 
 const DEFAULT_WAIT_TIME = 5000;
@@ -43,7 +43,7 @@ describe('Router Tests', () => {
         await waitFor(() => {
             expect(screen.getByTestId("login-button")).toBeInTheDocument();
             expect(screen.getByTestId("login-form")).toBeInTheDocument();
-        }, { timeout: DEFAULT_WAIT_TIME });
+        }, {timeout: DEFAULT_WAIT_TIME});
     })
 });
 
@@ -59,7 +59,7 @@ describe('Input Field Validation', () => {
         await waitFor(() => {
             expect(screen.getByText("* Username field cannot be empty")).toBeInTheDocument();
             expect(screen.getByText("* Password field cannot be empty")).toBeInTheDocument();
-        }, { timeout: DEFAULT_WAIT_TIME });
+        }, {timeout: DEFAULT_WAIT_TIME});
     });
 
     test('Name, Username, and Password must meet input validation', async () => {
@@ -77,7 +77,7 @@ describe('Input Field Validation', () => {
             expect(screen.getByText("* Name must be between 1 and 254 characters")).toBeInTheDocument();
             expect(screen.getByText("* Username must be between 1 and 50 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -")).toBeInTheDocument();
             expect(screen.getByText("* Password must be between 1 and 254 characters, at least one uppercase letter, one lowercase letter, one number, and one special character")).toBeInTheDocument();
-        }, { timeout: DEFAULT_WAIT_TIME });
+        }, {timeout: DEFAULT_WAIT_TIME});
     });
 
     test('Meaningful error messages are displayed on login when server is down', async () => {
@@ -94,17 +94,17 @@ describe('Input Field Validation', () => {
         await waitFor(() => {
             expect(screen.getByTestId("login-button")).toBeInTheDocument();
             expect(screen.getByTestId("login-form")).toBeInTheDocument();
-        }, { timeout: DEFAULT_WAIT_TIME });
+        }, {timeout: DEFAULT_WAIT_TIME});
 
         // type a username and password using uuid
         const username = v4();
         const password = v4();
 
         const usernameInput = screen.getByTestId("username-input-field");
-        fireEvent.change(usernameInput, { target: { value: username } });
+        fireEvent.change(usernameInput, {target: {value: username}});
 
         const passwordInput = screen.getByTestId("password-input-field");
-        fireEvent.change(passwordInput, { target: { value: password } });
+        fireEvent.change(passwordInput, {target: {value: password}});
 
         const submitButton = screen.getByTestId("login-button");
         fireEvent.click(submitButton);
@@ -130,7 +130,7 @@ describe('Input Field Validation', () => {
         await waitFor(() => {
             expect(screen.getByTestId("register-button")).toBeInTheDocument();
             expect(screen.getByTestId("register-form")).toBeInTheDocument();
-        }, { timeout: DEFAULT_WAIT_TIME });
+        }, {timeout: DEFAULT_WAIT_TIME});
 
         // type a username and password using uuid
         const name = v4();
@@ -138,13 +138,13 @@ describe('Input Field Validation', () => {
         const password = v4() + "A1!";
 
         const nameInput = screen.getByTestId("name-input-field");
-        fireEvent.change(nameInput, { target: { value: name } });
+        fireEvent.change(nameInput, {target: {value: name}});
 
         const usernameInput = screen.getByTestId("username-input-field");
-        fireEvent.change(usernameInput, { target: { value: username } });
+        fireEvent.change(usernameInput, {target: {value: username}});
 
         const passwordInput = screen.getByTestId("password-input-field");
-        fireEvent.change(passwordInput, { target: { value: password } });
+        fireEvent.change(passwordInput, {target: {value: password}});
 
         const submitButton = screen.getByTestId("register-button");
         fireEvent.click(submitButton);

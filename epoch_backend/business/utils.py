@@ -91,7 +91,7 @@ def guess_file_type(file_extension):
     return extension_to_type.get(file_extension, "text/text"), file_extension
 
 
-def get_session_id_from_request( request_data):
+def get_session_id_from_request(request_data):
     headers = request_data.split('\r\n\r\n')[0]
 
     for line in headers.split('\r\n'):
@@ -277,6 +277,7 @@ def get_posts_media(posts):
 
     return posts_media
 
+
 def get_post_profile_info(user_id):
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -293,6 +294,7 @@ def get_post_profile_info(user_id):
 
     return username, profile_picture_url, profile_picture_type, profile_picture_name
 
+
 def get_posts_users_info(posts):
     posts_users = {}
 
@@ -302,7 +304,9 @@ def get_posts_users_info(posts):
 
     return posts_users
 
-def get_post_dict(current_post, posts_media, username, profile_picture_url, profile_picture_type, profile_picture_name, i):
+
+def get_post_dict(current_post, posts_media, username, profile_picture_url, profile_picture_type, profile_picture_name,
+                  i):
     post_dict = {}
     post_dict["post_id"] = current_post[0]
     post_dict["profile_picture"] = profile_picture_url

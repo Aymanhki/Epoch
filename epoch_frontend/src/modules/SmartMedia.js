@@ -8,7 +8,7 @@ import '../styles/Post.css';
 
 const SmartMedia = ({file, fileUrl, file_type, file_name, className}) => {
     const getMediaType = () => {
-        if(file && file.type !== undefined && file.type !== null) {
+        if (file && file.type !== undefined && file.type !== null) {
             if (file.type.startsWith('image/')) {
                 return 'image';
             } else if (file.type.startsWith('video/')) {
@@ -36,7 +36,7 @@ const SmartMedia = ({file, fileUrl, file_type, file_name, className}) => {
     const renderMediaElement = () => {
         const mediaType = getMediaType();
 
-        if(file && file.type !== undefined && file.type !== null) {
+        if (file && file.type !== undefined && file.type !== null) {
             switch (mediaType) {
                 case 'image':
                     return <img src={URL.createObjectURL(file)} className={className} alt={file_name}/>;

@@ -16,7 +16,7 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-    const { updateUser } = useContext(UserContext);
+    const {updateUser} = useContext(UserContext);
 
 
     const toggleDropdown = () => {
@@ -60,7 +60,7 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
             <div className="left">
                 <div className="logo-container" onClick={() => navigate('/epoch/home')}>
                     <img
-                        src = {process.env.PUBLIC_URL + "/images/epoch-logo-400.jpeg"}
+                        src={process.env.PUBLIC_URL + "/images/epoch-logo-400.jpeg"}
                         alt="Epoch"
                         className="logo"
                         style={{width: "3rem", height: "100%"}}
@@ -77,10 +77,9 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
                 </NavLink>
 
                 <NavLink className="active" onClick={() => {
-                    if(showNewPostPopup) {
+                    if (showNewPostPopup) {
                         setShowNewPostPopup(false);
-                    }
-                    else {
+                    } else {
                         setShowNewPostPopup(true);
                     }
                 }}>
@@ -88,7 +87,7 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
                 </NavLink>
 
                 <NavLink to="/epoch/favorites" className="active">
-                    <FavoriteBorderOutlinedIcon />
+                    <FavoriteBorderOutlinedIcon/>
                 </NavLink>
 
                 <NavLink to="/epoch/search" className="active">
@@ -111,14 +110,14 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
                         )}
                     </div>
 
-                  {((!isMobile && isDropdownOpen) || (isMobile)) &&
+                    {((!isMobile && isDropdownOpen) || (isMobile)) &&
 
 
-                    <div className="dropdown-content">
-                        <span onClick={() => handleLogout()}>Logout</span>
-                        <span onClick={() => navigate('/epoch/profile')}>Profile</span>
-                    </div>
-                  }
+                        <div className="dropdown-content">
+                            <span onClick={() => handleLogout()}>Logout</span>
+                            <span onClick={() => navigate('/epoch/profile')}>Profile</span>
+                        </div>
+                    }
 
 
                 </div>
