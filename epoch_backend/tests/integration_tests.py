@@ -35,8 +35,8 @@ class integration_tests(unittest.TestCase):
     web_server = None
     frontend_process = None
     driver = None
-    frontend_dir = "../../epoch_frontend"
-    backend_dir = "../../epoch_backend/"
+    frontend_dir = os.path.join("..", "..", "epoch_frontend")
+    backend_dir = os.path.join("..", "..", "epoch_backend")
     username = str(uuid.uuid4())
     password = str(uuid.uuid4()) + "A1!"
     name = str(uuid.uuid4())
@@ -54,8 +54,6 @@ class integration_tests(unittest.TestCase):
         if os.environ.get("CI") == "true":
             options.add_argument("--no-sandbox")
             options.add_argument("--headless")
-
-
 
         try:
             cls.driver = webdriver.Chrome(options=options)

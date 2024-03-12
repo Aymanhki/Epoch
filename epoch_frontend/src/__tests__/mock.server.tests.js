@@ -55,7 +55,6 @@ describe('User Actions', () => {
         });
     });
 
-
     test('Correct request for user info', async () => {
         getUserInfo().then(result => {
             expect(mockOpen).toHaveBeenCalledWith('GET', 'http://localhost:8080/api/login/', true);
@@ -212,7 +211,6 @@ describe('Server Failures', () => {
         const xhr = new global.XMLHttpRequest();
         xhr.onabort();
     });
-
 
     test('Delete user triggers timeout', async () => {
         deleteUser(userId).catch(error => {
