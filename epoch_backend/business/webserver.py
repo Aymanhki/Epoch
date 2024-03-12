@@ -45,7 +45,7 @@ class webserver:
                     new_thread.start()
                     self.cleanup_threads()
                 except Exception as e:
-                    print(f"Error handling request: {e}")
+                    print(f"******* Error handling request: {e}")
 
         except KeyboardInterrupt:
             print("\n*** Server terminated by user. ***\n")
@@ -68,8 +68,8 @@ class webserver:
             handle_routing(relative_path, request_data, conn, method)
 
         except Exception as e:
-            print(f"Error handling request from {addr}: {e}")
-            reason_phrase = f"Error handling request: {e}"
+            print(f"************** Error handling request from {addr}: {e}")
+            reason_phrase = f"************ Error handling request: {e}"
             send_response(conn, 500, reason_phrase, body=b"<h1>500 Internal Server Error</h1>")
 
     def cleanup_threads(self):
