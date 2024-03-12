@@ -84,6 +84,18 @@
     font-size: 1rem;
 }
 
+.search-follow-button:disabled{
+    background-color: grey;
+    color: aliceblue;
+    cursor: wait;
+}
+
+.search-follow-button:hover:disabled{
+    background-color: grey;
+    color: aliceblue;
+    cursor: wait;
+}
+
 .user-list-item-profile-icon-container {
     display: flex;
     justify-content: flex-start;

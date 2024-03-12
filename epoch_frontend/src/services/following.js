@@ -148,12 +148,12 @@ async function fillUserList() {
     var following = await getFollowingList("self");
 
     for (var i in users) {
-        users[i].isFollowing = false;
+        users[i].isFollowing = 0;
     }
     for (var k in following) {
         for (var j in users) {
             if (users[j].user_id === following[k].following_id) {
-                users[j].isFollowing = true;
+                users[j].isFollowing = 1;
             }
         }
     }
