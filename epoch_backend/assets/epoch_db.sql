@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS users (
     background_pic INT REFERENCES media_content(media_id) NULL
 );
 
-
 CREATE TABLE IF NOT EXISTS posts (
     post_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id),
@@ -57,7 +56,6 @@ CREATE TABLE IF NOT EXISTS favorites (
     post_id INT REFERENCES posts(post_id),
     PRIMARY KEY (user_id, post_id)
 );
-
 
 INSERT INTO media_content (content_type, file_name, path)
 SELECT
