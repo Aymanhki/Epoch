@@ -15,28 +15,17 @@
 
 }
 
-.follower-count:hover {
-    color: #878787;
-
-}
-
 .follower-count {
-    padding: 1rem;
+
     margin-left: 1rem;
     margin-right: 1rem;
-    display: table-cell;
     cursor: pointer;
 }
 
-.following-count:hover {
-    color: #878787;
-}
-
 .following-count {
-    padding: 1rem;
+
     margin-left: 1rem;
     margin-right: 1rem;
-    display: table-cell;
     cursor: pointer;
 }
 
@@ -167,23 +156,59 @@
 }
 
 .popup-user-list {
-    justify-content: center;
-    margin: auto;
-    display: block;
-    margin-bottom: 1rem;
-    border-radius: .5rem;
-    padding: 1rem;
+    list-style: none;
+    padding: 0;
 }
 
 .popup-list-item {
-    text-align: center;
-    justify-content: center;
-    display: block;
-    border-radius: 1rem;
-    padding: .7rem;
-    margin: 1rem;
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
-    position: relative;
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+}
+
+.user-list-modal {
+    position: absolute;
+    border-radius: 1rem;
+    padding: 1rem;
+    background-color: white;
+    width: 50%;
+    max-height: 50%;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.popup-user-list {
+    list-style: none;
+    padding: 0;
+}
+
+.popup-list-item {
+    padding: 8px 0;
+}
+
+.popup-list-item .p {
+    margin: 0;
+    padding: 0;
+}
+
+.popup-list-item .username {
+    cursor: pointer;
+    color: #333;
+    padding-left: 1rem;
+    margin-left: 1rem;
+    height: 100%;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    z-index: 1000;
 }
 
 @media (max-width: 1024px) {
@@ -200,6 +225,14 @@
         height: 8rem;
         top: 15rem;
         margin-bottom: 15rem;
+    }
+
+    .user-list-modal {
+        width: 80%;
+    }
+
+    .counts-wrapper {
+        margin-bottom: 1rem;
     }
 }
 
@@ -252,6 +285,11 @@
     .follow-button:hover {
         font-size: 0.5rem;
     }
+
+    .user-list-modal {
+        width: 90%;
+    }
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -273,5 +311,20 @@
     .edit-profile-button-icon:hover {
         background-color: #333333;
         color: #ffffff;
+    }
+
+    .user-list-modal-container {
+        background-color: #333333;
+        color: white;
+    }
+
+    .popup-list-item .username {
+        cursor: pointer;
+        color: #ffffff;
+    }
+
+    .user-list-modal {
+        background-color: #333333;
+        color: white;
     }
 }

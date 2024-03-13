@@ -179,12 +179,11 @@ class integration_tests(unittest.TestCase):
         terminate_processes_on_port(8080)
 
         cls.server_process = subprocess.Popen(
-            ["python", "main.py"], cwd=str(cls.backend_dir)
+            ["python3", "main.py"], cwd=str(cls.backend_dir)
         )
 
         cls.frontend_process = subprocess.Popen(
-            ["npm", "start"], cwd=str(cls.frontend_dir), shell=True
-        )
+            ["npm", "start"], cwd=str(cls.frontend_dir))
 
         time.sleep(servers_wait_time)
 

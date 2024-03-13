@@ -27,7 +27,7 @@ function getAccountList() {
                     if (http.status !== 0) {
                         reject(http.statusText);
                     } else {
-                        reject("Connection refused: The server is not running or unreachable");
+                        reject("Connection refused: The server is not running or unreachable while getting account list");
                     }
                 }
             }
@@ -49,7 +49,7 @@ function getAccountList() {
     });
 }
 
-function getFollowingList(targetAcc) {
+async function getFollowingList(targetAcc) {
     const session_id = getCookie('epoch_session_id');
 
     if (!session_id) {
@@ -73,7 +73,7 @@ function getFollowingList(targetAcc) {
                     if (http.status !== 0) {
                         reject(http.statusText);
                     } else {
-                        reject("Connection refused: The server is not running or unreachable");
+                        reject(http.statusText + "Connection refused: The server is not running or unreachable while getting following list");
                     }
                 }
             }
@@ -120,7 +120,7 @@ function getFollowerList(targetAcc) {
                     if (http.status !== 0) {
                         reject(http.statusText);
                     } else {
-                        reject("Connection refused: The server is not running or unreachable");
+                        reject("Connection refused: The server is not running or unreachable while getting follower list");
                     }
                 }
             }
@@ -148,12 +148,12 @@ async function fillUserList() {
     var following = await getFollowingList("self");
 
     for (var i in users) {
-        users[i].isFollowing = false;
+        users[i].isFollowing = 0;
     }
     for (var k in following) {
         for (var j in users) {
             if (users[j].user_id === following[k].following_id) {
-                users[j].isFollowing = true;
+                users[j].isFollowing = 1;
             }
         }
     }
@@ -166,8 +166,26 @@ async function fillUserList() {
 }
 
 async function profileFollowNetwork(accountID) {
-    var following = await getFollowingList(accountID);
-    var followers = await getFollowerList(accountID);
+
+    var followers = [];
+    var following = [];
+
+    try {
+        following = await getFollowingList(accountID);
+
+    }
+    catch (e) {
+        console.log(e);
+
+    }
+
+    try {
+        followers = await getFollowerList(accountID);
+    }
+    catch (e) {
+        console.log(e);
+    }
+
     var followerCount = followers.length;
     var followingCount = following.length;
 
@@ -196,7 +214,7 @@ function followAccount(target) {
                     if (http.status !== 0) {
                         reject(http.statusText);
                     } else {
-                        reject("Connection refused: The server is not running or unreachable");
+                        reject("Connection refused: The server is not running or unreachable while following account");
                     }
                 }
             }
@@ -241,7 +259,7 @@ function unfollowAccount(target) {
                     if (http.status !== 0) {
                         reject(http.statusText);
                     } else {
-                        reject("Connection refused: The server is not running or unreachable");
+                        reject("Connection refused: The server is not running or unreachable while unfollowing account");
                     }
                 }
             }
