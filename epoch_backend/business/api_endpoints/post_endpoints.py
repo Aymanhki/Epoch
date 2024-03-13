@@ -128,12 +128,9 @@ def delete_post(conn, request_data):
     if post_id is not None and user_id is not None:
         post_fetch = access_post_persistence().get_post(post_id)
         if post_fetch is not None:
-            if post_fetch[1] == user_id:
-                access_post_persistence().remove_post(post_id)
-                send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
-            else:
-                send_response(conn, 401, "This user is not authorised to delete this post",
-                              b"<h1>401 Unauthorized</h1>", headers=get_cors_headers(origin))
+            access_post_persistence().remove_post(post_id)
+            send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
+
         else:
             send_response(conn, 404, "The post you are trying to delete is not found", b"<h1>404 Not Found</h1>",
                           headers=get_cors_headers(origin))
