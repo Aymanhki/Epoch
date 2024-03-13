@@ -65,6 +65,8 @@ function Comments() {
               console.log(error)
               setRefreshComments(false);
                 setIsLoading(false);
+                setRedirectToLogin(true);
+                navigate('/epoch/login')
             })
         }
     }, [refreshComments]);
@@ -86,6 +88,7 @@ function Comments() {
         console.log(error)
         setIsLoading(false);
         setRedirectToLogin(true);
+        navigate('/epoch/login')
       })
     }
   }, [postId])
