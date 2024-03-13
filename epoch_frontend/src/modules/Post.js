@@ -43,6 +43,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [upVoted, setUpVoted] = useState(false);
     const [downVoted, setDownVoted] = useState(false);
     const [voteResult, setVoteResult] = useState(0);
+    const [originalVote, setOriginalVote] = useState(0);
 
 
     useEffect(() => {
@@ -312,8 +313,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             setVote(1);
             setUpVoted(true);
             setDownVoted(false);
+            setVoteResult(voteResult + 2);
 
-            setVoteResult(voteResult -1);
             removeVotePost(postId, userId, -1)
                 .then((data) => {
                 })
@@ -330,7 +331,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     }, 5000);
                 });
 
-            setVoteResult(voteResult + 1);
+
             votePost(postId, userId, 1)
                 .then((data) => {
                 })
@@ -353,8 +354,9 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             setVote(-1);
             setUpVoted(false);
             setDownVoted(true);
+            setVoteResult(voteResult - 2);
 
-            setVoteResult(voteResult + 1);
+
             removeVotePost(postId, userId, 1)
                 .then((data) => {
                 })
@@ -372,7 +374,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     }, 5000);
                 });
 
-            setVoteResult(voteResult - 1);
+
             votePost(postId, userId, -1)
                 .then((data) => {
                 })
@@ -417,14 +419,23 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             if (post.votes[postViewer.id] === 1)
             {
                 setVote(1);
+                originalVote(1);
                 setUpVoted(true);
                 setDownVoted(false);
             }
             else if (post.votes[postViewer.id] === -1)
             {
                 setVote(-1);
+                setOriginalVote(-1);
                 setUpVoted(false);
                 setDownVoted(true);
+            }
+            else
+            {
+                setVote(0);
+                setOriginalVote(0);
+                setUpVoted(false);
+                setDownVoted(false);
             }
 
             for (let key in post.votes)
