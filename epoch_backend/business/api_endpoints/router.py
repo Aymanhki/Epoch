@@ -101,19 +101,11 @@ def handle_api_request(method, path, request_data, conn):
             if "Content-Length" in line:
                 content_length = int(line.split(" ")[1])
 
-        conn.settimeout(3)
-        data = {}
-        try:
-            while len(body) < content_length:
-                data = conn.recv(1024).decode('UTF-8')
-                if not data:
-                    break
-                body += data
-        except Exception as e:
-            pass
+
+        while len(body) < content_length:
+            body += conn.recv(1024).decode('UTF-8')
 
         # get data from body and headers
-        conn.settimeout(None)
         if content_length > 0:
             data = json.loads(body)
 
