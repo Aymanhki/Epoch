@@ -41,7 +41,6 @@ function Userlist() {
             .catch(error => {
                 setIsLoading(false);
                 console.log("Error fetching following list:", error);
-                navigate('/epoch/profile/');
             });
     }, [setUserList, navigate, updateUser, user, setIsLoading]);
 
@@ -50,20 +49,23 @@ function Userlist() {
     }, [changeStatus]);
 
     useEffect(() => {
-        if (searchInput === '') {
-            setFilteredList(null);
-        } else {
-            var tempFiltered = [];
 
-            for (var i in userList) {
-                if (userList[i].username.toLowerCase().includes(searchInput)) {
-                    tempFiltered.push(userList[i]);
+        if(user) {
+            if (searchInput === '') {
+                setFilteredList([]);
+            } else {
+                var tempFiltered = [];
+
+                for (var i in userList) {
+                    if (userList[i].username.toLowerCase().includes(searchInput)) {
+                        tempFiltered.push(userList[i]);
+                    }
                 }
+                setFilteredList(tempFiltered);
             }
-            setFilteredList(tempFiltered);
+            changeStatus(!changedStatus);
         }
-        changeStatus(!changedStatus);
-    }, [searchInput, changedStatus, filteredList, userList]);
+    }, [searchInput, changedStatus, filteredList, userList, setFilteredList, user]);
 
     useEffect(() => {
         const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -79,7 +81,7 @@ function Userlist() {
 
     return (
         <>
-            {!user ? (navigate('/epoch/home/')) : (
+            {user && (
                 isLoading ? <Spinner/> : (
                     <>
                         <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
