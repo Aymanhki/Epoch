@@ -22,3 +22,4 @@ these predictions are.
 - [Block Diagram](/epoch_project_documents/BlockDiagram)
 - [Testing Plan](/epoch_project_documents/TestingPlan)
 - [Sequence Diagrams](/epoch_project_documents/SequenceDiagrams)
+- [Manual Acceptance Tests](https://github.com/Aymanhki/Epoch/wiki/Manual-Acceptance-Tests)
