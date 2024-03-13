@@ -18,6 +18,18 @@ function getAccountList() {
         http.withCredentials = true;
         http.timeout = 10000;
 
+        http.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        http.onerror = function () {
+            reject("An error occurred sending account list request");
+        }
+
+        http.onabort = function () {
+            reject("Account List Request aborted");
+        }
+
         http.onreadystatechange = function () {
             if (http.readyState === 4) {
                 if (http.status === 200) {
@@ -33,23 +45,11 @@ function getAccountList() {
             }
         };
 
-        http.ontimeout = function () {
-            reject("Request timed out");
-        }
-
-        http.onerror = function () {
-            reject("An error occurred sending account list request");
-        }
-
-        http.onabort = function () {
-            reject("Account List Request aborted");
-        }
-
         http.send(JSON.stringify({session_id: session_id}));
     });
 }
 
-async function getFollowingList(targetAcc) {
+function getFollowingList(targetAcc) {
     const session_id = getCookie('epoch_session_id');
 
     if (!session_id) {
@@ -63,6 +63,19 @@ async function getFollowingList(targetAcc) {
         http.setRequestHeader("Content-Type", "application/json");
         http.withCredentials = true;
         http.timeout = 10000;
+
+        http.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        http.onerror = function () {
+            reject("An error occurred sending following list request");
+        }
+
+        http.onabort = function () {
+            reject("following List Request aborted");
+        }
+
 
         http.onreadystatechange = function () {
             if (http.readyState === 4) {
@@ -78,18 +91,6 @@ async function getFollowingList(targetAcc) {
                 }
             }
         };
-
-        http.ontimeout = function () {
-            reject("Request timed out");
-        }
-
-        http.onerror = function () {
-            reject("An error occurred sending following list request");
-        }
-
-        http.onabort = function () {
-            reject("following List Request aborted");
-        }
 
         http.send(JSON.stringify({session_id: session_id, target: targetAcc}));
     });
@@ -144,12 +145,28 @@ function getFollowerList(targetAcc) {
 }
 
 async function fillUserList() {
-    var users = await getAccountList();
-    var following = await getFollowingList("self");
+
+    try {
+        var users = await getAccountList();
+    }
+    catch (e) {
+        console.log(e);
+        return [];
+    }
+
+    try {
+        var following = await getFollowingList("self");
+    }
+    catch (e) {
+        console.log(e);
+        return [];
+    }
+
 
     for (var i in users) {
         users[i].isFollowing = 0;
     }
+
     for (var k in following) {
         for (var j in users) {
             if (users[j].user_id === following[k].following_id) {
@@ -157,11 +174,13 @@ async function fillUserList() {
             }
         }
     }
+
     if (users.length > 0) {
         users.sort(function (a, b) {
             return b.isFollowing - a.isFollowing;
         });
     }
+
     return users;
 }
 

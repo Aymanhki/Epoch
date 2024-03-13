@@ -125,7 +125,7 @@ function Comments() {
 
             <div className={"comments-wrapper"}>
                 {comments && (
-                  comments.map((newComment, index) => <Comment key={newComment.comm_id} commentObject={newComment}></Comment>)
+                  comments.map((newComment, index) => <Comment key={newComment.comm_id} commentObject={newComment} commentViewer={user} refreshComments={refreshComments} setRefreshComments={setRefreshComments}></Comment>)
                 )}
             </div>
 

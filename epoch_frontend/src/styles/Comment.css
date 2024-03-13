@@ -19,6 +19,7 @@
     display: grid;
     grid-template-columns: 5rem 1fr 1fr;
     gap: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .comment-header-left {
@@ -26,7 +27,10 @@
 }
 
 .comment-header-right {
-
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
 }
 
 .comment-header-info {
@@ -67,6 +71,27 @@
     padding: 0;
     overflow-wrap: break-word;
     word-break: break-word;
+}
+
+.comment-error-message {
+        color: red;
+    font-size: small;
+    padding: 0;
+    margin: 0;
+}
+
+.delete-comment-icon {
+        box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 10%;
+    color: red;
+    background-color: white;
+}
+
+.delete-comment-icon:hover {
+    background-color: red;
+    color: white;
 }
 
 @media (max-width: 768px) {

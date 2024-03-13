@@ -1,31 +1,53 @@
 import React, { useEffect, useState } from 'react'
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import {getUserInfo, getUsernameInfo} from '../services/user';
 import {useNavigate} from 'react-router-dom';
 import SmartMedia from "./SmartMedia";
 import '../styles/Comment.css'
+import {deleteComment} from '../services/comments'
 
-function Comment({commentObject}) {
+function Comment({commentObject, commentViewer, refreshComments, setRefreshComments}) {
   const commentCharLimit = 240;
   const navigate = useNavigate();
-  //const [truncatedComment, setTruncatedComment] = useState(comment.comment.slice(0, commentCharLimit) + '...');
-  const [comments, setComments] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [error, setError] = useState(false);
   const [overlayImageUrl, setOverlayImageUrl] = useState('');
   const [showOverlay, setShowOverlay] = useState(false);
-  const [showFullComment, setShowFullComment] = useState(false);
-  
-
+  const [deleted, setDeleted] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const handleProfilePhotoClick = (imageUrl) => {
     setOverlayImageUrl(imageUrl);
     setShowOverlay(true);
   };
 
+    const onDeleteComment = (comm_id) => {
+        if (deleting) {return;}
+
+        setDeleting(true);
+        setErrorMessage('Deleting comment...');
+        setError(true);
+      deleteComment(comm_id, commentObject.post_id, commentViewer.id)
+        .then(() => {
+          setDeleted(true);
+          setDeleting(false);
+          setRefreshComments(true);
+        })
+        .catch((error) => {
+          setError(true);
+          setErrorMessage(error);
+            setDeleting(false);
+
+            setTimeout(() => {
+                setError(false);
+                setErrorMessage('');
+            }, 5000);
+        });
+    }
+
   
   return (
-    <div className='comments'>
+    <div className='comments' style={{display: deleted ? 'none' : 'block'}}>
 
       <div className='comment-header'>
 
@@ -41,7 +63,11 @@ function Comment({commentObject}) {
         </div>
 
         <div className="comment-header-right">
+          {error && (<p className="comment-error-message">{errorMessage}</p>)}
 
+          {commentViewer.username === commentObject.username && (
+            <DeleteForeverOutlinedIcon className="delete-comment-icon" onClick={() => onDeleteComment(commentObject.comm_id)}/>
+          )}
         </div>
 
       </div>

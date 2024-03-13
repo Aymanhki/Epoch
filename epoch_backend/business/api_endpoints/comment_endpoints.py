@@ -52,20 +52,21 @@ def delete_comment(conn, request_data):
     comm_id = None
 
     for line in headers.split("\r\n"):
+        if "Comment-Id" in line:
+            comm_id = int(line.split(" ")[1])
         if "Post-Id" in line:
             post_id = int(line.split(" ")[1])
-        elif "User-Id" in line:
+        if "User-Id" in line:
             user_id = int(line.split(" ")[1])
-        elif "Comment-Id" in line:
-            comm_id = int(line.split(" ")[1])
+
     
     origin = get_origin_from_headers(headers)
 
-    if post_id is not None and user_id is not None and comm_id is not None:
-        comment_fetch = access_comment_persistence.get_comment(comm_id)
+    if comm_id is not None:
+        comment_fetch = access_comment_persistence().get_comment(comm_id)
         if comment_fetch is not None:
             if comment_fetch[1] == post_id and comment_fetch[2] == user_id:
-                access_comment_persistence.delete_comment(comm_id)
+                access_comment_persistence().delete_comment(comm_id)
                 send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
             else:
                 send_response(conn, 401, "This user is not authorised to delete this comment", b"<h1>401 Unauthorized</h1>", headers=get_cors_headers(origin))

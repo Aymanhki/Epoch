@@ -16,7 +16,7 @@ class access_comment_persistence(comment_persistence):
     def get_comments_for_post(self, post_id: int):
         return self.comment_persistence.get_comments_for_post(post_id)
 
-    def delete_comment(self, post_id: int, comm_id: int):
-        return self.comment_persistence.delete_comment(post_id, comm_id)
+    def delete_comment(self, comm_id: int):
+        return self.comment_persistence.delete_comment(comm_id)
     
     

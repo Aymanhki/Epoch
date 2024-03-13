@@ -26,6 +26,8 @@ def send_response(conn, status_code, reason_phrase, body=b"", headers={}):
         response_headers_str = "\r\n".join([f"{header}: {value}" for header, value in response_headers.items()])
         response = f"{response_line}{response_headers_str}\r\n\r\n".encode('utf-8') + body
         conn.sendall(response)
+    except Exception as e:
+        print(f"Error sending response: {e}")
     finally:
         conn.close()
 
@@ -154,7 +156,7 @@ def get_cors_headers(origin="*"):
     return {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment_Id, Vote",
+        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment-Id, Vote",
         "Access-Control-Allow-Credentials": "true",
         "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment-Id, Vote",
     }

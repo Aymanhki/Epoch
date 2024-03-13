@@ -16,7 +16,7 @@ class comment_persistence(ABC):
     
 
     @abstractmethod
-    def delete_comment(self, post_id: int, comm_id: int):
+    def delete_comment(self, comm_id: int):
         pass
     
     # More methods

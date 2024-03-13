@@ -49,6 +49,12 @@ export default function CommentPopup({
             return;
         }
 
+        if(commentText.length > 240) {
+            setError(true);
+            setErrorMessage('Comment cannot exceed 240 characters');
+            return;
+        }
+
         if(commenting) {return;}
 
         setCommenting(true);
@@ -110,9 +116,17 @@ export default function CommentPopup({
                         <textarea placeholder={'What\'s on your mind?'} disabled={commenting}
                                   className={`comment-input-textarea ${commenting ? 'disabled' : ''}`}
                                   value={commentText || ''} onChange={(e) => {
-                            setCommentText(e.target.value);
-                            setError(false);
-                            setErrorMessage('');
+
+                                      if(e.target.value.length < 240) {
+                                         setCommentText(e.target.value);
+                                         setError(false);
+                                         setErrorMessage('');
+                                      }
+                                      else
+                                      {
+                                          setError(true);
+                                          setErrorMessage('Comment cannot exceed 240 characters');
+                                      }
                         }}/>
                     </div>
 
