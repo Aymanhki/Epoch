@@ -267,7 +267,6 @@ def delete_by_username(conn, request_data):
 
 
 def update_user_info(conn, request_data):
-    print('******************************************')
     headers, body = request_data.split("\r\n\r\n", 1)
 
     content_length = 0
@@ -296,10 +295,15 @@ def update_user_info(conn, request_data):
             send_response(conn, 400, "Bad Request", body=b"Invalid request data", headers=get_cors_headers(origin))
             return
 
-        new_user = user(data.get('userID'), data.get('displayname'), data.get('username'), data.get('password'),
-                        data.get('bio'), data.get('profile_pic_id'), data.get('created_at'))
-        print(new_user.__dict__)
-        access_user_persistence().update_user(id, new_user)
-        send_response(conn, 200, "OK", body=b"", headers=get_cors_headers(origin))
+        existing_user = access_user_persistence().get_user(data.get('username'))
+
+        if existing_user is None or existing_user.id == id:
+            new_user = user(data.get('userID'), data.get('displayname'), data.get('username'), data.get('password'),
+                            data.get('bio'), data.get('profile_pic_id'), data.get('created_at'))
+            access_user_persistence().update_user(id, new_user)
+            send_response(conn, 200, "OK", body=b"", headers=get_cors_headers(origin))
+        else:
+            send_response(conn, 409, "Username already exist", body=b"<h1>409 Conflict</h1>",
+                          headers=get_cors_headers(origin))
     except json.JSONDecodeError:
         send_response(conn, 400, "Bad Request", body=b"Invalid JSON data", headers=get_cors_headers(origin))
