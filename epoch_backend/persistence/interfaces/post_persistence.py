@@ -44,10 +44,10 @@ class post_persistence(ABC):
         pass
     
     @abstractmethod
-    def vote_post(self, post_id: int, user_id:int):
+    def vote_post(self, post_id: int, user_id: int, vote: int):
         pass
 
     @abstractmethod
-    def remove_vote_post(self, post_id: int, user_id: int):
+    def remove_vote_post(self, post_id: int, user_id: int, vote: int):
         pass
 

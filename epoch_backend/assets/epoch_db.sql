@@ -69,7 +69,8 @@ CREATE TABLE IF NOT EXISTS favorites
 CREATE TABLE IF NOT EXISTS votes (
     user_id INT REFERENCES users(user_id),
     post_id INT REFERENCES posts(post_id),
-    PRIMARY KEY (user_id, post_id)
+    vote    INT NOT NULL,
+    PRIMARY KEY (user_id, post_id, vote)
 );
 
 CREATE TABLE IF NOT EXISTS comments (

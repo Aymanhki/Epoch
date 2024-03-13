@@ -404,6 +404,91 @@ function getFavoritePosts(userId) {
 
 }
 
+function votePost(postId, userId, vote) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+
+        xhr.open('POST', `${serverUrl}/api/vote/post/`, true);
+        xhr.setRequestHeader('Post-Id', postId);
+        xhr.setRequestHeader('User-Id', userId);
+        xhr.setRequestHeader('Vote', vote);
+        xhr.withCredentials = true;
+        xhr.timeout = 10000000;
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    resolve(true);
+                } else {
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
+                }
+            }
+        };
+        xhr.send(JSON.stringify({ vote: vote }));
+    });
+
+}
+
+function removeVotePost(postId, userId, vote) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const currentLocation = window.location;
+        const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
+
+        xhr.open('DELETE', `${serverUrl}/api/vote/post/`, true);
+        xhr.setRequestHeader('Post-Id', postId);
+        xhr.setRequestHeader('User-Id', userId);
+        xhr.setRequestHeader('Vote', vote);
+        xhr.withCredentials = true;
+        xhr.timeout = 10000000;
+
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    resolve(true);
+                } else {
+                    if (xhr.status !== 0) {
+                        reject(xhr.statusText);
+                    } else {
+                        reject("Connection refused: The server is not running or unreachable");
+                    }
+                }
+            }
+        };
+        xhr.send( JSON.stringify({ vote: vote }));
+    });
+}
+
 module.exports = {
     newPost,
     getAllUserPosts,
@@ -413,5 +498,7 @@ module.exports = {
     getFollowedUsersPost,
     favoritePost,
     removeFavoritePost,
-    getFavoritePosts
+    getFavoritePosts,
+    votePost,
+    removeVotePost
 };

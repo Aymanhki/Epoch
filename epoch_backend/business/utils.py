@@ -154,9 +154,9 @@ def get_cors_headers(origin="*"):
     return {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment_Id",
+        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment_Id, Vote",
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment-Id",
+        "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment-Id, Vote",
     }
 
 
@@ -331,9 +331,13 @@ def get_post_dict(current_post, posts_media, username, profile_picture_url, prof
     cursor = connection.cursor()
     cursor.execute("SELECT user_id FROM favorites WHERE post_id=%s", (current_post[0],))
     favorites = cursor.fetchall()
+    cursor.execute("SELECT user_id, vote FROM votes WHERE post_id=%s", (current_post[0],))
+    votes = cursor.fetchall()
     connection.close()
     post_dict["favorited_by"] = [favorite[0] for favorite in favorites]
     post_dict["favorited_by_count"] = len(post_dict["favorited_by"])
+    post_dict["votes"] = {vote[0]: vote[1] for vote in votes}
+    post_dict["votes_count"] = len(post_dict["votes"])
 
     return post_dict
 

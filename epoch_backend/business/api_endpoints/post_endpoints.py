@@ -280,17 +280,34 @@ def vote_post(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)
     user_id = None
     post_id = None
+    content_length = 0
 
     for line in headers.split("\r\n"):
         if "User-Id" in line:
             user_id = int(line.split(" ")[1])
         elif "Post-Id" in line:
             post_id = int(line.split(" ")[1])
+        elif "Content-Length" in line:
+            content_length = int(line.split(" ")[1])
 
     origin = get_origin_from_headers(headers)
+    conn.settimeout(3)
+    try:
+        while len(body) < content_length:
+            data = conn.recv(1048576).decode('UTF-8')
+            if not data:
+                break
+            body += data
+    except Exception as e:
+        pass
+
+    conn.settimeout(None)
+    data = json.loads(body)
+    vote = data.get("vote")
+    vote = int(vote)
 
     if user_id is not None and post_id is not None:
-        access_post_persistence().vote_post(post_id, user_id)
+        access_post_persistence().vote_post(post_id, user_id, vote)
         send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
     else:
         send_response(conn, 400, "Bad Request", b"<h1>400 Bad Request</h1>", headers=get_cors_headers(origin))
@@ -300,17 +317,35 @@ def remove_vote_post(conn, request_data):
     headers, body = request_data.split("\r\n\r\n", 1)
     user_id = None
     post_id = None
+    content_length = 0
 
     for line in headers.split("\r\n"):
         if "User-Id" in line:
             user_id = int(line.split(" ")[1])
         elif "Post-Id" in line:
             post_id = int(line.split(" ")[1])
+        elif "Content-Length" in line:
+            content_length = int(line.split(" ")[1])
+
 
     origin = get_origin_from_headers(headers)
+    conn.settimeout(3)
+    try:
+        while len(body) < content_length:
+            data = conn.recv(1048576).decode('UTF-8')
+            if not data:
+                break
+            body += data
+    except Exception as e:
+        pass
+
+    conn.settimeout(None)
+    data = json.loads(body)
+    vote = data.get("vote")
+    vote = int(vote)
 
     if user_id is not None and post_id is not None:
-        access_post_persistence().remove_vote_post(post_id, user_id)
+        access_post_persistence().remove_vote_post(post_id, user_id, vote)
         send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
     else:
         send_response(conn, 400, "Bad Request", b"<h1>400 Bad Request</h1>", headers=get_cors_headers(origin))

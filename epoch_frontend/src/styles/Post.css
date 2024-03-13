@@ -341,13 +341,12 @@
 }
 
 .post-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 0.1rem solid #000000;
-    gap: 1rem;
+    gap: 3rem;
 }
 
 .favorite-button {
@@ -360,17 +359,52 @@
     border: none;
 }
 
+.favorite-button:hover {
+    background-color: red;
+    color: white;
+}
+
 .favorite-button.active {
     background-color: red;
     color: white;
 }
 
-.favorite-button.active:hover {
+.up-vote-button{
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
     background-color: white;
-    color: red;
+    color: green;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    border: none;
 }
 
-.favorite-button:hover {
+.up-vote-button:hover {
+    background-color: green;
+    color: white;
+}
+
+.up-vote-button.active {
+    background-color: green;
+    color: white;
+}
+
+.down-vote-button{
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: white;
+    color: red;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    border: none;
+}
+
+.down-vote-button:hover {
+    background-color: red;
+    color: white;
+}
+
+.down-vote-button.active {
     background-color: red;
     color: white;
 }
@@ -378,6 +412,20 @@
 .favorited-by-count {
     font-weight: bold;
 
+}
+
+.favorite-button-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.vote-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
 }
 
 .view-comments-button {
@@ -424,6 +472,7 @@
         padding-bottom: 1rem;
         border-bottom: 0.1rem solid #000000;
     }
+
 
     .post-header-left {
         display: flex;

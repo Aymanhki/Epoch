@@ -51,20 +51,23 @@ class epoch_post_persistence(post_persistence):
 
         if post_fetch:
             media_id = post_fetch[2]
-            cursor.execute(f"SELECT * FROM posts WHERE media_id=%s", (media_id,))
-            reference_count = len(cursor.fetchall())
-            cursor.execute("SELECT * FROM users WHERE profile_pic=%s", (media_id,))
-            reference_count += len(cursor.fetchall())
-            cursor.execute("SELECT * FROM users WHERE background_pic=%s", (media_id,))
-            reference_count += len(cursor.fetchall())
 
-            if reference_count == 1:
-                cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (media_id,))
-                media_fetch = cursor.fetchone()
-                delete_file_from_bucket(media_fetch[5])
-                cursor.execute("DELETE FROM media_content WHERE media_id=%s", (media_id,))
+            if media_id is not None:
+                cursor.execute(f"SELECT * FROM posts WHERE media_id=%s", (media_id,))
+                reference_count = len(cursor.fetchall())
+                cursor.execute("SELECT * FROM users WHERE profile_pic=%s", (media_id,))
+                reference_count += len(cursor.fetchall())
+                cursor.execute("SELECT * FROM users WHERE background_pic=%s", (media_id,))
+                reference_count += len(cursor.fetchall())
+
+                if reference_count == 1:
+                    cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (media_id,))
+                    media_fetch = cursor.fetchone()
+                    delete_file_from_bucket(media_fetch[5])
+                    cursor.execute("DELETE FROM media_content WHERE media_id=%s", (media_id,))
 
             cursor.execute("DELETE FROM favorites WHERE post_id=%s", (post_id,))
+            cursor.execute("DELETE FROM votes WHERE post_id=%s", (post_id,))
             cursor.execute("DELETE FROM posts WHERE post_id=%s", (post_id,))
             connection.commit()
 
@@ -195,20 +198,30 @@ class epoch_post_persistence(post_persistence):
         connection.close()
         return all_posts
     
-    def vote_post(self, post_id: int, user_id: int):
+    def vote_post(self, post_id: int, user_id: int, vote: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO votes (user_id, post_id) VALUES (%s, %s)", (user_id, post_id))
+        cursor.execute("INSERT INTO votes (user_id, post_id, vote) VALUES (%s, %s, %s)", (user_id, post_id, vote))
         connection.commit()
-        cursor.execute("UPDATE posts SET votes_count = votes_count + 1 WHERE post_id = %s", (post_id,))
+
+        if vote == 1:
+            cursor.execute("UPDATE posts SET votes_count = votes_count + 1 WHERE post_id = %s", (post_id,))
+        else:
+            cursor.execute("UPDATE posts SET votes_count = votes_count - 1 WHERE post_id = %s", (post_id,))
+
         connection.commit()
         connection.close()
 
-    def remove_vote_post(self, post_id: int, user_id: int):
+    def remove_vote_post(self, post_id: int, user_id: int, vote: int):
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute("DELETE FROM votes WHERE user_id=%s AND post_id=%s", (user_id, post_id))
         connection.commit()
-        cursor.execute("UPDATE posts SET votes_count = votes_count - 1 WHERE post_id = %s", (post_id,))
+
+        if vote == 1:
+            cursor.execute("UPDATE posts SET votes_count = votes_count - 1 WHERE post_id = %s", (post_id,))
+        else:
+            cursor.execute("UPDATE posts SET votes_count = votes_count + 1 WHERE post_id = %s", (post_id,))
+
         connection.commit()
         connection.close()
