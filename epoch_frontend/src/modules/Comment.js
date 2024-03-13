@@ -15,7 +15,7 @@ function Comment({commentObject}) {
   const [overlayImageUrl, setOverlayImageUrl] = useState('');
   const [showOverlay, setShowOverlay] = useState(false);
   const [showFullComment, setShowFullComment] = useState(false);
-
+  
 
 
   const handleProfilePhotoClick = (imageUrl) => {
@@ -28,7 +28,7 @@ function Comment({commentObject}) {
     <div className='comments'>
       <div className='comment-header'>
         <div className='comment-header-left'>
-          <div className={'comment-profile-photo-container'} 
+          <div className={`comment-profile-photo-container`} 
             onClick={() => handleProfilePhotoClick(commentObject.profile_picture)}>
               <SmartMedia fileUrl={commentObject.profile_picture} file_type={commentObject.profile_picture_type}
               file_name={commentObject.profile_picture_name} alt="Profile" className="comment-profile-photo"/>

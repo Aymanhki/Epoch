@@ -42,6 +42,7 @@ function Profile() {
     const [showUserListModal, setShowUserListModal] = useState(false); // State to manage UserListModal visibility
     const [showingFol, setShowingFol] = useState(true);
     const [showPopup, setShowPopup] = useState(false);
+    const [refreshProfile, setRefreshProfile] = useState(false);
 
     const {transform: inTransform} = useSpring({
         transform: `translateY(${showUserListModal ? 0 : 100}vh)`,
@@ -192,6 +193,23 @@ function Profile() {
         }
     }, [showUserListModal, followerList, followingList, showingFol]);
 
+    useEffect(() => {
+        setIsLoading(true);
+        if (refreshProfile) {
+            getUserInfo()
+                .then(data => {
+                    updateUser(data);
+                    setUserInfo(data);
+                    setRefreshProfile(false);
+                    setIsLoading(false);
+                })
+                .catch(error => {
+                    console.log("Error fetching user info:", error);
+                    setIsLoading(false);
+                });
+        }
+    }, [refreshProfile, setRefreshProfile, updateUser]);
+
     if (!user && !userInfo) {
         return <Spinner/>
     }
@@ -332,8 +350,8 @@ function Profile() {
                                    username={user.username} profilePic={user.profile_pic_data}
                                    refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
 
-                        {showEditProfilePopup &&
-                            <EditProfilePopup user={user} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)}/>}
+
+                        <EditProfilePopup user={user} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)} showEditProfilePopup={showEditProfilePopup} setShowEditProfilePopup={setShowEditProfilePopup} refreshProfile={refreshProfile} setRefreshProfile={setRefreshProfile}/>
                     </>
                 )}
 

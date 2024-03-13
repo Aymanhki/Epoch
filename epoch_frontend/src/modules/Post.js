@@ -300,15 +300,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                 )}
             </div>
 
-            <div className="post-footer">
-                <button className={"view-comments-button"}>View Comments</button>
-                {postViewer && (
-                    <>
-                        <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`}
-                                                    onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
-                        <p className={'favorited-by-count'}>{favoritedByCount}</p>
-                    </>)}
-            </div>
+            
             {(post.file) ?
                 (showPostPopup && fileBlob && postViewer && postAdmin) && (
                     <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
