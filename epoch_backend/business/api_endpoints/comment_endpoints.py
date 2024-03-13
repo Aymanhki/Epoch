@@ -39,7 +39,7 @@ def new_comment(conn, request_data):
     if user_fetch:
         user_id = user_fetch.id
         new_comment = comment(user_id, post_id, comment_text, created_at)
-        access_comment_persistence.create_comment(new_comment)
+        access_comment_persistence().create_comment(new_comment)
         send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
     else:
         send_response(conn, 404, "Could not post a comment for this username", b"<h1>404 Not Found</h1>", headers=get_cors_headers(origin))
