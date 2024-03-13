@@ -67,6 +67,7 @@ class epoch_post_persistence(post_persistence):
                     cursor.execute("DELETE FROM media_content WHERE media_id=%s", (media_id,))
 
             cursor.execute("DELETE FROM favorites WHERE post_id=%s", (post_id,))
+            cursor.execute("DELETE FROM comments WHERE post_id=%s", (post_id,))
             cursor.execute("DELETE FROM votes WHERE post_id=%s", (post_id,))
             cursor.execute("DELETE FROM posts WHERE post_id=%s", (post_id,))
             connection.commit()

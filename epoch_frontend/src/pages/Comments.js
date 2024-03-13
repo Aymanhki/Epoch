@@ -115,7 +115,7 @@ function Comments() {
                 <div className={"post-comments-page-wrapper"}>
                     <div className={"post-comments-page-feed"}>
             <div className={'comments-post-wrapper'}>
-        {commentsPost && (<Post key={ commentsPost.post_id } post={commentsPost} postViewer={user} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} isInFavorites={false}></Post>)}
+        {commentsPost && (<Post key={ commentsPost.post_id } post={commentsPost} postViewer={user} refreshFeed={refreshComments} setRefreshFeed={setRefreshComments()} isInFavorites={false}></Post>)}
             </div>
 
       {(<button className={`new-comment-button ${showNewCommentPopup ? 'rotate' : ''}`}
