@@ -419,7 +419,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             if (post.votes[postViewer.id] === 1)
             {
                 setVote(1);
-                originalVote(1);
+                setOriginalVote(1)
                 setUpVoted(true);
                 setDownVoted(false);
             }
