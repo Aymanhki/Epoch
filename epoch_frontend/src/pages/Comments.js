@@ -86,6 +86,7 @@ function Comments() {
       <div className={'post-comments-page'}>
         <div className={"post-comments-wrapper"}>
         {commentsPost && (<Post key={ commentsPost.post_id } post={commentsPost} postViewer={user} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} isInFavorites={false}></Post>)}
+        {comments && comments.length === 0 && <div className={"no-comments"}>No comments yet</div>}
         {comments && (
           comments.map((newComment, index) => <Comment key={newComment.comm_id} commentObject={newComment}></Comment>)
         )}

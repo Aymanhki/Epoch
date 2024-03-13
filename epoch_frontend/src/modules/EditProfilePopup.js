@@ -26,12 +26,14 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
     const [saving, setSaving] = useState(false);
     const [formDataChanged, setFormDataChanged] = useState(false);
 
-    const {transform: inTransform} = useSpring({
+    const {transform: inTransform, opacity: inOpacity} = useSpring({
+        opacity: showEditProfilePopup ? 1 : 0,
         transform: `translateY(${showEditProfilePopup ? 0 : 100}vh)`,
         config: {duration: 300},
     });
 
-    const {transform: outTransform} = useSpring({
+    const {transform: outTransform, opacity: outOpacity} = useSpring({
+        opacity: showEditProfilePopup ? 1 : 0,
         transform: `translateY(${showEditProfilePopup ? 0 : -100}vh)`,
         config: {duration: 300},
     });
@@ -196,6 +198,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                opacity: showEditProfilePopup ? inOpacity : outOpacity,
                 transform: showEditProfilePopup ? inTransform : outTransform,
                 zIndex: 1000
             }}
