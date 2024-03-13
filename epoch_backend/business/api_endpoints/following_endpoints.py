@@ -10,8 +10,8 @@ def get_account_list(session_id, session_persistence, user_persistence):
     try:
         accountList = user_persistence.get_all_users(user_id)
         return ([200, "OK", accountList.encode('UTF-8')])
-    except Exception as e:
-        return ([500, f"Could not retrieve user list {e}", b"<h1>500 Internal Server Error</h1>"])
+    except:
+        return ([500, "Could not retrieve user list", b"<h1>500 Internal Server Error</h1>"])
 
 
 def get_following_list(session_id, session_persistence, user_persistence, target):
