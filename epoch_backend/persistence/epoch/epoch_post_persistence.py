@@ -63,7 +63,12 @@ class epoch_post_persistence(post_persistence):
                 if reference_count == 1:
                     cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (media_id,))
                     media_fetch = cursor.fetchone()
-                    delete_file_from_bucket(media_fetch[5])
+
+                    try:
+                        delete_file_from_bucket(media_fetch[5])
+                    except Exception as e:
+                        pass
+
                     cursor.execute("DELETE FROM media_content WHERE media_id=%s", (media_id,))
 
             cursor.execute("DELETE FROM favorites WHERE post_id=%s", (post_id,))
