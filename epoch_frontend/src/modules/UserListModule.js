@@ -1,7 +1,7 @@
 import {followAccount, unfollowAccount} from "../services/following";
 import {useNavigate} from "react-router-dom";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-
+import '../styles/UserList.css'
 
 export default function UserListModule ({ userList }) {
     const navigate = useNavigate();

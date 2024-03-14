@@ -11,8 +11,8 @@ import UserListModule from "../modules/UserListModule";
 
 function Userlist() {
     const [isLoading, setIsLoading] = useState(false);
-    const [userList, setUserList] = useState({});
-    const [filteredList, setFilteredList] = useState(null);
+    const [fullUserList, setFullUserList] = useState({});
+    const [filteredList, setFilteredList] = useState({});
     const [changedStatus, changeStatus] = useState(false);
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
     const [refreshFeed, setRefreshFeed] = useState(false);
@@ -34,7 +34,7 @@ function Userlist() {
         }
         fillUserList()
             .then(data => {
-                setUserList(data);
+                setFullUserList(data);
                 setIsLoading(false);
                 changeStatus(false);
             })
@@ -42,30 +42,28 @@ function Userlist() {
                 setIsLoading(false);
                 console.log("Error fetching following list:", error);
             });
-    }, [setUserList, navigate, updateUser, user, setIsLoading]);
+    }, [setFullUserList, navigate, updateUser, user, setIsLoading]);
 
     useEffect(() => {
         changeStatus(false);
     }, [changeStatus]);
 
     useEffect(() => {
+        if (searchInput === '') {
+            setFilteredList([]);
+        } else {
+            var tempFiltered = [];
 
-        if(user) {
-            if (searchInput === '') {
-                setFilteredList([]);
-            } else {
-                var tempFiltered = [];
-
-                for (var i in userList) {
-                    if (userList[i].username.toLowerCase().includes(searchInput)) {
-                        tempFiltered.push(userList[i]);
-                    }
+            for (var i in fullUserList) {
+                if (fullUserList[i].username.toLowerCase().includes(searchInput)) {
+                    tempFiltered.push(fullUserList[i]);
                 }
-                setFilteredList(tempFiltered);
             }
-            changeStatus(!changedStatus);
+            setFilteredList(tempFiltered);
         }
-    }, [searchInput, changedStatus, filteredList, userList, setFilteredList, user]);
+        changeStatus(!changedStatus);
+    }, [searchInput, changedStatus, filteredList, fullUserList]);
+
 
     useEffect(() => {
         const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -104,7 +102,7 @@ function Userlist() {
                                                }}
                                     />
                                 </div>
-                                {filteredList ? <UserListModule userList={filteredList}/> : <UserListModule userList={userList}/>}
+                                { (filteredList.length > 0 || searchInput.length > 0) ? (<UserListModule userList={filteredList}/>) : (<UserListModule userList={fullUserList}/>) }
                                 
                                 
                             </div>
