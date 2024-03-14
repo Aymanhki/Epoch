@@ -97,8 +97,8 @@ jobs:
             cp credentials/privkey.pem Epoch/epoch_backend/assets/
             cp credentials/db_params.json Epoch/epoch_frontend/assets/
             cp credentials/virtual-bonito-412515-d7dae3104a12.json Epoch/epoch_frontend/assets/
-            cp credentials/fullchain.pem Epoch/epoch_frontend/assets/
-            cp credentials/privkey.pem Epoch/epoch_frontend/assets/
+            cp credentials/fullchain.pem Epoch/epoch_frontend/
+            cp credentials/privkey.pem Epoch/epoch_frontend/
             cd
             cp credentials/get_version.sh Epoch/epoch_backend/
             cp credentials/get_version.sh Epoch/epoch_frontend/
@@ -126,37 +126,8 @@ jobs:
       - name: Get Docker Version for Backend
         id: get_version_backend
         run: |
-          latest_tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/aymanhki/epoch_frontend/tags/?page_size=1" | jq -r '.results[0].name')
-          if [ -z "$latest_tag" ]; then
-            version="v2.0.9" 
-          elif [ "$latest_tag" == "latest" ]; then
-            version="v2.0.9" 
-          else
-            major=$(echo "$latest_tag" | awk -F '.' '{print $1}') 
-            minor=$(echo "$latest_tag" | awk -F '.' '{print $2}')
-            patch=$(echo "$latest_tag" | awk -F '.' '{print $3}')
-            major=$(echo $major | sed 's/v//')
-          
-            if [ $patch -lt 9 ]; then
-              new_patch=$((patch + 1))
-              version="v1.0.$new_patch"
-            elif [ $minor -lt 9 ]; then
-              new_minor=$((minor + 1))
-              version="v1.$new_minor.0"
-            else
-              new_major=$((major + 1))
-              version="v$new_major.0.0"
-            
-            fi
-          fi
-          echo "::set-output name=version::$version"
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-
-      - name: Get Docker Version for Frontend
-        id: get_version_frontend
-        run: |
-          latest_tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/aymanhki/epoch_frontend/tags/?page_size=1" | jq -r '.results[0].name')
+          version="v2.0.9"
+          latest_tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/$DOCKER_USERNAME/epoch_frontend/tags/?page_size=1" | jq -r '.results[0].name')
           if [ -z "$latest_tag" ]; then
             version="v2.0.9" 
           elif [ "$latest_tag" == "latest" ]; then
@@ -166,17 +137,61 @@ jobs:
             minor=$(echo "$latest_tag" | awk -F '.' '{print $2}')
             patch=$(echo "$latest_tag" | awk -F '.' '{print $3}')
             major=$(echo $major | sed 's/v//')
-          
+            new_patch=0
+            new_minor=0
+            new_major=0
             
-            if [ $patch -lt 9 ]; then
-              new_patch=$((patch + 1))
-              version="v1.0.$new_patch"
-            elif [ $minor -lt 9 ]; then
-              new_minor=$((minor + 1))
-              version="v1.$new_minor.0"
+            if [ "$patch" -lt 9 ]; then
+              new_patch=$((patch+1))
+              version="v$major.$minor.$new_patch"
             else
-              new_major=$((major + 1))
-              version="v$new_major.0.0"
+              new_patch=0
+              if [ "$minor" -lt 9 ]; then
+                new_minor=$((minor+1))
+                version="v$major.$new_minor.$new_patch"
+              else
+                new_minor=0
+                new_major=$((major+1))
+                version="v$new_major.$new_minor.$new_patch"
+              fi
+            fi
+          fi
+          
+          echo "::set-output name=version::$version"
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
+      - name: Get Docker Version for Frontend
+        id: get_version_frontend
+        run: |
+          version="v2.0.9"
+          latest_tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/$DOCKER_USERNAME/epoch_frontend/tags/?page_size=1" | jq -r '.results[0].name')
+          if [ -z "$latest_tag" ]; then
+            version="v2.0.9" 
+          elif [ "$latest_tag" == "latest" ]; then
+            version="v2.0.9" 
+          else
+            major=$(echo "$latest_tag" | awk -F '.' '{print $1}')
+            minor=$(echo "$latest_tag" | awk -F '.' '{print $2}')
+            patch=$(echo "$latest_tag" | awk -F '.' '{print $3}')
+            major=$(echo $major | sed 's/v//')
+            new_patch=0
+            new_minor=0
+            new_major=0
+            
+            if [ "$patch" -lt 9 ]; then
+              new_patch=$((patch+1))
+              version="v$major.$minor.$new_patch"
+            else
+              new_patch=0
+              if [ "$minor" -lt 9 ]; then
+                new_minor=$((minor+1))
+                version="v$major.$new_minor.$new_patch"
+              else
+                new_minor=0
+                new_major=$((major+1))
+                version="v$new_major.$new_minor.$new_patch"
+              fi
             fi
           fi
           echo "::set-output name=version::$version"
