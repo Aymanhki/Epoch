@@ -117,10 +117,15 @@ jobs:
             cd
             cd Epoch/epoch_backend/
             docker build -t epoch_backend ./
-            docker push aymanhki/epoch_backend
+            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+            docker tag epoch_backend $DOCKER_USERNAME/epoch_backend
+            docker push $DOCKER_USERNAME/epoch_backend
             docker run -d -p 8080:8080 epoch_backend
             exit
           EOF
+        env:
+            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+            DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         if: success()
 
       - name: Deploying Frontend (Build and Run Frontend Docker Container)
@@ -130,8 +135,13 @@ jobs:
             cd
             cd Epoch/epoch_frontend/
             docker build -t epoch_frontend ./
-            docker push aymanhki/epoch_backend
+            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+            docker tag epoch_frontend $DOCKER_USERNAME/epoch_frontend
+            docker push $DOCKER_USERNAME/epoch_frontend
             docker run -d -p 80:80 -p 443:443 epoch_frontend
             exit
           EOF
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         if: success()
