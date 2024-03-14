@@ -198,6 +198,18 @@ jobs:
         env:
             DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
+      - name: Create Release
+        if: always()
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.get_version_frontend.outputs.version }}
+          release_name: Release ${{ steps.get_version_frontend.outputs.version }}
+          body: |
+            Release ${{ steps.get_version_frontend.outputs.version }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploying Backend (Build and Run Backend Docker Container)
         run: |
