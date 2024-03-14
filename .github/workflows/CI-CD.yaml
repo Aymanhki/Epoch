@@ -132,10 +132,11 @@ jobs:
           elif [ "$latest_tag" == "latest" ]; then
             version="v2.0.9" 
           else
-            major=$(echo "$latest_tag" | awk -F '.' '{print $2}')
-            minor=$(echo "$latest_tag" | awk -F '.' '{print $3}')
-            patch=$(echo "$latest_tag" | awk -F '.' '{print $4}')
-            
+            major=$(echo "$latest_tag" | awk -F '.' '{print $1}') 
+            minor=$(echo "$latest_tag" | awk -F '.' '{print $2}')
+            patch=$(echo "$latest_tag" | awk -F '.' '{print $3}')
+            major=$(echo $major | sed 's/v//')
+          
             if [ $patch -lt 9 ]; then
               new_patch=$((patch + 1))
               version="v1.0.$new_patch"
@@ -145,6 +146,7 @@ jobs:
             else
               new_major=$((major + 1))
               version="v$new_major.0.0"
+            
             fi
           fi
           echo "::set-output name=version::$version"
@@ -160,9 +162,11 @@ jobs:
           elif [ "$latest_tag" == "latest" ]; then
             version="v2.0.9" 
           else
-            major=$(echo "$latest_tag" | awk -F '.' '{print $2}')
-            minor=$(echo "$latest_tag" | awk -F '.' '{print $3}')
-            patch=$(echo "$latest_tag" | awk -F '.' '{print $4}')
+            major=$(echo "$latest_tag" | awk -F '.' '{print $1}')
+            minor=$(echo "$latest_tag" | awk -F '.' '{print $2}')
+            patch=$(echo "$latest_tag" | awk -F '.' '{print $3}')
+            major=$(echo $major | sed 's/v//')
+          
             
             if [ $patch -lt 9 ]; then
               new_patch=$((patch + 1))
