@@ -100,8 +100,11 @@ def handle_api_request(method, path, request_data, conn):
         for line in headers.split("\r\n"):
             if "Content-Length" in line:
                 content_length = int(line.split(" ")[1])
+
+
         while len(body) < content_length:
             body += conn.recv(1024).decode('UTF-8')
+
         # get data from body and headers
         if content_length > 0:
             data = json.loads(body)
@@ -184,22 +187,22 @@ def handle_api_request(method, path, request_data, conn):
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
     # Comment paths
-    elif path.startswith("/api/comments/post"):
+    elif path.startswith("/api/comments/post/"):
         if method == "POST":
             new_comment(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
-    elif path.startswith("/api/comments/delete"):
+    elif path.startswith("/api/comments/delete/"):
         if method == "DELETE":
             delete_comment(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
-    elif path.startswith("/api/comments/get"):
+    elif path.startswith("/api/comments/get/"):
         if method == "GET":
             get_all_comments_post(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
-    elif path.startswith("/api/vote/post"):
+    elif path.startswith("/api/vote/post/"):
         if method == "POST":
             vote_post(conn, request_data)
         elif method == "DELETE":

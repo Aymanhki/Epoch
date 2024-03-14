@@ -49,8 +49,8 @@
     object-fit: cover;
 }
 
-.popup-header-username{
-    margin-left: 10px;
+.popup-header-username {
+
 }
 
 .popup-body {
@@ -198,7 +198,7 @@
     padding: 0.5rem 1rem;
     border-radius: 1rem;
     background-color: #ffffff;
-    color: #222222;
+    color: #1a2a6c;
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
     font-weight: bold;
     border: none;
@@ -206,7 +206,7 @@
 }
 
 .post-button:hover {
-    background-color: #3a7bd5;
+    background-color: #1a2a6c;
     color: #ffffff;
     font-weight: bold;
 }
@@ -226,7 +226,6 @@
     background-color: red;
     color: #ffffff;
     font-weight: bold;
-
 }
 
 .prompts-wrapper {
@@ -257,7 +256,7 @@
     .popup-body {
         grid-template-columns: 1fr;
         grid-template-rows: 20vh;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
 
     .uploaded-file-preview {

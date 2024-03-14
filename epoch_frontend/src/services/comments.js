@@ -3,7 +3,7 @@ function addComment(commentObject) {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('POST', `${serverUrl}/api/comments/post`, true);
+        xhr.open('POST', `${serverUrl}/api/comments/post/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.withCredentials = true;
         xhr.timeout = 10000;
@@ -39,13 +39,16 @@ function addComment(commentObject) {
 }
 
 
-function deleteComment(commentId) {
+function deleteComment(commentId, postId, userId) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('DELETE', `${serverUrl}/api/comments/delete`, true);
+        xhr.open('DELETE', `${serverUrl}/api/comments/delete/`, true);
         xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Comment-Id', commentId);
+        xhr.setRequestHeader('Post-Id', postId);
+        xhr.setRequestHeader('User-Id', userId);
         xhr.withCredentials = true;
         xhr.timeout = 10000;
 
@@ -85,7 +88,7 @@ function getAllComments(postId) {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
-        xhr.open('GET', `${serverUrl}/api/comments/get`, true);
+        xhr.open('GET', `${serverUrl}/api/comments/get/`, true);
         xhr.setRequestHeader('Post-Id', postId);
         xhr.withCredentials = true;
         xhr.timeout = 10000;

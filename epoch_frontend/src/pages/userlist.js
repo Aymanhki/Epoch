@@ -11,8 +11,8 @@ import UserListModule from "../modules/UserListModule";
 
 function Userlist() {
     const [isLoading, setIsLoading] = useState(false);
-    const [userList, setUserList] = useState({});
-    const [filteredList, setFilteredList] = useState(null);
+    const [fullUserList, setFullUserList] = useState({});
+    const [filteredList, setFilteredList] = useState({});
     const [changedStatus, changeStatus] = useState(false);
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
     const [refreshFeed, setRefreshFeed] = useState(false);
@@ -34,16 +34,15 @@ function Userlist() {
         }
         fillUserList()
             .then(data => {
-                setUserList(data);
+                setFullUserList(data);
                 setIsLoading(false);
                 changeStatus(false);
             })
             .catch(error => {
                 setIsLoading(false);
                 console.log("Error fetching following list:", error);
-                navigate('/epoch/profile/');
             });
-    }, [setUserList, navigate, updateUser, user, setIsLoading]);
+    }, [setFullUserList, navigate, updateUser, user, setIsLoading]);
 
     useEffect(() => {
         changeStatus(false);
@@ -51,19 +50,20 @@ function Userlist() {
 
     useEffect(() => {
         if (searchInput === '') {
-            setFilteredList(null);
+            setFilteredList([]);
         } else {
             var tempFiltered = [];
 
-            for (var i in userList) {
-                if (userList[i].username.toLowerCase().includes(searchInput)) {
-                    tempFiltered.push(userList[i]);
+            for (var i in fullUserList) {
+                if (fullUserList[i].username.toLowerCase().includes(searchInput)) {
+                    tempFiltered.push(fullUserList[i]);
                 }
             }
             setFilteredList(tempFiltered);
         }
         changeStatus(!changedStatus);
-    }, [searchInput, changedStatus, filteredList, userList]);
+    }, [searchInput, changedStatus, filteredList, fullUserList]);
+
 
     useEffect(() => {
         const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -79,7 +79,7 @@ function Userlist() {
 
     return (
         <>
-            {!user ? (navigate('/epoch/home/')) : (
+            {user && (
                 isLoading ? <Spinner/> : (
                     <>
                         <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
@@ -102,7 +102,7 @@ function Userlist() {
                                                }}
                                     />
                                 </div>
-                                {filteredList ? <UserListModule userList={filteredList}/> : <UserListModule userList={userList}/>}
+                                { (filteredList.length > 0 || searchInput.length > 0) ? (<UserListModule userList={filteredList}/>) : (<UserListModule userList={fullUserList}/>) }
                                 
                                 
                             </div>

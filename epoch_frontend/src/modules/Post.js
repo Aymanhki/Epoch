@@ -8,7 +8,9 @@ import {useNavigate} from 'react-router-dom';
 import {useLocation} from 'react-router-dom';
 import {deletePost} from '../services/post';
 import PostPopup from "./PostPopup";
-import {favoritePost, removeFavoritePost} from "../services/post";
+import ArrowCircleUpSharpIcon from '@mui/icons-material/ArrowCircleUpSharp';
+import ArrowCircleDownSharpIcon from '@mui/icons-material/ArrowCircleDownSharp';
+import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../services/post";
 
 
 export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
@@ -37,6 +39,11 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [favoritedByCount, setFavoritedByCount] = useState(0);
     const location = useLocation(); // Get current location
     const [showCommentsSection, setShowCommentsSection] = useState(false);
+    const [vote, setVote] = useState(0);
+    const [upVoted, setUpVoted] = useState(false);
+    const [downVoted, setDownVoted] = useState(false);
+    const [voteResult, setVoteResult] = useState(0);
+    const [originalVote, setOriginalVote] = useState(0);
 
 
     useEffect(() => {
@@ -201,6 +208,192 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         setShowPostPopup(true);
     }
 
+    const onVotePost = (postId, userId, vote, action) => {
+        // there are 6 scenarios:
+        // 1. user has not voted on the post and wants to upvote
+        // 2. user has not voted on the post and wants to downvote
+        // 3. user has upvoted the post and wants to remove the upvote
+        // 4. user has downvoted the post and wants to remove the downvote
+        // 5. user has downvoted the post and wants to upvote
+        // 6. user has upvoted the post and wants to downvote
+
+        if (vote === 0 && action === 'upVote') {
+            setVote(1);
+            setUpVoted(true);
+            setDownVoted(false);
+            setVoteResult(voteResult + 1);
+            votePost(postId, userId, 1)
+                .then((data) => {
+                })
+                .catch((error) => {
+                    setError(true);
+                    setErrorMessage(error);
+                    setVote(0);
+                    setUpVoted(false);
+                    setDownVoted(false);
+                    setVoteResult(voteResult);
+                    setTimeout(() => {
+                        setError(false);
+                        setErrorMessage('');
+                    }, 5000);
+                });
+        }
+
+        if (vote === 0 && action === 'downVote') {
+            setVote(-1);
+            setUpVoted(false);
+            setDownVoted(true);
+            setVoteResult(voteResult - 1);
+            votePost(postId, userId, -1)
+                .then((data) => {
+                })
+                .catch((error) => {
+                    setError(true);
+                    setErrorMessage(error);
+                    setVote(0);
+                    setUpVoted(false);
+                    setDownVoted(false);
+                    setVoteResult(voteResult);
+
+                    setTimeout(() => {
+                        setError(false);
+                        setErrorMessage('');
+                    }, 5000);
+                });
+        }
+
+        if (vote === 1 && action === 'removeUpVote') {
+            setVote(0);
+            setUpVoted(false);
+            setDownVoted(false);
+            setVoteResult(voteResult - 1);
+            removeVotePost(postId, userId, -1)
+                .then((data) => {
+                })
+                .catch((error) => {
+                    setError(true);
+                    setErrorMessage(error);
+                    setVote(1);
+                    setUpVoted(true);
+                    setDownVoted(false);
+                    setVoteResult(voteResult);
+
+                    setTimeout(() => {
+                        setError(false);
+                        setErrorMessage('');
+                    }, 5000);
+                });
+        }
+
+        if (vote === -1 && action === 'removeDownVote') {
+            setVote(0);
+            setUpVoted(false);
+            setDownVoted(false);
+            setVoteResult(voteResult + 1);
+            removeVotePost(postId, userId, 1)
+                .then((data) => {
+                })
+                .catch((error) => {
+                    setError(true);
+                    setErrorMessage(error);
+                    setVote(-1);
+                    setUpVoted(false);
+                    setDownVoted(true);
+                    setVoteResult(voteResult);
+
+                    setTimeout(() => {
+                        setError(false);
+                        setErrorMessage('');
+                    }, 5000);
+                });
+        }
+
+
+        if (vote === -1 && action === 'upVote') {
+            setVote(1);
+            setUpVoted(true);
+            setDownVoted(false);
+            setVoteResult(voteResult + 2);
+
+            removeVotePost(postId, userId, -1)
+                .then((data) => {
+                })
+                .catch((error) => {
+                    setError(true);
+                    setErrorMessage(error);
+                    setVote(-1);
+                    setUpVoted(false);
+                    setDownVoted(true);
+                    setVoteResult(voteResult);
+                    setTimeout(() => {
+                        setError(false);
+                        setErrorMessage('');
+                    }, 5000);
+                });
+
+
+            votePost(postId, userId, 1)
+                .then((data) => {
+                })
+                .catch((error) => {
+                    setError(true);
+                    setErrorMessage(error);
+                    setVote(-1);
+                    setUpVoted(false);
+                    setDownVoted(true);
+                    setVoteResult(voteResult);
+
+                    setTimeout(() => {
+                        setError(false);
+                        setErrorMessage('');
+                    }, 5000);
+                });
+        }
+
+        if (vote === 1 && action === 'downVote') {
+            setVote(-1);
+            setUpVoted(false);
+            setDownVoted(true);
+            setVoteResult(voteResult - 2);
+
+
+            removeVotePost(postId, userId, 1)
+                .then((data) => {
+                })
+                .catch((error) => {
+                    setError(true);
+                    setErrorMessage(error);
+                    setVote(1);
+                    setUpVoted(true);
+                    setDownVoted(false);
+                    setVoteResult(voteResult);
+
+                    setTimeout(() => {
+                        setError(false);
+                        setErrorMessage('');
+                    }, 5000);
+                });
+
+
+            votePost(postId, userId, -1)
+                .then((data) => {
+                })
+                .catch((error) => {
+                    setError(true);
+                    setErrorMessage(error);
+                    setVote(1);
+                    setUpVoted(true);
+                    setDownVoted(false);
+                    setVoteResult(voteResult);
+
+                    setTimeout(() => {
+                        setError(false);
+                        setErrorMessage('');
+                    }, 5000);
+                });
+        }
+    }
+
     useEffect(() => {
 
         if (postViewer && post.favorited_by.includes(postViewer.id)) {
@@ -216,6 +409,44 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     useEffect(() => {
         setShowCommentsSection(location.pathname.includes('/comments'));
     }, [location]);
+
+    useEffect(() => {
+
+        let voteResult = 0;
+
+        if (postViewer && post.votes)
+        {
+            if (post.votes[postViewer.id] === 1)
+            {
+                setVote(1);
+                setOriginalVote(1)
+                setUpVoted(true);
+                setDownVoted(false);
+            }
+            else if (post.votes[postViewer.id] === -1)
+            {
+                setVote(-1);
+                setOriginalVote(-1);
+                setUpVoted(false);
+                setDownVoted(true);
+            }
+            else
+            {
+                setVote(0);
+                setOriginalVote(0);
+                setUpVoted(false);
+                setDownVoted(false);
+            }
+
+            for (let key in post.votes)
+            {
+                voteResult += post.votes[key];
+            }
+        }
+
+        setVoteResult(voteResult);
+
+    }, [post.votes, postViewer]);
 
 
 
@@ -278,15 +509,43 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                 </div>}
 
                 <div className="post-footer">
-                    {!showCommentsSection && (
+                    {postViewer && (
+                        <div className={'vote-buttons'}>
+                            <ArrowCircleUpSharpIcon className={`up-vote-button ${upVoted ? 'active' : ''}`} onClick={() => {
+                                if(vote === 1)
+                                {
+                                    onVotePost(post.post_id, postViewer.id, vote, 'removeUpVote');
+                                }
+                                else
+                                {
+                                    onVotePost(post.post_id, postViewer.id, vote, 'upVote');
+                                }
+                            }}></ArrowCircleUpSharpIcon>
+                            <p className={'vote-count'}>{voteResult}</p>
+                            <ArrowCircleDownSharpIcon className={`down-vote-button ${downVoted ? 'active' : ''}`} onClick={() => {
+                                if(vote === -1)
+                                {
+                                    onVotePost(post.post_id, postViewer.id, vote, 'removeDownVote');
+                                }
+                                else
+                                {
+                                    onVotePost(post.post_id, postViewer.id, vote, 'downVote');
+                                }
+                            }}></ArrowCircleDownSharpIcon>
+                        </div>
+                    )}
+
+                    {((!showCommentsSection) && postViewer) && (
                         <button className={"view-comments-button"} onClick={() => navigate(`/epoch/comments/${post.post_id}`)}>View Comments</button>
                     )}
                     
                     {postViewer && (
-                        <>
+                        <div className={'favorite-button-wrapper'}>
                             <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`} onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
                             <p className={'favorited-by-count'}>{favoritedByCount}</p>
-                        </>)}
+                        </div>)}
+
+
                 </div>
                 {(post.file) ?
                 (showPostPopup && fileBlob && postViewer && postAdmin) && (<PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username} profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} postFile={fileBlob} year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
