@@ -123,7 +123,9 @@ jobs:
             cd
             cd Epoch/epoch_backend/
             latest_tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/$DOCKER_USERNAME/epoch_backend/tags/?page_size=1" | jq -r '.results[0].name')
-            if [[ -z $latest_tag || $latest_tag == "latest" ]]; then
+            if [ -z "$latest_tag" ]; then
+              version="v2.0.9" 
+            elif [ "$latest_tag" == "latest" ]; then
               version="v2.0.9"
             else
               major=$(echo "$latest_tag" | awk -F '.' '{print $2}')
@@ -161,8 +163,10 @@ jobs:
             cd
             cd Epoch/epoch_frontend/
             latest_tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/$DOCKER_USERNAME/epoch_frontend/tags/?page_size=1" | jq -r '.results[0].name')
-            if [[ -z $latest_tag || $latest_tag == "latest" ]]; then
-              version="v2.0.9"
+            if [ -z "$latest_tag" ]; then
+              version="v2.0.9" 
+            elif [ "$latest_tag" == "latest" ]; then
+              version="v2.0.9" 
             else
               major=$(echo "$latest_tag" | awk -F '.' '{print $2}')
               minor=$(echo "$latest_tag" | awk -F '.' '{print $3}')
