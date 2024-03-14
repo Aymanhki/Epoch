@@ -198,18 +198,31 @@ jobs:
         env:
             DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
+      - name: Is This Major Version
+        id: is_major
+        run: |
+            major=$(echo "${{ steps.get_version_frontend.outputs.version }}" | awk -F '.' '{print $1}')
+            minor=$(echo "${{ steps.get_version_frontend.outputs.version }}" | awk -F '.' '{print $2}')
+            patch=$(echo "${{ steps.get_version_frontend.outputs.version }}" | awk -F '.' '{print $3}')
+            major=$(echo $major | sed 's/v//')
+          
+            if [ "$patch" -eq 0 ] && [ "$minor" -eq 0 ]; then
+              echo "This is a major version"
+              echo "::set-output name=is_major::true"
+            else
+              echo "This is not a major version"
+              echo "::set-output name=is_major::false"
+            fi
+
       - name: Create Release
-        if: always()
+        if: always()          #steps.is_major.outputs.is_major == 'true'
         uses: actions/create-release@v1
-        with:
-          tag_name: ${{ steps.get_version_frontend.outputs.version }}
-          release_name: Release ${{ steps.get_version_frontend.outputs.version }}
-          body: |
-            Release ${{ steps.get_version_frontend.outputs.version }}
-          draft: false
-          prerelease: false
+        id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_version_backend.outputs.version }}
+          release_name: ${{ steps.get_version_backend.outputs.version }}
 
       - name: Deploying Backend (Build and Run Backend Docker Container)
         run: |
