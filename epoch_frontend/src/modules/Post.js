@@ -47,7 +47,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
 
     useEffect(() => {
-        const currentTime = new Date();
+        const now = new Date();
+        const currentTime = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
         const postTime = new Date(post.created_at);
         const initialTimeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
 
@@ -139,9 +140,14 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     }, [post.caption]);
 
     const postIsInThePast = () => {
-        const currentTime = new Date();
-        const postTime = new Date(post.release);
-        return currentTime >= postTime;
+        const now = new Date();
+        const currentTimeUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+
+        const postTimeUTC = new Date(post.release);
+        postTimeUTC.setHours(postTimeUTC.getHours() + (postTimeUTC.getTimezoneOffset() / 60)); // Adjust for local time zone offset
+        const postTimeUTCTimestamp = Date.UTC(postTimeUTC.getFullYear(), postTimeUTC.getMonth(), postTimeUTC.getDate(), postTimeUTC.getHours(), postTimeUTC.getMinutes(), postTimeUTC.getSeconds(), postTimeUTC.getMilliseconds());
+
+        return currentTimeUTC >= postTimeUTCTimestamp;
     }
 
     const toggleCaptionVisibility = () => {
