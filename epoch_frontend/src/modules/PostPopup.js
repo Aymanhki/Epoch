@@ -319,13 +319,13 @@ export default function PostPopup({
                             </div>
                         </div>
 
-                        {!editPost && (<div className={'schedule-checkbox-wrapper'}>
+                        <div className={'schedule-checkbox-wrapper'}>
                             <input
                                 className={`schedule-checkbox ${postNow ? 'checked' : ''} ${posting ? 'disabled' : ''}`}
                                 type="checkbox"
                                 checked={postNow} onChange={handleCheckboxChange}/>
                             <label className={'schedule-checkbox-label'}>Do you want to post this now?</label>
-                        </div>)}
+                        </div>
 
                         <div className={'schedule-options'}>
 

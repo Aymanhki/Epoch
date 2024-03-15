@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {updateUser} from '../services/user';
 import '../styles/EditProfilePopup.css';
 import {useSpring, animated} from 'react-spring';
@@ -33,6 +33,12 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
     const [removableBackgroundPic, setRemovableBackgroundPic] = useState(backgroundPicId !== 1 && backgroundPicId !== 2 && backgroundPicId !== null);
     const [removedOldProfilePic, setRemovedOldProfilePic] = useState(false);
     const [removedOldBackgroundPic, setRemovedOldBackgroundPic] = useState(false);
+    const usernameRef = useRef(null);
+    const displaynameRef = useRef(null);
+    const bioRef = useRef(null);
+    const currentPasswordRef = useRef(null);
+    const newPasswordRef = useRef(null);
+
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
         opacity: showEditProfilePopup ? 1 : 0,
@@ -46,7 +52,25 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
         config: {duration: 300},
     });
 
-    // Handler to update form data
+    useEffect(() => {
+        if (showEditProfilePopup) {
+            setFormData({
+                username: user.username,
+                displayname: user.name,
+                bio: user.bio
+            });
+            setProfilePicFile(null);
+            setBackgroundPicFile(null);
+            setRemovableProfilePic(profilePicId !== 1 && profilePicId !== 2 && profilePicId !== null);
+            setRemovableBackgroundPic(backgroundPicId !== 1 && backgroundPicId !== 2 && backgroundPicId !== null);
+            setRemovedOldProfilePic(false);
+            setRemovedOldBackgroundPic(false);
+            setGeneralError(false);
+            setGeneralErrorMessage('');
+            setFormDataChanged(false);
+        }
+    }, [showEditProfilePopup]);
+
     const handleInputChange = (e) => {
         const {name, value} = e.target;
         setFormData({
@@ -77,7 +101,6 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
         setFormDataChanged(true);
     };
 
-    // Handler to submit form data
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!saving) {
@@ -89,15 +112,21 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
             const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
 
             if (!formData.username.match(usernameRegex)) {
-                setUsernameErrorMessage('Username must be between 1 and 50 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -');
                 invalidUsername = true;
                 setUsernameError(true);
+                setUsernameErrorMessage('Username must be between 1 and 50 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -');
+                usernameRef.current.scrollIntoView({ behavior: 'smooth' });
+                usernameRef.current.focus();
+                return;
             }
 
             if (formData.displayname <= 0 || formData.displayname > 255) {
-                setDisplaynameErrorMessage('Name must be between 1 and 254 characters');
                 invalidDisplayname = true;
                 setDisplaynameError(true);
+                setDisplaynameErrorMessage('Name must be between 1 and 254 characters');
+                displaynameRef.current.scrollIntoView({ behavior: 'smooth' });
+                displaynameRef.current.focus();
+                return;
             }
 
             const newData = {
@@ -113,14 +142,20 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
 
             if (isPasswordChanging) {
                 if (formData.currentPassword !== user.password) {
-                    setPasswordErrorMessage('Current password is not correct');
                     invalidPassword = true;
                     setPasswordError(true);
+                    setPasswordErrorMessage('Current password is not correct');
+                    currentPasswordRef.current.scrollIntoView({ behavior: 'smooth' });
+                    currentPasswordRef.current.focus();
+                    return;
                 } else {
                     if (!formData.newPassword.match(passwordRegex)) {
-                        setNewPasswordErrorMessage('Password must be between 1 and 254 characters, at least one uppercase letter, one lowercase letter, one number, and one special character');
                         invalidPassword = true;
                         setNewPasswordError(true);
+                        setNewPasswordErrorMessage('Password must be between 1 and 254 characters, at least one uppercase letter, one lowercase letter, one number, and one special character');
+                        newPasswordRef.current.scrollIntoView({ behavior: 'smooth' });
+                        newPasswordRef.current.focus();
+                        return;
                     } else {
                         newData.password = formData.newPassword
                     }
@@ -138,6 +173,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                 newData.new_profile_pic = null;
                 newData.new_profile_pic_type = null;
                 newData.new_profile_pic_name = null;
+                newData.profile_pic_id = profilePicId;
             }
 
             if (backgroundPicFile && backgroundPicFile !== null && backgroundPicFile !== undefined && removableBackgroundPic) {
@@ -151,6 +187,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                 newData.new_background_pic = null;
                 newData.new_background_pic_type = null;
                 newData.new_background_pic_name = null;
+                newData.background_pic_id = backgroundPicId;
             }
 
             if(removedOldProfilePic)
@@ -232,6 +269,8 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
         setBackgroundPicFile(null);
         setRemovableProfilePic(false);
         setRemovableBackgroundPic(false);
+        setRemovedOldProfilePic(false);
+        setRemovedOldBackgroundPic(false);
         onClose();
     }
 
@@ -239,12 +278,14 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
         setProfilePicFile(null);
         setRemovableProfilePic(false);
         setRemovedOldProfilePic(true);
+        setFormDataChanged(true);
     }
 
     const onRemoveBackgroundPic = () => {
         setBackgroundPicFile(null);
         setRemovableBackgroundPic(false);
         setRemovedOldBackgroundPic(true);
+        setFormDataChanged(true);
     }
 
     const onProfilePicChange = (e) => {
@@ -298,7 +339,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
 
                                 <input type="text" id="usernameField" name="username" value={formData.username}
                                        onChange={handleInputChange} disabled={saving}
-                                       className={"edit-popup-username-field"}/>
+                                       className={"edit-popup-username-field"} ref={usernameRef}/>
 
                                 {usernameError && (
                                     <div className="edit-popup-error">
@@ -313,7 +354,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
 
                                 <input type="text" id="displaynameField" name="displayname" value={formData.displayname}
                                        onChange={handleInputChange} disabled={saving}
-                                       className={"edit-popup-displayname-field"}/>
+                                       className={"edit-popup-displayname-field"} ref={displaynameRef}/>
 
                                 {displaynameError && (
                                     <div className="edit-popup-error">
@@ -326,7 +367,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                             <div className={"edit-popup-bio-container"}>
 
                                 <textarea id="bioField" name="bio" value={formData.bio} onChange={handleInputChange}
-                                          disabled={saving} className={"edit-popup-bio-field"}/>
+                                          disabled={saving} className={"edit-popup-bio-field"} ref={bioRef}/>
                                 {bioError && (
                                     <div className="edit-popup-error">
                                         {bioErrorMessage}
@@ -338,12 +379,14 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                             <div className={"edit-popup-profile-pic-change-container"}>
 
                                 <div className={"edit-popup-profile-pic-container"}>
-                                    {profilePicFile ? (
-                                        <img src={URL.createObjectURL(profilePicFile)} alt={profilePicFile.name}
-                                             className={"edit-popup-profile-pic"}/>
-                                    ) : (
-                                        <img src={profilePicUrl} alt={profilePicName}
-                                             className={"edit-popup-profile-pic"}/>
+                                    {removableProfilePic && !profilePicFile && (
+                                        <img src={profilePicUrl} alt={profilePicName} className={"edit-popup-profile-pic"} />
+                                    )}
+                                    {profilePicFile && removableProfilePic && (
+                                        <img src={URL.createObjectURL(profilePicFile)} alt={profilePicFile.name} className={"edit-popup-profile-pic"} />
+                                    )}
+                                    {!profilePicFile && !removableProfilePic && (
+                                        <img src={process.env.PUBLIC_URL + '/images/default_pfp.png'} alt={"default profile photo"} className={"edit-popup-profile-pic"} />
                                     )}
                                 </div>
 
@@ -369,14 +412,24 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
 
 
                                 <div className={"edit-popup-background-pic-container"}>
-                                    {backgroundPicFile ? (
-                                        <img src={URL.createObjectURL(backgroundPicFile)} alt={backgroundPicFile.name}
-                                             className={"edit-popup-background-pic"}/>
-                                    ) : (
-                                        <img src={backgroundPicUrl} alt={backgroundPicName}
-                                             className={"edit-popup-background-pic"}/>
-                                    )}
+                                    {/*{backgroundPicFile ? (*/}
+                                    {/*    <img src={URL.createObjectURL(backgroundPicFile)} alt={backgroundPicFile.name}*/}
+                                    {/*         className={"edit-popup-background-pic"}/>*/}
+                                    {/*) : (*/}
+                                    {/*    <img src={backgroundPicUrl} alt={backgroundPicName}*/}
+                                    {/*         className={"edit-popup-background-pic"}/>*/}
+                                    {/*)}*/}
 
+                                    {removableBackgroundPic && !backgroundPicFile && (
+                                        <img src={backgroundPicUrl} alt={backgroundPicName} className={"edit-popup-background-pic"} />
+                                    )}
+                                    {backgroundPicFile && removableBackgroundPic && (
+                                        <img src={URL.createObjectURL(backgroundPicFile)} alt={backgroundPicFile.name} className={"edit-popup-background-pic"} />
+                                    )}
+                                    {!backgroundPicFile && !removableBackgroundPic && (
+                                        <img src={process.env.PUBLIC_URL + '/images/default_profile_background.png'} alt={"default background"} className={"edit-popup-background-pic"} />
+                                    )}
+                                    </div>
 
                                     {removableBackgroundPic ? (
                                         <button type="button" className={"edit-popup-background-pic-remove-button"}
@@ -389,7 +442,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                                                 }} disabled={saving}>+
                                         </button>
                                     )}
-                                </div>
+
                                 <input type="file" id="backgroundPic" name="backgroundPic" accept="image/*"
                                        disabled={saving} className={"edit-popup-background-pic-field"}
                                        style={{display: "none"}} ref={backgroundPicInputRef}
@@ -404,7 +457,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                                     <input type="password" id="currentPassword" name="currentPassword"
                                            value={formData.currentPassword} onChange={handleInputChange}
                                            disabled={((!isPasswordChanging) || saving)}
-                                           className={"edit-popup-password-field"}/>
+                                           className={"edit-popup-password-field"} ref={currentPasswordRef}/>
                                     {passwordError && (
                                         <div className="edit-popup-error">
                                             {passwordErrorMessage}
@@ -419,7 +472,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                                     <input type="password" id="newPassword" name="newPassword"
                                            value={formData.newPassword}
                                            onChange={handleInputChange} disabled={((!isPasswordChanging) || saving)}
-                                           className={"edit-popup-password-field"}/>
+                                           className={"edit-popup-password-field"} ref={newPasswordRef}/>
 
                                     {newPasswordError && (
                                         <div className="edit-popup-error">

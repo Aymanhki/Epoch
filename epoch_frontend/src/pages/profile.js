@@ -344,7 +344,7 @@ function Profile() {
                                    refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
 
 
-                        <EditProfilePopup user={user} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)} showEditProfilePopup={showEditProfilePopup} setShowEditProfilePopup={setShowEditProfilePopup} refreshProfile={refreshProfile} setRefreshProfile={setRefreshProfile} profilePicId={user.profile_pic_id} profilePicType={user.profile_pic_type} backgroundPicId={user.background_pic_id} profilePicUrl={user.profile_pic_data} profilePicName={user.profile_pic_name} profilePicType={user.profile_pic_type} backgroundPicUrl={user.background_pic_data} backgroundPicName={user.background_pic_name} backgroundPicType={user.background_pic_type} backgroundPicId={user.background_pic_id}/>
+                        <EditProfilePopup user={user} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)} showEditProfilePopup={showEditProfilePopup} setShowEditProfilePopup={setShowEditProfilePopup} refreshProfile={refreshProfile} setRefreshProfile={setRefreshProfile} profilePicId={user.profile_pic_id} profilePicUrl={user.profile_pic_data} profilePicName={user.profile_pic_name} profilePicType={user.profile_pic_type} backgroundPicId={user.background_pic_id} backgroundPicUrl={user.background_pic_data} backgroundPicName={user.background_pic_name} backgroundPicType={user.background_pic_type} />
                     </>
                 )}
 

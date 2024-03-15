@@ -308,8 +308,18 @@ def update_user_info(conn, request_data):
         if "Content-Length" in line:
             content_length = int(line.split(" ")[1])
 
-    while len(body) < content_length:
-        body += conn.recv(1024).decode('UTF-8')
+    conn.settimeout(3)
+    try:
+        while len(body) < content_length:
+            data = conn.recv(1048576).decode('UTF-8')
+            if not data:
+                break
+            body += data
+    except Exception as e:
+        pass
+
+    conn.settimeout(None)
+
     try:
         data = json.loads(body)
         origin = get_origin_from_headers(headers)
@@ -348,7 +358,7 @@ def update_user_info(conn, request_data):
             final_profile_pic_id = profile_pic_id
             final_background_pic_id = background_pic_id
 
-            if new_profile_pic and int(profile_pic_id) == -1:
+            if new_profile_pic:
                 file_bytes = base64.b64decode(new_profile_pic)
                 path = upload_file_to_cloud(username, new_profile_pic_name, file=file_bytes, content_type=new_profile_pic_type)
                 new_profile_pic_media_id = access_media_persistence().add_media(media(new_profile_pic_type, new_profile_pic_name, id, path))
@@ -357,7 +367,7 @@ def update_user_info(conn, request_data):
                 if new_profile_pic_uploaded:
                     final_profile_pic_id = new_profile_pic_media_id
 
-            if new_background_pic and int(background_pic_id) == -1:
+            if new_background_pic:
                 file_bytes = base64.b64decode(new_background_pic)
                 path = upload_file_to_cloud(username, new_background_pic_name, file=file_bytes, content_type=new_background_pic_type)
                 new_background_pic_media_id = access_media_persistence().add_media(media(new_background_pic_type, new_background_pic_name, id, path))
