@@ -155,7 +155,7 @@ class webserver_tests(unittest.TestCase):
     def test_g_follow_user(self):
         print("Following user...")
         if self.get_follow_id() == None: # there are no users to follow
-            return
+            self.fill_empty_list()
         response = requests.post('http://localhost:8080/api/follow/follow/',
                                  json={'userToFollow': self.get_follow_id()},
                                  cookies={'epoch_session_id': self.get_session_id()})
@@ -167,7 +167,7 @@ class webserver_tests(unittest.TestCase):
     def test_h_get_following(self):
         print("Getting following list...")
         if self.get_follow_id() == None: # there are no users to follow
-            return
+            self.fill_empty_list()
         response = requests.post('http://localhost:8080/api/follow/followingList/',
                                  json={'target': "self"},
                                  cookies={'epoch_session_id': self.get_session_id()})
@@ -186,7 +186,7 @@ class webserver_tests(unittest.TestCase):
     def test_i_get_followers(self):
         print("Getting follower list...")
         if self.get_follow_id() == None: # there are no users to follow
-            return
+            self.fill_empty_list()
         response = requests.post('http://localhost:8080/api/follow/followingList/',
                                  json={'target': "self"},
                                  cookies={'epoch_session_id': self.get_session_id()})
@@ -200,7 +200,7 @@ class webserver_tests(unittest.TestCase):
     def test_j_dupe_follow(self):
         print("Attempting dupe follow...")
         if self.get_follow_id() == None: # there are no users to follow
-            return
+            self.fill_empty_list()
         response = requests.post('http://localhost:8080/api/follow/follow/',
                                  json={'userToFollow': self.user_to_follow_id},
                                  cookies={'epoch_session_id': self.get_session_id()})
@@ -210,7 +210,7 @@ class webserver_tests(unittest.TestCase):
     def test_k_unfollow_user(self):
         print("Unfollowing user...")
         if self.get_follow_id() == None: # there are no users to follow
-            return
+            self.fill_empty_list()
         response = requests.post('http://localhost:8080/api/follow/unfollow/',
                                  json={'userToUnfollow': self.get_follow_id()},
                                  cookies={'epoch_session_id': self.get_session_id()})
@@ -226,7 +226,7 @@ class webserver_tests(unittest.TestCase):
     def test_l_delete_user(self):
         print("Deleting user...")
         if self.get_user_id == None:
-            return
+            self.register_test_user()
         response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()},
                                    cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
