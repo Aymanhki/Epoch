@@ -29,10 +29,11 @@ class webserver_tests(unittest.TestCase):
     unittest.TestLoader.sortTestMethodsUsing = None
     server_thread = None
     web_server = None
-    username = "cedrictest"#str(uuid.uuid4())
-    password = "Newuser1!"#str(uuid.uuid4())
+    username = "WebserverTests" # str(uuid.uuid4())
+    password = "password" # str(uuid.uuid4())
     name = str(uuid.uuid4())
     bio = str(uuid.uuid4())
+    post_creation_time = '2024-02-22T06:36:12.653Z'
     user_to_follow_id = None
 
     @classmethod
@@ -48,6 +49,11 @@ class webserver_tests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        global user_id
+        global session_id
+        response = requests.delete('http://localhost:8080/api/delete/userId/', 
+                                   json={'userId': user_id},
+                                   cookies={'epoch_session_id': session_id})
         cls.web_server.stop()
         cls.server_thread.join(timeout=SERVER_WAIT_TIME)
         terminate_processes_on_port(3000)
@@ -77,7 +83,7 @@ class webserver_tests(unittest.TestCase):
     def get_follow_id(self):
         global user_to_follow_id
         return user_to_follow_id
-    '''
+    
     def test_a_register_user(self):
         print("Registering user...")
         response = requests.post('http://localhost:8080/api/register/',
@@ -135,8 +141,7 @@ class webserver_tests(unittest.TestCase):
             self.set_follow_id(int(response_json[0]["user_id"]))
             print("Got all followable acccounts.")
         else:
-            print("tests will not work with no other accounts in the db")
-            self.assertTrue(False)
+            self.fill_empty_list() # if no other users in db create one to test on
 
     def test_f_get_following_empty(self):
         print("Getting empty following list...")
@@ -149,6 +154,8 @@ class webserver_tests(unittest.TestCase):
 
     def test_g_follow_user(self):
         print("Following user...")
+        if self.get_follow_id() == None: # there are no users to follow
+            return
         response = requests.post('http://localhost:8080/api/follow/follow/',
                                  json={'userToFollow': self.get_follow_id()},
                                  cookies={'epoch_session_id': self.get_session_id()})
@@ -159,6 +166,8 @@ class webserver_tests(unittest.TestCase):
 
     def test_h_get_following(self):
         print("Getting following list...")
+        if self.get_follow_id() == None: # there are no users to follow
+            return
         response = requests.post('http://localhost:8080/api/follow/followingList/',
                                  json={'target': "self"},
                                  cookies={'epoch_session_id': self.get_session_id()})
@@ -176,6 +185,8 @@ class webserver_tests(unittest.TestCase):
 
     def test_i_get_followers(self):
         print("Getting follower list...")
+        if self.get_follow_id() == None: # there are no users to follow
+            return
         response = requests.post('http://localhost:8080/api/follow/followingList/',
                                  json={'target': "self"},
                                  cookies={'epoch_session_id': self.get_session_id()})
@@ -188,6 +199,8 @@ class webserver_tests(unittest.TestCase):
 
     def test_j_dupe_follow(self):
         print("Attempting dupe follow...")
+        if self.get_follow_id() == None: # there are no users to follow
+            return
         response = requests.post('http://localhost:8080/api/follow/follow/',
                                  json={'userToFollow': self.user_to_follow_id},
                                  cookies={'epoch_session_id': self.get_session_id()})
@@ -196,6 +209,8 @@ class webserver_tests(unittest.TestCase):
 
     def test_k_unfollow_user(self):
         print("Unfollowing user...")
+        if self.get_follow_id() == None: # there are no users to follow
+            return
         response = requests.post('http://localhost:8080/api/follow/unfollow/',
                                  json={'userToUnfollow': self.get_follow_id()},
                                  cookies={'epoch_session_id': self.get_session_id()})
@@ -210,6 +225,8 @@ class webserver_tests(unittest.TestCase):
 
     def test_l_delete_user(self):
         print("Deleting user...")
+        if self.get_user_id == None:
+            return
         response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()},
                                    cookies={'epoch_session_id': self.get_session_id()})
         self.assertEqual(response.status_code, 200)
@@ -218,7 +235,7 @@ class webserver_tests(unittest.TestCase):
     def test_m_login_nonexistent_user(self):
         print("Logging in nonexistent user...")
         response = requests.post('http://localhost:8080/api/login/',
-                                 json={'username': self.username, 'password': self.password})
+                                 json={'username': str(uuid.uuid4()), 'password': self.password})
         self.assertEqual(response.status_code, 401)
         print(response.text)
         print("Nonexistent user not logged in.")
@@ -237,8 +254,9 @@ class webserver_tests(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
         print(response.text)
         print("Nonexistent user not deleted.")
-
+    
     def test_p_register_user_with_picture(self):
+        # Added additional tests to cover other methods with profiles with profile photos
         print("Registering user with picture...")
         response = requests.post('http://localhost:8080/api/register/',
                                  json={'username': self.username, 'password': self.password, 'name': self.name,
@@ -254,10 +272,10 @@ class webserver_tests(unittest.TestCase):
             "fileType": 'image/jpeg',
             "userId": self.get_user_id()
         }
-
         body = json.dumps(body)
-
         response = requests.post('http://localhost:8080/api/upload/profile/1/', data=body)
+        response_json = response.json()
+        media_id = response_json['media_id']
         assert (response.status_code == 200)
         response = requests.post('http://localhost:8080/api/login/',
                                  json={'username': self.username, 'password': self.password})
@@ -272,23 +290,23 @@ class webserver_tests(unittest.TestCase):
         assert (response_json['id'] == self.get_user_id())
         profile_pic = response_json['profile_pic_data']
         assert (profile_pic is not None)
-
+        print("Testing getting profile with profile picture") # get a user with a profile pic 's info
         response = requests.get('http://localhost:8080/api/user/', 
                                 cookies={'epoch_session_id': self.get_session_id()},
                                 headers={"User-Id": self.username})
         self.assertEqual(response.status_code, 200)
-        
-        # TEST NOT WORKING
-        #response = requests.post('http://localhost:8080/api/user/', 
-        #                        cookies = {'epoch_session_id': self.get_session_id()},
-        #                        json = {'username': self.username, 'userID': self.get_user_id(), 'displayname': 'some new name', 'bio':'some new bio', 
-        #                              'password': self.password, 'created_at': 'sometime?', 'profile_pic_id': profile_pic})
-        #self.assertEqual(response.status_code, 200)
+        print("Testing updating profile with profile picture")  # update a profile with a profile pic
+        response = requests.post('http://localhost:8080/api/user/', 
+                                cookies = {'epoch_session_id': self.get_session_id()},
+                                json = {'username': self.username, 'userID': self.get_user_id(), 'displayname': 'cEDRICtESTS', 'bio':'some new bio', 
+                                      'password': self.password, 'created_at': 'sometime?', 'profile_pic_id': media_id})
+        self.assertEqual(response.status_code, 200)
+        # delete a profile with a profile pic
         response = requests.delete('http://localhost:8080/api/delete/userId/', json={'userId': self.get_user_id()},
                                    cookies={'epoch_session_id': self.get_session_id()})
         assert (response.status_code == 200)
         print("User with picture registered and deleted.")
-
+    
     def register_user(self, i, usernames, passwords, names, bios, session_ids, user_ids, media_ids):
         print(f"Registering user {i}...")
         response = requests.post('http://localhost:8080/api/register/',
@@ -347,7 +365,7 @@ class webserver_tests(unittest.TestCase):
                                    cookies={'epoch_session_id': session_ids[i]})
         self.assertEqual(response.status_code, 200)
         print(f"User {i} deleted.")
-    
+    '''
     def test_q_load_test(self):
         usernames = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
         passwords = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
@@ -409,40 +427,74 @@ class webserver_tests(unittest.TestCase):
 
         for i in range(EXTREME_TEST_RANGE):
             threads[i].join()
-
+    '''
     def register_test_user(self):
+        # create a test account if it already exist log in to it
         response = requests.post('http://localhost:8080/api/register/',
                                  json={'username': self.username, 'password': self.password, 
                                        'name': self.name, 'bio': self.bio})
+        if response.status_code == 200:
+            response_json = response.json()
+            self.set_user_id(response_json['user_id'])
+        response = requests.post('http://localhost:8080/api/login/',
+                                 json={'username': self.username, 'password': self.password})
+        self.set_session_id(response.text.split('=')[1])
+        response = requests.get('http://localhost:8080/api/user/', 
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                headers={"User-Id": self.username})
         response_json = response.json()
-        self.set_user_id(response_json['user_id'])
-        self.assertEqual(response.status_code, 200)
-        response = requests.post('http://localhost:8080/api/login/',
-                                 json={'username': self.username, 'password': self.password})
-        self.set_session_id(response.text.split('=')[1])
-        self.assertEqual(response.status_code, 200)
-
-    def login_test_user(self):
-        response = requests.post('http://localhost:8080/api/login/',
-                                 json={'username': self.username, 'password': self.password})
-        self.set_session_id(response.text.split('=')[1])
-        self.assertEqual(response.status_code, 200)
+        self.set_user_id(response_json["id"])
 
     def delete_test_user(self):
         response = requests.delete('http://localhost:8080/api/delete/userId/', 
                                    json={'userId': self.get_user_id()},
                                    cookies={'epoch_session_id': self.get_session_id()})
-        self.assertEqual(response.status_code, 200)
     
-    def test_z01_get_username_info(self): # GET "/api/user/"
+    def make_post(self):
+        print("creating a post!")
+        today = datetime.date.today()
+        response = requests.post('http://localhost:8080/api/post/', 
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                json={'postText': 'someText #webservertest', 'file': base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'),
+                                       'fileType': 'image/jpeg', 'fileName': 'test.jpg', 'postNow': 'true', 'selectedDate': self.post_creation_time,
+                                       'createdAt': self.post_creation_time, 'username': self.username })
+        self.assertEqual(response.status_code, 200)
+        print("Created a post!")
+
+    def delete_post(self):
+        print("Deleting a post")
+        response = requests.get('http://localhost:8080/api/user/posts/',
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                headers={'User-Id': str(self.get_user_id()) })
+        self.assertEqual(response.status_code, 200)
+        response_json = response.json()
+        for post in response_json:
+            response = requests.delete('http://localhost:8080/api/user/posts/',
+                                       headers={'Post-Id': str(post["post_id"]), 'User-Id': str(self.get_user_id())})
+            self.assertEqual(response.status_code, 200)
+
+    def fill_empty_list(self):
+        response = requests.post('http://localhost:8080/api/register/',
+                                 json={'username': 'cedric', 'password': 'Newuser1!', 
+                                       'name': 'Cedric', 'bio': 'some bio'})
+        if response.status_code == 200:
+            response_json = response.json()
+            self.set_follow_id(response_json["user_id"])
+        else:
+            response = requests.get('http://localhost:8080/api/user/', 
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                headers={"User-Id": 'cedric'})
+            response_json = response.json()
+            self.set_follow_id(response_json['id'])
+            self.assertEqual(response.status_code, 200)
+    
+    def test_z01_get_username_info(self): # GET "/api/user/" - get user info
         self.register_test_user()
         response = requests.get('http://localhost:8080/api/user/', 
                                 cookies={'epoch_session_id': self.get_session_id()},
                                 headers={"User-Id": self.username})
         self.assertEqual(response.status_code, 200)
-
-        self.delete_test_user()
-
+        #self.delete_test_user()
         response = requests.get('http://localhost:8080/api/user/', 
                                 cookies={'epoch_session_id': self.get_session_id()},
                                 headers={"User-id": "not a real username"})
@@ -454,43 +506,93 @@ class webserver_tests(unittest.TestCase):
                                 cookies={'epoch_session_id': self.get_session_id()},
                                 json={'username': self.username, 'displayname': 'some new name', 'bio':'some new bio' })
         self.assertEqual(response.status_code, 400) # missing fields
-        self.delete_test_user()
-    '''
-    def test_z03_(self): # POST "/api/post/" 
+        #self.delete_test_user()
+    
+    def test_z03_create_post(self): # POST "/api/post/" 
         self.register_test_user()
-        today = datetime.date.today()
-        response = requests.post('http://localhost:8080/api/post/', 
+        self.make_post()
+        self.delete_post()
+        #self.delete_test_user()
+
+    def test_z04_hashtag_tests(self): # GET "/api/post/hashtag/" - Get all post with hash tag
+        self.register_test_user()
+        self.make_post()
+        response = requests.get('http://localhost:8080/api/post/hashtag/', 
                                 cookies={'epoch_session_id': self.get_session_id()},
-                                json={'postText': 'someText', 'file': base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'),
-                                       'fileType': 'image/jpeg', 'fileName': 'test.jpg', 'postNow': 'true', 'selectedDate': '2024-02-22T06:36:12.653Z',
-                                       'createdAt': '2024-02-22T06:36:12.653Z', 'username': self.username })
+                                headers={"Hashtag": "webservertest"})
         self.assertEqual(response.status_code, 200)
+        response = requests.get('http://localhost:8080/api/post/hashtag/', 
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                headers={"Hashtag": str(uuid.uuid4())})
+        response_json = response.json()
+        self.assertEqual(response_json, [])
+        response = requests.get('http://localhost:8080/api/post/hashtag/', 
+                                cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 400)
+        self.delete_post()
+        #self.delete_test_user()
+    
+    def test_z07_updating_posts(self): # PUT "/api/user/posts/" - UPDATE POST
+        self.register_test_user()
+        self.make_post()
+        print("updating a post without media")
         response = requests.get('http://localhost:8080/api/user/posts/',
                                 cookies={'epoch_session_id': self.get_session_id()},
                                 headers={'User-Id': str(self.get_user_id()) })
         self.assertEqual(response.status_code, 200)
         response_json = response.json()
-        for post in response_json:
-            response = requests.delete('http://localhost:8080/api/user/posts/',
-                                       headers={'Post-Id': str(post["post_id"]), 'User-Id': str(self.get_user_id())})
-            self.assertEqual(response.status_code, 200)
-        self.delete_test_user()
-    
+        
+        response = requests.put('http://localhost:8080/api/user/posts/',
+                                    cookies={'epoch_session_id': self.get_session_id()},
+                                    headers={'User-Id': str(self.get_user_id())},
+                                    json={'postId': response_json[0]["post_id"], 'username': self.username,
+                                          'fileName': '', 'fileType': '', 'file': '', 'postNow': 'true', 'postText': 'updated text #webservertest',
+                                           'selectedDate': self.post_creation_time, 'createdAt': self.post_creation_time, 'oldFileRemoved': 'false'})
+        self.assertEqual(response.status_code, 200)
+        # now update a post's media
+        print("updating a post with media")
+        response = requests.get('http://localhost:8080/api/user/posts/',
+                                cookies={'epoch_session_id': self.get_session_id()},
+                                headers={'User-Id': str(self.get_user_id()) })
+        self.assertEqual(response.status_code, 200)
+        response_json = response.json()
+        response = requests.put('http://localhost:8080/api/user/posts/',
+                                    cookies={'epoch_session_id': self.get_session_id()},
+                                    headers={'User-Id': str(self.get_user_id())},
+                                    json={'postId': response_json[0]["post_id"], 'username': self.username,
+                                            'fileName': 'test.jpg', 'fileType': 'image/jpeg', 'file': base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'),
+                                            'postNow': 'true', 'postText': 'updated text #webservertest',
+                                            'selectedDate': self.post_creation_time, 'createdAt': self.post_creation_time, 'oldFileRemoved': 'true'})
+        self.assertEqual(response.status_code, 200)
+        self.delete_post()
+        print("finished updating posts")
+        #self.delete_test_user()
 
+    def test_z08_get_followed_posts(self): # GET "/api/followed/posts/"
+        self.fill_empty_list()
+        self.register_test_user()
+        response = requests.get('http://localhost:8080/api/followed/posts/', # empty list
+                                 headers={'User-Id': str(self.get_user_id())},
+                                 cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 200)
+        response_json = response.json()
+        self.assertEqual(response_json, [])
+        response = requests.post('http://localhost:8080/api/follow/follow/',
+                                 json={'userToFollow': self.get_follow_id()},
+                                 cookies={'epoch_session_id': self.get_session_id()})
+        response = requests.get('http://localhost:8080/api/followed/posts/', # not empty list depending
+                                 headers={'User-Id': str(self.get_user_id())},
+                                 cookies={'epoch_session_id': self.get_session_id()})
+        self.assertEqual(response.status_code, 200)
+        response = requests.get('http://localhost:8080/api/followed/posts/',
+                                cookies={'epoch_session_id': self.get_session_id()}) # bad request
+        self.assertEqual(response.status_code, 400)
+        response = requests.post('http://localhost:8080/api/follow/unfollow/',
+                                 json={'userToFollow': self.get_follow_id()},
+                                 cookies={'epoch_session_id': self.get_session_id()})
+        #self.delete_test_user()
+    
     '''
-
-    def test_z05_(self): # GET "/api/post/hashtag/"
-        self.register_test_user()
-        self.delete_test_user()
-
-    def test_z07_(self): # PUT "/api/user/posts/"
-        self.register_test_user()
-        self.delete_test_user()
-
-    def test_z08_(self): # GET "/api/followed/posts/"
-        self.register_test_user()
-        self.delete_test_user()
-    
     def test_z09_(self): # POST "/api/favorite/posts/"
         self.register_test_user()
         self.delete_test_user()
