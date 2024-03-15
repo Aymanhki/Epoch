@@ -285,7 +285,12 @@ def get_profile_info(user_id):
     cursor.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
     user = cursor.fetchone()
     username = user[2]
-    profile_picture_id = user[5]
+
+    if user[5] is None:
+        profile_picture_id = 1
+    else:
+        profile_picture_id = user[5]
+
     cursor.execute("SELECT * FROM media_content WHERE media_id=%s", (profile_picture_id,))
     profile_picture = cursor.fetchone()
     connection.close()
