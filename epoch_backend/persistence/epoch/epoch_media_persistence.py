@@ -44,6 +44,10 @@ class epoch_media_persistence(media_persistence):
     def get_media(self, media_id: int):
         connection = get_db_connection()
         cursor = connection.cursor()
+
+        if media_id is None:
+            return None
+
         cursor.execute(f"SELECT * FROM media_content WHERE media_id = {media_id}")
         result = cursor.fetchone()
         cursor.close()

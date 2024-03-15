@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {updateUser} from '../services/user';
 import '../styles/EditProfilePopup.css';
 import {useSpring, animated} from 'react-spring';
 
-function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfilePopup, refreshProfile, setRefreshProfile}) {
+function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfilePopup, refreshProfile, setRefreshProfile, profilePicId, profilePicUrl, profilePicName, profilePicType, backgroundPicId, backgroundPicUrl, backgroundPicName, backgroundPicType}) {
     const [formData, setFormData] = useState({
         username: user.username,
         displayname: user.name,
@@ -25,6 +25,14 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
     const [saveButtonPrompt, setSaveButtonPrompt] = useState('Save');
     const [saving, setSaving] = useState(false);
     const [formDataChanged, setFormDataChanged] = useState(false);
+    const profilePicInputRef = React.createRef();
+    const backgroundPicInputRef = React.createRef();
+    const [profilePicFile, setProfilePicFile] = useState(null);
+    const [backgroundPicFile, setBackgroundPicFile] = useState(null);
+    const [removableProfilePic, setRemovableProfilePic] = useState(profilePicId !== 1 && profilePicId !== 2 && profilePicId !== null);
+    const [removableBackgroundPic, setRemovableBackgroundPic] = useState(backgroundPicId !== 1 && backgroundPicId !== 2 && backgroundPicId !== null);
+    const [removedOldProfilePic, setRemovedOldProfilePic] = useState(false);
+    const [removedOldBackgroundPic, setRemovedOldBackgroundPic] = useState(false);
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
         opacity: showEditProfilePopup ? 1 : 0,
@@ -119,6 +127,44 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                 }
             }
 
+            if (profilePicFile && profilePicFile !== null && profilePicFile !== undefined && removableProfilePic) {
+                newData.new_profile_pic = profilePicFile;
+                newData.new_profile_pic_type = profilePicFile.type;
+                newData.new_profile_pic_name = profilePicFile.name;
+                newData.profile_pic_id = -1;
+            }
+            else
+            {
+                newData.new_profile_pic = null;
+                newData.new_profile_pic_type = null;
+                newData.new_profile_pic_name = null;
+            }
+
+            if (backgroundPicFile && backgroundPicFile !== null && backgroundPicFile !== undefined && removableBackgroundPic) {
+                newData.new_background_pic = backgroundPicFile;
+                newData.new_background_pic_type = backgroundPicFile.type;
+                newData.new_background_pic_name = backgroundPicFile.name;
+                newData.background_pic_id = -1;
+            }
+            else
+            {
+                newData.new_background_pic = null;
+                newData.new_background_pic_type = null;
+                newData.new_background_pic_name = null;
+            }
+
+            if(removedOldProfilePic)
+            {
+                newData.removed_old_profile_pic = true;
+                newData.profile_pic_id = -1;
+            }
+
+            if(removedOldBackgroundPic)
+            {
+                newData.removed_old_background_pic = true;
+                newData.background_pic_id = -1;
+            }
+
             if (!invalidUsername && !invalidDisplayname && !invalidPassword && formDataChanged) {
                 setSaving(true);
                 setSaveButtonPrompt('Saving...');
@@ -152,6 +198,8 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
     };
 
     const resetBeforeClose = (saved) => {
+        if (saving) {return;}
+
         if(!saved) {
             setFormData({
                 username: user.username,
@@ -167,7 +215,6 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                 currentPassword: '',
                 newPassword: ''
             });
-
         }
         setUsernameError(false);
         setDisplaynameError(false);
@@ -180,9 +227,44 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
         setSaving(false);
         setShowEditProfilePopup(false);
         setIsPasswordChanging(false);
-
-
+        setFormDataChanged(false);
+        setProfilePicFile(null);
+        setBackgroundPicFile(null);
+        setRemovableProfilePic(false);
+        setRemovableBackgroundPic(false);
         onClose();
+    }
+
+    const onRemoveProfilePic = () => {
+        setProfilePicFile(null);
+        setRemovableProfilePic(false);
+        setRemovedOldProfilePic(true);
+    }
+
+    const onRemoveBackgroundPic = () => {
+        setBackgroundPicFile(null);
+        setRemovableBackgroundPic(false);
+        setRemovedOldBackgroundPic(true);
+    }
+
+    const onProfilePicChange = (e) => {
+        const file = e.target.files[0];
+
+        if(!file) {return;}
+
+        setProfilePicFile(file);
+        setRemovableProfilePic(true);
+        setFormDataChanged(true);
+    }
+
+    const onBackgroundPicChange = (e) => {
+        const file = e.target.files[0];
+
+        if(!file) {return;}
+
+        setBackgroundPicFile(file);
+        setRemovableBackgroundPic(true);
+        setFormDataChanged(true);
     }
 
     return (
@@ -207,89 +289,166 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
             <div className="edit-popup-content">
                 <h1>Edit your profile</h1>
 
-                <div className="edit-popup-form-container">
 
-                    <form onSubmit={handleSubmit} className={"edit-popup-form-grid"}>
 
-                    <div className={"edit-popup-username-container"}>
-                        <label htmlFor="username">Username:</label>
-                        <input type="text" id="usernameField" name="username" value={formData.username}
-                               onChange={handleInputChange} disabled={saving} className={"edit-popup-username-field"}/>
+                    <form onSubmit={handleSubmit} className={"edit-popup-form"}>
+                        <div className={"edit-popup-form-fields-container"}>
+                            <label htmlFor="username">Username:</label>
+                            <div className={"edit-popup-username-container"}>
 
-                        {usernameError && (
-                            <div className="edit-popup-error">
-                                {usernameErrorMessage}
+                                <input type="text" id="usernameField" name="username" value={formData.username}
+                                       onChange={handleInputChange} disabled={saving}
+                                       className={"edit-popup-username-field"}/>
+
+                                {usernameError && (
+                                    <div className="edit-popup-error">
+                                        {usernameErrorMessage}
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    <div className={"edit-popup-display-name-container"}>
-                        <label htmlFor="displayname">Display Name:</label>
+                            <label htmlFor="displayname">Display Name:</label>
+                            <div className={"edit-popup-display-name-container"}>
 
-                        <input type="text" id="displaynameField" name="displayname" value={formData.displayname}
-                               onChange={handleInputChange} disabled={saving} className={"edit-popup-displayname-field"}/>
 
-                        {displaynameError && (
-                            <div className="edit-popup-error">
-                                {displaynameErrorMessage}
+                                <input type="text" id="displaynameField" name="displayname" value={formData.displayname}
+                                       onChange={handleInputChange} disabled={saving}
+                                       className={"edit-popup-displayname-field"}/>
+
+                                {displaynameError && (
+                                    <div className="edit-popup-error">
+                                        {displaynameErrorMessage}
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
+                            <label htmlFor="bio">Bio:</label>
+                            <div className={"edit-popup-bio-container"}>
 
-                    <div className={"edit-popup-bio-container"}>
-                        <label htmlFor="bio">Bio:</label>
-                        <textarea id="bioField" name="bio" value={formData.bio} onChange={handleInputChange} disabled={saving} className={"edit-popup-bio-field"}/>
-                        {bioError && (
-                            <div className="edit-popup-error">
-                                {bioErrorMessage}
+                                <textarea id="bioField" name="bio" value={formData.bio} onChange={handleInputChange}
+                                          disabled={saving} className={"edit-popup-bio-field"}/>
+                                {bioError && (
+                                    <div className="edit-popup-error">
+                                        {bioErrorMessage}
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
+                            <label htmlFor="profilePic">Profile Picture:</label>
+                            <div className={"edit-popup-profile-pic-change-container"}>
 
-
-                    <div className={"edit-popup-password-container"}>
-                        <div className={"edit-popup-password-field-container"}>
-                        <label htmlFor="currentPassword">Current Password:</label>
-                        <input type="password" id="currentPassword" name="currentPassword"
-                               value={formData.currentPassword} onChange={handleInputChange}
-                               disabled={( (!isPasswordChanging) || saving )} className={"edit-popup-password-field"}/>
-                            {passwordError && (
-                                <div className="edit-popup-error">
-                                    {passwordErrorMessage}
+                                <div className={"edit-popup-profile-pic-container"}>
+                                    {profilePicFile ? (
+                                        <img src={URL.createObjectURL(profilePicFile)} alt={profilePicFile.name}
+                                             className={"edit-popup-profile-pic"}/>
+                                    ) : (
+                                        <img src={profilePicUrl} alt={profilePicName}
+                                             className={"edit-popup-profile-pic"}/>
+                                    )}
                                 </div>
-                            )}
-                    </div>
 
-                        <div className={"edit-popup-password-field-container"}>
-                            <label htmlFor="newPassword">New Password:</label>
-                            <input type="password" id="newPassword" name="newPassword" value={formData.newPassword}
-                                   onChange={handleInputChange} disabled={( (!isPasswordChanging) || saving )} className={"edit-popup-password-field"}/>
+                                {removableProfilePic ? (
+                                    <button type="button" className={"edit-popup-profile-pic-remove-button"}
+                                            onClick={onRemoveProfilePic} disabled={saving}>+
+                                    </button>
+                                ) : (
+                                    <button type="button" className={"edit-popup-profile-pic-change-button"}
+                                            onClick={() => {
+                                                profilePicInputRef.current.click()
+                                            }} disabled={saving}>+
+                                    </button>
+                                )}
 
-                            {newPasswordError && (
-                                <div className="edit-popup-error">
-                                    {newPasswordErrorMessage}
+                                <input type="file" id="profilePic" name="profilePic" accept="image/*" disabled={saving}
+                                       className={"edit-popup-profile-pic-field"} style={{display: "none"}}
+                                       ref={profilePicInputRef} onChange={onProfilePicChange}/>
+                            </div>
+
+                            <label htmlFor="backgroundPic">Background Picture:</label>
+                            <div className={"edit-popup-background-pic-change-container"}>
+
+
+                                <div className={"edit-popup-background-pic-container"}>
+                                    {backgroundPicFile ? (
+                                        <img src={URL.createObjectURL(backgroundPicFile)} alt={backgroundPicFile.name}
+                                             className={"edit-popup-background-pic"}/>
+                                    ) : (
+                                        <img src={backgroundPicUrl} alt={backgroundPicName}
+                                             className={"edit-popup-background-pic"}/>
+                                    )}
+
+
+                                    {removableBackgroundPic ? (
+                                        <button type="button" className={"edit-popup-background-pic-remove-button"}
+                                                onClick={onRemoveBackgroundPic} disabled={saving}>+
+                                        </button>
+                                    ) : (
+                                        <button type="button" className={"edit-popup-background-pic-change-button"}
+                                                onClick={() => {
+                                                    backgroundPicInputRef.current.click()
+                                                }} disabled={saving}>+
+                                        </button>
+                                    )}
                                 </div>
-                            )}
+                                <input type="file" id="backgroundPic" name="backgroundPic" accept="image/*"
+                                       disabled={saving} className={"edit-popup-background-pic-field"}
+                                       style={{display: "none"}} ref={backgroundPicInputRef}
+                                       onChange={onBackgroundPicChange}/>
+                            </div>
+
+                            <div className={"edit-popup-password-container"}>
+
+                                <label htmlFor="currentPassword">Current Password:</label>
+                                <div className={"edit-popup-password-field-container"}>
+
+                                    <input type="password" id="currentPassword" name="currentPassword"
+                                           value={formData.currentPassword} onChange={handleInputChange}
+                                           disabled={((!isPasswordChanging) || saving)}
+                                           className={"edit-popup-password-field"}/>
+                                    {passwordError && (
+                                        <div className="edit-popup-error">
+                                            {passwordErrorMessage}
+                                        </div>
+                                    )}
+                                </div>
+
+
+                                <label htmlFor="newPassword">New Password:</label>
+                                <div className={"edit-popup-password-field-container"}>
+
+                                    <input type="password" id="newPassword" name="newPassword"
+                                           value={formData.newPassword}
+                                           onChange={handleInputChange} disabled={((!isPasswordChanging) || saving)}
+                                           className={"edit-popup-password-field"}/>
+
+                                    {newPasswordError && (
+                                        <div className="edit-popup-error">
+                                            {newPasswordErrorMessage}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className={"edit-popup-password-change-button-container"}>
+                                    {!isPasswordChanging && (
+                                        <button type="button" onClick={handlePasswordChangeStart}>Change
+                                            Password</button>
+                                    )}
+                                    {isPasswordChanging && (
+                                        <button type="button" onClick={handlePasswordChangeStart}>Cancel</button>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
-                    <div className={"edit-popup-password-change-button-container"}>
-                        {!isPasswordChanging && (
-                            <button type="button" onClick={handlePasswordChangeStart}>Change Password</button>
-                        )}
-                        {isPasswordChanging && (
-                            <button type="button" onClick={handlePasswordChangeStart}>Cancel</button>
-                        )}
-                    </div>
-                    </div>
+                    </form>
 
-                </form>
-                </div>
 
                 <div className="edit-popup-footer">
                     <button onClick={handleSubmit}>{saveButtonPrompt}</button>
-                    <button onClick={() => {resetBeforeClose(false)}}>Cancel</button>
+                    <button onClick={() => {
+                        resetBeforeClose(false)
+                    }}>Cancel
+                    </button>
                     {generalError && (
                         <div className="edit-popup-error">
                             {generalErrorMessage}

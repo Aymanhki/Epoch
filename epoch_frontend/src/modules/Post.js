@@ -18,7 +18,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const timeAllowedToEditInSeconds = 180;
     const [editable, setEditable] = useState(true);
     const [editing, setEditing] = useState(false);
-    const [truncatedCaption, setTruncatedCaption] = useState(post.caption.slice(0, captionCharLimit) + '...');
+    const [truncatedCaption, setTruncatedCaption] = useState((post && post.caption) ? post.caption.slice(0, captionCharLimit) + '...' : '');
     const [showFullCaption, setShowFullCaption] = useState(false);
     const navigate = useNavigate();
     const [showOverlay, setShowOverlay] = useState(false);
@@ -129,7 +129,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     };
 
     useEffect(() => {
-        if (post.caption.length > captionCharLimit) {
+        if (post.caption && post.caption.length > captionCharLimit) {
             setTruncatedCaption(post.caption.slice(0, captionCharLimit) + '...');
             setShowFullCaption(false);
         } else {
@@ -153,6 +153,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     }
 
     const renderCaptionWithHashtags = (toRender) => {
+
+        if(!toRender) {return;}
         const words = toRender.split(' ');
         return words.map((word, index) => {
             if (word.startsWith('#') && word.length > 1) {
@@ -484,8 +486,9 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             </div>
 
             <div className="post-body">
+                {post.caption && post.caption.length > 0 && (
                 <p className={"post-caption"}>
-                    {showFullCaption ? renderCaptionWithHashtags(post.caption) : (
+                    {(showFullCaption && post.caption) ? renderCaptionWithHashtags(post.caption) : (
                         <>
                             {renderCaptionWithHashtags(truncatedCaption)}
                             <span className="see-more" onClick={toggleCaptionVisibility}>
@@ -493,7 +496,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                                 </span>
                         </>
                     )}
-                    {(showFullCaption && post.caption.length >= captionCharLimit) && (
+                    {(showFullCaption && post.caption && post.caption.length >= captionCharLimit) && (
                         <>
                             {' '}
                             <span className="see-less" onClick={toggleSeeLess}>
@@ -502,6 +505,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                         </>
                     )}
                 </p>
+                )}
                 {(post.file && showFullCaption) && <div className={'file-wrapper'}>
                     <div className={'post-file'}><SmartMedia file={post.file} fileUrl={post.file}
                                                              file_type={post.file_type}
