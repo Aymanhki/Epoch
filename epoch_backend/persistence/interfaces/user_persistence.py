@@ -35,6 +35,9 @@ class user_persistence(ABC):
     def update_user_profile_pic(self, user_id: int, profile_pic_id: int):
         pass
 
+    def update_user_background_pic(self, user_id: int, background_pic_id: int):
+        pass
+
     def remove_user_by_id(self, user_id: int):
         pass
 

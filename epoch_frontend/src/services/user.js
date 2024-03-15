@@ -295,6 +295,18 @@ function updateUser(userId, newUserInfo) {
         xhr.withCredentials = true;
         xhr.timeout = 10000;
 
+        xhr.ontimeout = function () {
+            reject("Request timed out");
+        }
+
+        xhr.onerror = function () {
+            reject("An error occurred");
+        }
+
+        xhr.onabort = function () {
+            reject("Request aborted");
+        }
+
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
@@ -309,22 +321,50 @@ function updateUser(userId, newUserInfo) {
             }
         };
 
-        xhr.ontimeout = function () {
-            reject("Request timed out");
-        }
-
-        xhr.onerror = function () {
-            reject("An error occurred");
-        }
-
-        xhr.onabort = function () {
-            reject("Request aborted");
-        }
-
         const toSend = JSON.stringify(newUserInfo);
-        xhr.send(toSend);
+
+        let profileLoaded = false;
+        let backgroundLoaded = false;
+
+        function sendRequestIfReady() {
+            if (profileLoaded && backgroundLoaded) {
+                xhr.send(toSend);
+            }
+        }
+
+        if (newUserInfo.new_profile_pic) {
+            const readerProfile = new FileReader();
+
+            readerProfile.onload = function () {
+                newUserInfo.new_profile_pic = readerProfile.result.split(',')[1];
+                profileLoaded = true;
+                sendRequestIfReady();
+            }
+
+            readerProfile.readAsDataURL(newUserInfo.new_profile_pic);
+        } else {
+            profileLoaded = true;
+            sendRequestIfReady();
+        }
+
+        if (newUserInfo.new_background_pic) {
+            const readerBackground = new FileReader();
+
+            readerBackground.onload = function () {
+                newUserInfo.new_background_pic = readerBackground.result.split(',')[1];
+                backgroundLoaded = true;
+                sendRequestIfReady();
+            }
+
+            readerBackground.readAsDataURL(newUserInfo.new_background_pic);
+        } else {
+            backgroundLoaded = true;
+            sendRequestIfReady();
+        }
+
     });
 }
+
 
 
 module.exports = {

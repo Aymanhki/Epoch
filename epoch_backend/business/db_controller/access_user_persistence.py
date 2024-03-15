@@ -31,6 +31,9 @@ class access_user_persistence(user_persistence):
     def update_user_profile_pic(self, user_id: int, profile_pic_id: int):
         self.user_persistence.update_user_profile_pic(user_id, profile_pic_id)
 
+    def update_user_background_pic(self, user_id: int, background_pic_id: int):
+        self.user_persistence.update_user_background_pic(user_id, background_pic_id)
+
     def remove_user_by_id(self, user_id: int):
         self.user_persistence.remove_user_by_id(user_id)
 

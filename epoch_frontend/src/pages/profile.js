@@ -240,19 +240,12 @@ function Profile() {
                                     className="profile-pic"
                                     onClick={() => handleProfilePhotoClick(userInfo.profile_pic_data)}
                                 />
-                                {userInfo.profile_background_pic_data ? (
+                                {userInfo.background_pic_data && (
                                     <img
-                                        src={userInfo.profile_background_pic_data}
+                                        src={userInfo.background_pic_data}
                                         alt="Background Pic"
                                         className="background-pic"
-                                        onClick={() => handleProfilePhotoClick(userInfo.profile_background_pic_data)}
-                                    />
-                                ) : (
-                                    <img
-                                        src={process.env.PUBLIC_URL + '/images/default_profile_background.png'}
-                                        alt="Background Pic"
-                                        className="background-pic"
-                                        onClick={() => handleProfilePhotoClick(process.env.PUBLIC_URL + '/images/default_profile_background.png')}
+                                        onClick={() => handleProfilePhotoClick(userInfo.background_pic_data)}
                                     />
                                 )}
                             </div>
@@ -351,7 +344,7 @@ function Profile() {
                                    refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed}/>
 
 
-                        <EditProfilePopup user={user} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)} showEditProfilePopup={showEditProfilePopup} setShowEditProfilePopup={setShowEditProfilePopup} refreshProfile={refreshProfile} setRefreshProfile={setRefreshProfile}/>
+                        <EditProfilePopup user={user} onClose={() => setShowEditProfilePopup(!showEditProfilePopup)} showEditProfilePopup={showEditProfilePopup} setShowEditProfilePopup={setShowEditProfilePopup} refreshProfile={refreshProfile} setRefreshProfile={setRefreshProfile} profilePicId={user.profile_pic_id} profilePicType={user.profile_pic_type} backgroundPicId={user.background_pic_id} profilePicUrl={user.profile_pic_data} profilePicName={user.profile_pic_name} profilePicType={user.profile_pic_type} backgroundPicUrl={user.background_pic_data} backgroundPicName={user.background_pic_name} backgroundPicType={user.background_pic_type} backgroundPicId={user.background_pic_id}/>
                     </>
                 )}
 

@@ -20,7 +20,7 @@ class epoch_user_persistence(user_persistence):
             return None
         else:
             return user(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4], result[0][5],
-                        str(result[0][6]))
+                        str(result[0][6]), result[0][7])
 
     def get_user_by_id(self, user_id: int):
         connection = get_db_connection()
@@ -34,7 +34,7 @@ class epoch_user_persistence(user_persistence):
             return None
         else:
             return user(result[0][0], result[0][1], result[0][2], result[0][3], result[0][4], result[0][5],
-                        str(result[0][6]))
+                        str(result[0][6]), result[0][7])
 
     def add_user(self, new_user: user):
         connection = get_db_connection()
@@ -63,18 +63,37 @@ class epoch_user_persistence(user_persistence):
     def remove_user(self, username: str):
         connection = get_db_connection()
         cursor = connection.cursor()
+        cursor.execute(f"DELETE FROM followers WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}')")
+        connection.commit()
+        cursor.execute(f"DELETE FROM following WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}')")
+        connection.commit()
+        cursor.execute(f"DELETE FROM favorites WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}') or post_id = (SELECT post_id FROM posts WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}'))")
+        connection.commit()
+        cursor.execute(f"DELETE FROM comments WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}') or post_id = (SELECT post_id FROM posts WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}'))")
+        connection.commit()
+        cursor.execute(f"DELETE FROM votes WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}') or post_id = (SELECT post_id FROM posts WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}'))")
+        connection.commit()
+        cursor.execute(f"DELETE FROM posts WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}')")
+        connection.commit()
         cursor.execute(f"DELETE FROM users WHERE username = '{username}'")
         connection.commit()
         cursor.close()
         connection.close()
-        # im thinking this should update follower/following tables to remove user from there also 
 
     def update_user(self, id_to_update: int, data):
         connection = get_db_connection()
         cursor = connection.cursor()
-        print(data)
-        cursor.execute(
-            f"UPDATE users SET name = '{data.name}', username = '{data.username}', password = '{data.password}', bio = '{data.bio}', profile_pic = '{data.profile_pic_id}', background_pic = NULL WHERE user_id = {id_to_update}")
+        profile_pic_id = data.profile_pic_id
+        background_pic_id = data.background_pic_id
+
+        if data.profile_pic_id == -1:
+            profile_pic_id = "NULL"
+
+        if data.background_pic_id == -1:
+            background_pic_id = "NULL"
+
+
+        cursor.execute(f"UPDATE users SET name = '{data.name}', username = '{data.username}', password = '{data.password}', bio = '{data.bio}', profile_pic = '{profile_pic_id}', background_pic = {background_pic_id} WHERE user_id = {id_to_update}")
         connection.commit()
         cursor.close()
         connection.close()
@@ -115,6 +134,14 @@ class epoch_user_persistence(user_persistence):
         cursor.close()
         connection.close()
 
+    def update_user_background_pic(self, user_id: int, background_pic_id: int):
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"UPDATE users SET background_pic = {background_pic_id} WHERE user_id = {user_id}")
+        connection.commit()
+        cursor.close()
+        connection.close()
+
     def remove_user_by_id(self, user_id: int):
         connection = get_db_connection()
         cursor = connection.cursor()
@@ -122,11 +149,13 @@ class epoch_user_persistence(user_persistence):
         connection.commit()
         cursor.execute(f"DELETE FROM following WHERE user_id = {user_id}")
         connection.commit()
-        cursor.execute(f"DELETE FROM followers WHERE follower_id = {user_id}")
+        cursor.execute(f"DELETE FROM favorites WHERE user_id = {user_id} or post_id = (SELECT post_id FROM posts WHERE user_id = {user_id})")
         connection.commit()
-        cursor.execute(f"DELETE FROM following WHERE following_id = {user_id}")
+        cursor.execute(f"DELETE FROM comments WHERE user_id = {user_id} or post_id = (SELECT post_id FROM posts WHERE user_id = {user_id})")
         connection.commit()
-        cursor.execute(f"DELETE FROM favorites WHERE user_id = {user_id}")
+        cursor.execute(f"DELETE FROM votes WHERE user_id = {user_id} or post_id = (SELECT post_id FROM posts WHERE user_id = {user_id})")
+        connection.commit()
+        cursor.execute(f"DELETE FROM posts WHERE user_id = {user_id}")
         connection.commit()
         cursor.execute(f"DELETE FROM users WHERE user_id = {user_id}")
         connection.commit()
@@ -134,7 +163,10 @@ class epoch_user_persistence(user_persistence):
         result = cursor.fetchall()
 
         for row in result:
-            delete_file_from_bucket(row[0])
+            try:
+                delete_file_from_bucket(row[0])
+            except Exception as e:
+                pass
 
             if is_file_in_bucket(row[0]):
                 raise Exception("Failed to delete file from bucket")
