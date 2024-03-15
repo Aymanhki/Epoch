@@ -127,6 +127,18 @@
     font-weight: bold;
 }
 
+.follow-button:disabled{
+    background-color: grey;
+    color: aliceblue;
+    cursor: wait;
+}
+
+.follow-button:hover:disabled{
+    background-color: grey;
+    color: aliceblue;
+    cursor: wait;
+}
+
 .profile-feed {
     margin-bottom: 5rem;
     border-radius: 1%;
