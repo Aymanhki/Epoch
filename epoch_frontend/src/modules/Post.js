@@ -47,7 +47,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
 
     useEffect(() => {
-        const currentTime = new Date();
+        const now = new Date();
+        const currentTime = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
         const postTime = new Date(post.created_at);
         const initialTimeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
 
@@ -139,7 +140,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     }, [post.caption]);
 
     const postIsInThePast = () => {
-        const currentTime = new Date();
+        const now = new Date();
+        const currentTime = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
         const postTime = new Date(post.release);
         return currentTime >= postTime;
     }
