@@ -81,4 +81,5 @@ CREATE TABLE IF NOT EXISTS comments (
     created_at TIMESTAMP NOT NULL
 );
 
--- insert into media_content (content_type, file_name, path) values ('image/png', 'default_pfp.jpg', 'https://storage.googleapis.com/epoch-cloud-storage-media/epoch-media/default_pfp.png');
+-- insert into media_content (content_type, file_name, path) values ('image/png', 'default_pfp.png', 'https://storage.googleapis.com/epoch-cloud-storage-media/epoch-media/default_pfp.png');
+-- insert into media_content (content_type, file_name, path) values ('image/png', 'default_profile_background.png', 'https://storage.googleapis.com/epoch-cloud-storage-media/epoch-media/default_profile_background.png');

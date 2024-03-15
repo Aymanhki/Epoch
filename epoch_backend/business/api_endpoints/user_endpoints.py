@@ -1,8 +1,7 @@
 import datetime
 import json
 import re
-from ..utils import send_response, get_cors_headers, get_origin_from_headers, upload_file_to_cloud, \
-    download_file_from_cloud, is_file_in_bucket
+from ..utils import send_response, get_cors_headers, get_origin_from_headers, upload_file_to_cloud, download_file_from_cloud, is_file_in_bucket
 from ..db_controller.access_user_persistence import access_user_persistence
 from ..db_controller.access_media_persistence import access_media_persistence
 from ..db_controller.access_session_persistence import access_session_persistence
@@ -38,6 +37,9 @@ def post_user(conn, request_data):
         if user.profile_pic_id is None:
             access_user_persistence().update_user_profile_pic(user.id, 1)
 
+        if user.background_pic_id is None:
+            access_user_persistence().update_user_background_pic(user.id, 2)
+
         headers = {
             "Set-Cookie": f"epoch_session_id={session_id}; Expires={datetime.datetime.now() + datetime.timedelta(days=1)}; username={username}; Path=/",
         }
@@ -52,7 +54,6 @@ def post_user(conn, request_data):
 
 def get_user(conn, request_data, session_id):
     headers, body = request_data.split("\r\n\r\n", 1)
-
     content_length = 0
 
     for line in headers.split("\r\n"):
@@ -72,21 +73,38 @@ def get_user(conn, request_data, session_id):
 
         if user_fetch is not None and user_fetch.__dict__ is not None and len(user_fetch.__dict__) > 0:
             profile_pic_data = access_media_persistence().get_media(user_fetch.profile_pic_id)
+            background_pic_data = access_media_persistence().get_media(user_fetch.background_pic_id)
             profile_pic_url = None
+            background_pic_url = None
+
             if profile_pic_data is not None:
                 if is_file_in_bucket(profile_pic_data.path):
                     profile_pic_url = profile_pic_data.path
                 else:
                     profile_pic_url = access_media_persistence().get_media(1).path
-
-                user_info_with_pic = user_fetch.__dict__
-                user_info_with_pic["profile_pic_data"] = profile_pic_url
-                user_info_with_pic["profile_pic_type"] = profile_pic_data.content_type
-                user_info_with_pic["profile_pic_name"] = profile_pic_data.file_name
-                send_response(conn, 200, "OK", body=json.dumps(user_info_with_pic).encode('UTF-8'), headers=headers)
             else:
-                send_response(conn, 200, "OK, but did not find profile picture for the user",
-                              body=json.dumps(user_fetch.__dict__).encode('UTF-8'), headers=headers)
+                profile_pic_data = access_media_persistence().get_media(1)
+                profile_pic_url = profile_pic_data.path
+
+
+            if background_pic_data is not None:
+                if is_file_in_bucket(background_pic_data.path):
+                    background_pic_url = background_pic_data.path
+                else:
+                    background_pic_url = access_media_persistence().get_media(2).path
+            else:
+                background_pic_data = access_media_persistence().get_media(2)
+                background_pic_url = background_pic_data.path
+
+            user_info = user_fetch.__dict__
+            user_info["profile_pic_data"] = profile_pic_url
+            user_info["profile_pic_type"] = profile_pic_data.content_type
+            user_info["profile_pic_name"] = profile_pic_data.file_name
+            user_info["background_pic_data"] = background_pic_url
+            user_info["background_pic_type"] = background_pic_data.content_type
+            user_info["background_pic_name"] = background_pic_data.file_name
+
+            send_response(conn, 200, "OK", body=json.dumps(user_info).encode('UTF-8'), headers=headers)
         else:
             send_response(conn, 404, "Could not get the user information because the user was not found",
                           body=b"<h1>404 Not Found</h1>", headers=headers)
@@ -111,21 +129,37 @@ def get_user_from_name(conn, request_data):
 
     if user_fetch is not None and user_fetch.__dict__ is not None and len(user_fetch.__dict__) > 0:
         profile_pic_data = access_media_persistence().get_media(user_fetch.profile_pic_id)
+        background_pic_data = access_media_persistence().get_media(user_fetch.background_pic_id)
         profile_pic_url = None
+        background_pic_url = None
+
         if profile_pic_data is not None:
             if is_file_in_bucket(profile_pic_data.path):
                 profile_pic_url = profile_pic_data.path
             else:
                 profile_pic_url = access_media_persistence().get_media(1).path
-
-            user_info_with_pic = user_fetch.__dict__
-            user_info_with_pic["profile_pic_data"] = profile_pic_url
-            user_info_with_pic["profile_pic_type"] = profile_pic_data.content_type
-            user_info_with_pic["profile_pic_name"] = profile_pic_data.file_name
-            send_response(conn, 200, "OK", body=json.dumps(user_info_with_pic).encode('UTF-8'), headers=headers)
         else:
-            send_response(conn, 200, "OK, but did not find profile picture for the user",
-                          body=json.dumps(user_fetch.__dict__).encode('UTF-8'), headers=headers)
+            profile_pic_data = access_media_persistence().get_media(1)
+            profile_pic_url = profile_pic_data.path
+
+        if background_pic_data is not None:
+            if is_file_in_bucket(background_pic_data.path):
+                background_pic_url = background_pic_data.path
+            else:
+                background_pic_url = access_media_persistence().get_media(2).path
+        else:
+            background_pic_data = access_media_persistence().get_media(2)
+            background_pic_url = background_pic_data.path
+
+        user_info = user_fetch.__dict__
+        user_info["profile_pic_data"] = profile_pic_url
+        user_info["profile_pic_type"] = profile_pic_data.content_type
+        user_info["profile_pic_name"] = profile_pic_data.file_name
+        user_info["background_pic_data"] = background_pic_url
+        user_info["background_pic_type"] = background_pic_data.content_type
+        user_info["background_pic_name"] = background_pic_data.file_name
+
+        send_response(conn, 200, "OK", body=json.dumps(user_info).encode('UTF-8'), headers=headers)
     else:
         send_response(conn, 400, "Could not get the user information because the user was not found",
                       body=b"<h1>404 Not Found</h1>", headers=headers)
@@ -151,7 +185,7 @@ def register_user(conn, request_data):
     origin = get_origin_from_headers(headers)
 
     if access_user_persistence().get_user(username) is None:
-        new_user = user(None, name, username, password, bio, None, None)
+        new_user = user(None, name, username, password, bio, None, None, None)
         user_id = access_user_persistence().add_user(new_user)
 
         if user_id is not None:
@@ -203,7 +237,6 @@ def upload_profile_pic(conn, request_data):
 
         if media_id is not None and file_uploaded:
             access_user_persistence().update_user_profile_pic(user_id=user_id, profile_pic_id=media_id)
-            print(f"*************** File uploaded, media_id: {media_id}, path: {path}")
             send_response(conn, 200, "OK", body=json.dumps({"media_id": media_id}).encode('UTF-8'),
                           headers=get_cors_headers(origin))
         else:
@@ -280,28 +313,63 @@ def update_user_info(conn, request_data):
     try:
         data = json.loads(body)
         origin = get_origin_from_headers(headers)
-        print(f'{data}')
         id = data.get('userID')
+        username = data.get('username')
+        password = data.get('password')
+        bio = data.get('bio')
+        name = data.get('displayname')
+        profile_pic_id = data.get('profile_pic_id')
+        background_pic_id = data.get('background_pic_id')
+        new_profile_pic = data.get('new_profile_pic')
+        new_profile_pic_type = data.get('new_profile_pic_type')
+        new_profile_pic_name = data.get('new_profile_pic_name')
+        new_background_pic = data.get('new_background_pic')
+        new_background_pic_type = data.get('new_background_pic_type')
+        new_background_pic_name = data.get('new_background_pic_name')
+        created_at = data.get('created_at')
+
+
         required_fields = ['userID', 'username', 'displayname', 'bio', 'password', 'created_at', 'profile_pic_id']
         for field in required_fields:
             if field not in data:
-                send_response(conn, 400, "Bad Request", body=b"Missing required fields",
-                              headers=get_cors_headers(origin))
+                send_response(conn, 400, "Bad Request", body=b"Missing required fields", headers=get_cors_headers(origin))
                 return
+
         if len(data.get('displayname', '')) > 255 \
                 or not re.match(r'^[a-zA-Z0-9_.@$-]{1,49}$', data.get('username', '')) \
-                or not re.match(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$',
-                                data.get('password', '')):
+                or not re.match(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$', data.get('password', '')):
+
             send_response(conn, 400, "Bad Request", body=b"Invalid request data", headers=get_cors_headers(origin))
             return
 
         existing_user = access_user_persistence().get_user(data.get('username'))
 
         if existing_user is None or existing_user.id == id:
-            new_user = user(data.get('userID'), data.get('displayname'), data.get('username'), data.get('password'),
-                            data.get('bio'), data.get('profile_pic_id'), data.get('created_at'))
+            final_profile_pic_id = profile_pic_id
+            final_background_pic_id = background_pic_id
+
+            if new_profile_pic and int(profile_pic_id) == -1:
+                file_bytes = base64.b64decode(new_profile_pic)
+                path = upload_file_to_cloud(username, new_profile_pic_name, file=file_bytes, content_type=new_profile_pic_type)
+                new_profile_pic_media_id = access_media_persistence().add_media(media(new_profile_pic_type, new_profile_pic_name, id, path))
+                new_profile_pic_uploaded = is_file_in_bucket(path)
+
+                if new_profile_pic_uploaded:
+                    final_profile_pic_id = new_profile_pic_media_id
+
+            if new_background_pic and int(background_pic_id) == -1:
+                file_bytes = base64.b64decode(new_background_pic)
+                path = upload_file_to_cloud(username, new_background_pic_name, file=file_bytes, content_type=new_background_pic_type)
+                new_background_pic_media_id = access_media_persistence().add_media(media(new_background_pic_type, new_background_pic_name, id, path))
+                new_background_pic_uploaded = is_file_in_bucket(path)
+
+                if new_background_pic_uploaded:
+                    final_background_pic_id = new_background_pic_media_id
+
+
+            new_user = user(id, name, username, password, bio, final_profile_pic_id, created_at, final_background_pic_id)
             access_user_persistence().update_user(id, new_user)
-            send_response(conn, 200, "OK", body=b"", headers=get_cors_headers(origin))
+            send_response(conn, 200, "OK", body=b"<h1>200 OK</h1>", headers=get_cors_headers(origin))
         else:
             send_response(conn, 409, "Username already exist", body=b"<h1>409 Conflict</h1>",
                           headers=get_cors_headers(origin))
