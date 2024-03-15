@@ -86,14 +86,14 @@ class epoch_user_persistence(user_persistence):
         profile_pic_id = data.profile_pic_id
         background_pic_id = data.background_pic_id
 
-        if data.profile_pic_id == -1:
+        if profile_pic_id is None or profile_pic_id == -1:
             profile_pic_id = "NULL"
 
-        if data.background_pic_id == -1:
+        if background_pic_id is None or background_pic_id == -1:
             background_pic_id = "NULL"
 
 
-        cursor.execute(f"UPDATE users SET name = '{data.name}', username = '{data.username}', password = '{data.password}', bio = '{data.bio}', profile_pic = '{profile_pic_id}', background_pic = {background_pic_id} WHERE user_id = {id_to_update}")
+        cursor.execute(f"UPDATE users SET name = '{data.name}', username = '{data.username}', password = '{data.password}', bio = '{data.bio}', profile_pic = {profile_pic_id}, background_pic = {background_pic_id} WHERE user_id = {id_to_update}")
         connection.commit()
         cursor.close()
         connection.close()

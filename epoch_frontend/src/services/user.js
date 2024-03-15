@@ -321,47 +321,45 @@ function updateUser(userId, newUserInfo) {
             }
         };
 
-        const toSend = JSON.stringify(newUserInfo);
+        if(newUserInfo.new_profile_pic && newUserInfo.new_background_pic) {
+            const profilePicReader = new FileReader();
+            profilePicReader.onload = () => {
+                const profilePicData = profilePicReader.result.split(',')[1];
+                newUserInfo.new_profile_pic = profilePicData;
+                const backgroundPicReader = new FileReader();
+                backgroundPicReader.onload = () => {
+                    const backgroundPicData = backgroundPicReader.result.split(',')[1];
+                    newUserInfo.new_background_pic = backgroundPicData;
+                    xhr.send(JSON.stringify(newUserInfo));
+                };
+                backgroundPicReader.readAsDataURL(newUserInfo.new_background_pic);
+            };
+            profilePicReader.readAsDataURL(newUserInfo.new_profile_pic);
+            return;
+        }
+        else if(newUserInfo.new_profile_pic) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const fileData = reader.result.split(',')[1];
+                newUserInfo.new_profile_pic = fileData;
+                xhr.send(JSON.stringify(newUserInfo));
 
-        let profileLoaded = false;
-        let backgroundLoaded = false;
-
-        function sendRequestIfReady() {
-            if (profileLoaded && backgroundLoaded) {
-                xhr.send(toSend);
-            }
+            };
+            reader.readAsDataURL(newUserInfo.new_profile_pic);
+            return;
+        }
+        else if(newUserInfo.new_background_pic) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const fileData = reader.result.split(',')[1];
+                newUserInfo.new_background_pic = fileData;
+                xhr.send(JSON.stringify(newUserInfo));
+            };
+            reader.readAsDataURL(newUserInfo.new_background_pic);
+            return;
         }
 
-        if (newUserInfo.new_profile_pic) {
-            const readerProfile = new FileReader();
-
-            readerProfile.onload = function () {
-                newUserInfo.new_profile_pic = readerProfile.result.split(',')[1];
-                profileLoaded = true;
-                sendRequestIfReady();
-            }
-
-            readerProfile.readAsDataURL(newUserInfo.new_profile_pic);
-        } else {
-            profileLoaded = true;
-            sendRequestIfReady();
-        }
-
-        if (newUserInfo.new_background_pic) {
-            const readerBackground = new FileReader();
-
-            readerBackground.onload = function () {
-                newUserInfo.new_background_pic = readerBackground.result.split(',')[1];
-                backgroundLoaded = true;
-                sendRequestIfReady();
-            }
-
-            readerBackground.readAsDataURL(newUserInfo.new_background_pic);
-        } else {
-            backgroundLoaded = true;
-            sendRequestIfReady();
-        }
-
+        xhr.send(JSON.stringify(newUserInfo));
     });
 }
 
