@@ -57,12 +57,12 @@ function Profile() {
     function clickedFollow(target, isFollowing) {
         if (isFollowing) {
             unfollowAccount(target);
-            setIsFollowingPrompt('Follow');
+            setIsFollowingPrompt('Please wait...');
             setIsFollowing(false);
             setFollowerCount("...");
         } else {
             followAccount(target);
-            setIsFollowingPrompt('Unfollow');
+            setIsFollowingPrompt('Please wait...');
             setIsFollowing(true);
             setFollowerCount("...");
         }
@@ -176,6 +176,12 @@ function Profile() {
                     setFollowingList(data[2]);
                     setFollowerList(data[3]);
                     setIsLoading(false);
+                    if(isFollowing) {
+                        setIsFollowingPrompt('Unfollow');
+                    }
+                    else {
+                        setIsFollowingPrompt('Follow')
+                    }
                 })
                 .catch(error => {
                         console.log("Error fetching follower list:", error);
@@ -264,7 +270,7 @@ function Profile() {
 
                             ) : (
                                 <button className={"follow-button"}
-                                        onClick={clickedFollow.bind(this, viewedId, isFollowing)}> {isFollowingPrompt} </button>
+                                        onClick={clickedFollow.bind(this, viewedId, isFollowing)}disabled={followerCount === "..."}> {isFollowingPrompt} </button>
                             )
                         )}
                         <div className="counts-wrapper">

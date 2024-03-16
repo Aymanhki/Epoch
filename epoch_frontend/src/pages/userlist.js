@@ -79,7 +79,7 @@ function Userlist() {
 
     return (
         <>
-            {user && (
+            {user ? (
                 isLoading ? <Spinner/> : (
                     <>
                         <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
@@ -113,7 +113,7 @@ function Userlist() {
 
                     </>
                 )
-            )}
+            ):navigate("/epoch/home")}
         </>
     );
 }

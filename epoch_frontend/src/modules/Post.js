@@ -17,7 +17,7 @@ import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
     const captionCharLimit = 240;
     const timeAllowedToEditInSeconds = 180;
-    const [editable, setEditable] = useState(true);
+    const [editable, setEditable] = useState(false);
     const [editing, setEditing] = useState(false);
     const [truncatedCaption, setTruncatedCaption] = useState((post && post.caption) ? post.caption.slice(0, captionCharLimit) + '...' : '');
     const [showFullCaption, setShowFullCaption] = useState(false);
@@ -53,7 +53,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         const postTime = new Date(post.created_at);
         const initialTimeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
 
-        setEditable(initialTimeDifferenceInSeconds <= timeAllowedToEditInSeconds);
+        //setEditable(initialTimeDifferenceInSeconds <= timeAllowedToEditInSeconds);
 
         const timerInterval = setInterval(() => {
             const currentTime = new Date();
