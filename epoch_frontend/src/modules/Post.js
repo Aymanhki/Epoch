@@ -11,6 +11,7 @@ import PostPopup from "./PostPopup";
 import ArrowCircleUpSharpIcon from '@mui/icons-material/ArrowCircleUpSharp';
 import ArrowCircleDownSharpIcon from '@mui/icons-material/ArrowCircleDownSharp';
 import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../services/post";
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 
 
 export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
@@ -546,7 +547,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     )}
 
                     {((!showCommentsSection) && postViewer) && (
-                        <button className={"view-comments-button"} onClick={() => navigate(`/epoch/comments/${post.post_id}`)}>View Comments</button>
+                        <button className={"view-comments-button"} onClick={() => navigate(`/epoch/comments/${post.post_id}`)}><ForumOutlinedIcon/></button>
                     )}
                     
                     {postViewer && (
