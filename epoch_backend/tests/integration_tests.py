@@ -288,7 +288,8 @@ class integration_tests(unittest.TestCase):
         WebDriverWait(driver, default_element_wait_timeout).until(
             lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
         driver.get("http://localhost:3000/profile")
-        WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: self.name in driver.page_source)
+        WebDriverWait(driver, default_element_wait_timeout).until(
+            lambda driver: driver.find_element(By.CLASS_NAME, "profile-delete-account-button") is not None)
         delete = driver.find_element(By.CLASS_NAME, "profile-delete-account-button")
         delete.click()
         WebDriverWait(driver, default_element_wait_timeout).until(
