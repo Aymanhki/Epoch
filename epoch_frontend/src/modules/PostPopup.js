@@ -57,19 +57,17 @@ export default function PostPopup({
 
         if (selectedFile) {
             if (!allowedFileTypes.includes(selectedFile.type.split('/')[1]) ) {
-                alert("Unsupported file type, try: .jpg, .jepg, .png, .mp4, .mp3, .gif");
+                setErrorMessage("Unsupported file type: \""+ (selectedFile.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .mp4, .mp3, .gif");
                 setError(true);
-                setErrorMessage("Unsupported file type, try: .jpg, .jpeg, .png, .mp4, .mp3, .gif");
             }
             else if (selectedFile.size > maxImageBytes && selectedFile.type.split('/')[1] !== "mp4") {
-                alert("Image File Size too Big: Max Image Size is 30Mb");
+                var message = "Image File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > 30Mb"
+                setErrorMessage( message );
                 setError(true);
-                setErrorMessage("Image File Size too Big: ", selectedFile.size, " > 30Mb" );
             }
             else if (selectedFile.size > maxVideoBytes && selectedFile.type.split('/')[1] === "mp4") {
-                alert("Video File Size too Big: Max Video Size is 200Mb");
+                setErrorMessage("Video File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > 200Mb");
                 setError(true);
-                setErrorMessage("Video File Size too Big: ", selectedFile.size, " > 200Mb");
             }
             else {
                 setUploadedFile(selectedFile);
@@ -78,10 +76,9 @@ export default function PostPopup({
                 if (editPost) {
                     setEditPostFileChanged(true);
                 }
+                setError(false);
             }
         }
-
-        setError(false);
     };
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
