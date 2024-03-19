@@ -273,27 +273,19 @@ class integration_tests(unittest.TestCase):
         driver.delete_cookie("epoch_session_id")
 
     def test_3_delete_account(self):
-        driver = self.driver
-        driver.get("http://localhost:3000/login")
-        WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.ID, "login-button") is not None)
-        username = driver.find_element(By.NAME, "username")
-        username.send_keys(self.username)
-        password = driver.find_element(By.NAME, "password")
-        password.send_keys(self.password)
-        login = driver.find_element(By.ID, "login-button")
-        login.click()
-        WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.get_cookie("epoch_session_id") is not None)
-        driver.get("http://localhost:3000/profile")
-        WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.ID, "profile-delete-account-button") is not None)
-        delete = driver.find_element(By.ID, "profile-delete-account-button")
-        delete.click()
-        WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.ID, "delete-account-button-yes") is not None)
-        yes = driver.find_element(By.ID, "delete-account-button-yes")
-        yes.click()
+        response = requests.post('http://localhost:8080/api/login/',
+                                 json={'username': self.username, 'password': self.password})
+        session_id =(response.text.split('=')[1])
+        response = requests.get('http://localhost:8080/api/user/', 
+                                cookies={'epoch_session_id': session_id},
+                                headers={"User-Id": self.username})
+        response_json = response.json()
+        user_id =response_json["id"]
+        response = requests.delete('http://localhost:8080/api/delete/userId/', 
+                                   json={'userId': user_id},
+                                   cookies={'epoch_session_id': session_id})
+        self.assertEqual(response.status_code, 200)
+        
 
 if __name__ == "__main__":
     unittest.main()
