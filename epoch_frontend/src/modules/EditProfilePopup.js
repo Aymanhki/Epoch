@@ -33,6 +33,10 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
     const [removableBackgroundPic, setRemovableBackgroundPic] = useState(backgroundPicId !== 1 && backgroundPicId !== 2 && backgroundPicId !== null);
     const [removedOldProfilePic, setRemovedOldProfilePic] = useState(false);
     const [removedOldBackgroundPic, setRemovedOldBackgroundPic] = useState(false);
+    const [profilePicError, setProfilePicError] = useState(false);
+    const [backgroundPicError, setBackgroundPicError] = useState(false);
+    const [profilePicErrorPrompt, setProfilePicErrorMessage] = useState('');
+    const [backgroundPicErrorPromt, setBackgroundPicErrorMessage] = useState('');
     const usernameRef = useRef(null);
     const displaynameRef = useRef(null);
     const bioRef = useRef(null);
@@ -40,7 +44,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
     const newPasswordRef = useRef(null);
     const maxImageBytes = 30000001;
     const maxVideoBytes = 200000001;
-    const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif"]
+    const allowedFileTypes = ["jpg", "jpeg", "png", "gif"]
 
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
@@ -71,6 +75,8 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
             setGeneralError(false);
             setGeneralErrorMessage('');
             setFormDataChanged(false);
+            setBackgroundPicError(false);
+            setProfilePicError(false);
         }
     }, [showEditProfilePopup]);
 
@@ -296,15 +302,15 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
 
         if(!file) {return;}
         if (!allowedFileTypes.includes(file.type.split('/')[1]) ) {
-            alert("Unsupported file type, try: .jpg, .jepg, .png, .mp4, .mp3, .gif");
+            setProfilePicErrorMessage("Unsupported file type: \""+ (file.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .gif");
+            setProfilePicError(true);
         }
-        else if (file.size > maxImageBytes && file.type.split('/')[1] !== "mp4") {
-            alert("Image File Size too Big: Max Image Size is 30Mb");
-        }
-        else if (file.size > maxVideoBytes && file.type.split('/')[1] === "mp4") {
-            alert("Video File Size too Big: Max Video Size is 200Mb");
+        else if (file.size > maxImageBytes) {
+            setProfilePicErrorMessage("Image File Size too Big: " + Math.round((file.size)/(1000000)) + "Mb > 30Mb");
+            setProfilePicError(true);
         }
         else {
+            setProfilePicError(false);
             setProfilePicFile(file);
             setRemovableProfilePic(true);
             setFormDataChanged(true);
@@ -316,15 +322,15 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
 
         if(!file) {return;}
         if (!allowedFileTypes.includes(file.type.split('/')[1]) ) {
-            alert("Unsupported file type, try: .jpg, .jepg, .png, .mp4, .mp3, .gif");
+            setBackgroundPicErrorMessage("Unsupported file type: \""+ (file.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .gif");
+            setBackgroundPicError(true);
         }
-        else if (file.size > maxImageBytes && file.type.split('/')[1] !== "mp4") {
-            alert("Image File Size too Big: Max Image Size is 30Mb");
-        }
-        else if (file.size > maxVideoBytes && file.type.split('/')[1] === "mp4") {
-            alert("Video File Size too Big: Max Video Size is 200Mb");
+        else if (file.size > maxImageBytes) {
+            setBackgroundPicErrorMessage("Image File Size too Big: " + Math.round((file.size)/(1000000)) + "Mb > 30Mb");
+            setBackgroundPicError(true);
         }
         else {
+            setBackgroundPicError(false);
             setBackgroundPicFile(file);
             setRemovableBackgroundPic(true);
             setFormDataChanged(true);
@@ -399,6 +405,11 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                             </div>
 
                             <label htmlFor="profilePic">Profile Picture:</label>
+                            {profilePicError && (
+                                    <div className="profile-pic-popup-error">
+                                        {profilePicErrorPrompt}
+                                    </div>
+                                )}
                             <div className={"edit-popup-profile-pic-change-container"}>
 
                                 <div className={"edit-popup-profile-pic-container"}>
@@ -431,6 +442,11 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                             </div>
 
                             <label htmlFor="backgroundPic">Background Picture:</label>
+                            {backgroundPicError && (
+                                    <div className="background-pic-popup-error">
+                                        {backgroundPicErrorPromt}
+                                    </div>
+                                )}
                             <div className={"edit-popup-background-pic-change-container"}>
 
 
