@@ -178,12 +178,23 @@ def register_user(conn, request_data):
         body += conn.recv(1024).decode('UTF-8')
 
     data = json.loads(body)
+    required_fields = ['username', 'password', 'bio', 'name']
+    for field in required_fields:
+        if field not in data:
+            send_response(conn, 400, "Bad Request", body=b"Missing required fields", headers=get_cors_headers(origin))
+            return
+    
     username = data.get("username")
     password = data.get("password")
     bio = data.get("bio")
     name = data.get("name")
     origin = get_origin_from_headers(headers)
-
+    if len(name) > 255 \
+        or not re.match(r'^[a-zA-Z0-9_.@$-]{1,49}$', username) \
+        or not re.match(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$', password):
+        send_response(conn, 400, "Bad Request", body=b"Invalid request data", headers=get_cors_headers(origin))
+        return
+    
     if access_user_persistence().get_user(username) is None:
         new_user = user(None, name, username, password, bio, None, None, None)
         user_id = access_user_persistence().add_user(new_user)
@@ -345,7 +356,7 @@ def update_user_info(conn, request_data):
                 send_response(conn, 400, "Bad Request", body=b"Missing required fields", headers=get_cors_headers(origin))
                 return
 
-        if len(data.get('displayname', '')) > 255 \
+        if len(data.get('displayname', '')) > 255\
                 or not re.match(r'^[a-zA-Z0-9_.@$-]{1,49}$', data.get('username', '')) \
                 or not re.match(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$', data.get('password', '')):
 

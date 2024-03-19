@@ -45,7 +45,7 @@ function Register() {
 
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$/;
         const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
-
+        
 
         if (!password.match(passwordRegex)) {
             setPasswordError(true);
@@ -73,7 +73,7 @@ function Register() {
             setNameError(false);
             wrongName = false;
         }
-
+        
 
         if (!wrongUsername && !wrongPassword && !wrongName) {
 
