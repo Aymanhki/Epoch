@@ -45,9 +45,8 @@ function Home() {
 
 
     if (redirectToLogin && isMounted.current) {
-        //window.location.href = "/epoch/login";
-        navigate('/epoch/login');
-        return <div><h2>User Not Signed In</h2></div>;
+        window.location.href = "/epoch/login";
+        //return <div><h2>User Not Signed In</h2>{navigate('/epoch/login')}</div>;
     }
 
     if (!user) {
