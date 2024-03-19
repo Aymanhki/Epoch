@@ -32,8 +32,8 @@ class webserver_tests(unittest.TestCase):
     # allow us to go in manually if something happens when deleting this account
     username = "WebserverTests" # str(uuid.uuid4())
     password = "Newuser1!" # str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    bio = str(uuid.uuid4())
+    name = "some name"
+    bio = "a big long bio"
     post_creation_time = '2024-02-22T06:36:12.653Z'
     user_to_follow_id = None
 
