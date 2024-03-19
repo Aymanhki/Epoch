@@ -240,6 +240,20 @@
     margin: 0;
 }
 
+.profile-pic-popup-error{
+    color: red;
+    font-size: small;
+    padding: 0;
+    margin: 0;
+}
+
+.background-pic-popup-error{
+    color: red;
+    font-size: small;
+    padding: 0;
+    margin: 0;
+}
+
 .edit-popup-footer button {
     padding: 0.5rem 1rem;
     border-radius: 1rem;
