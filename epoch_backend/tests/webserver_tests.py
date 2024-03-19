@@ -87,9 +87,11 @@ class webserver_tests(unittest.TestCase):
 
     def test_a_register_user(self):
         # delete our test account if its for some reason still in db
+        self.register_test_user()
         response = requests.delete('http://localhost:8080/api/delete/userId/', 
-                                   json={'userId': user_id},
-                                   cookies={'epoch_session_id': session_id})
+                                   json={'userId': self.get_user_id()},
+                                   cookies={'epoch_session_id': self.get_session_id()})
+                                   
         print("Registering user...")
         response = requests.post('http://localhost:8080/api/register/',
                                  json={'username': self.username, 'password': self.password, 'name': self.name,
