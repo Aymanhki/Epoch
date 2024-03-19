@@ -52,9 +52,6 @@ function getAccountList() {
 function getFollowingList(targetAcc) {
     const session_id = getCookie('epoch_session_id');
 
-    if (!session_id) {
-        return;
-    }
     return new Promise((resolve, reject) => {
         var http = new XMLHttpRequest();
         const currentLocation = window.location;
@@ -100,9 +97,6 @@ function getFollowingList(targetAcc) {
 function getFollowerList(targetAcc) {
     const session_id = getCookie('epoch_session_id');
 
-    if (!session_id) {
-        return;
-    }
     return new Promise((resolve, reject) => {
         var http = new XMLHttpRequest();
         const currentLocation = window.location;

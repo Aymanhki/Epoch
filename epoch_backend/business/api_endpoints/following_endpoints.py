@@ -16,13 +16,13 @@ def get_account_list(session_id, session_persistence, user_persistence):
 
 def get_following_list(session_id, session_persistence, user_persistence, target):
     try:
-        user_id_l = session_persistence.get_user_by_session_id(session_id)
-        user_id = [int(l[0]) for l in user_id_l][0]  # convert what is returned to an int
+        if target == "self":
+            user_id_l = session_persistence.get_user_by_session_id(session_id)
+            user_id = [int(l[0]) for l in user_id_l][0]  # convert what is returned to an int
+        else:
+            user_id = int(target)
     except:
         return ([500, "No valid session", b"<h1>500 Internal Server Error</h1>"])
-
-    if target != "self":
-        user_id = int(target)
 
     try:
         followingList = user_persistence.get_following(user_id)
@@ -33,13 +33,13 @@ def get_following_list(session_id, session_persistence, user_persistence, target
 
 def get_follower_list(session_id, session_persistence, user_persistence, target):
     try:
-        user_id_l = session_persistence.get_user_by_session_id(session_id)
-        user_id = [int(l[0]) for l in user_id_l][0]  # convert what is returned to an int
+        if target == "self":
+            user_id_l = session_persistence.get_user_by_session_id(session_id)
+            user_id = [int(l[0]) for l in user_id_l][0]  # convert what is returned to an int
+        else:
+            user_id = int(target)
     except:
         return ([500, "No valid session", b"<h1>500 Internal Server Error</h1>"])
-
-    if target != "self":
-        user_id = int(target)
 
     try:
         followerList = user_persistence.get_followers(user_id)
