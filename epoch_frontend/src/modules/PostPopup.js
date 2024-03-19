@@ -61,12 +61,11 @@ export default function PostPopup({
                 setError(true);
             }
             else if (selectedFile.size > maxImageBytes && selectedFile.type.split('/')[1] !== "mp4") {
-                var message = "Image File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > 30Mb"
-                setErrorMessage( message );
+                setErrorMessage( "Image File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > "+ Math.round((maxImageBytes)/(1000000)) +"Mb" );
                 setError(true);
             }
             else if (selectedFile.size > maxVideoBytes && selectedFile.type.split('/')[1] === "mp4") {
-                setErrorMessage("Video File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > 200Mb");
+                setErrorMessage("Video File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > "+ Math.round((maxVideoBytes)/(1000000)) +"Mb");
                 setError(true);
             }
             else {

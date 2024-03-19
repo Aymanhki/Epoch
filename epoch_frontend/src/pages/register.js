@@ -27,8 +27,7 @@ function Register() {
     const fileInputRef = React.createRef();
     const navigate = useNavigate();
     const maxImageBytes = 30000001;
-    const maxVideoBytes = 200000001;
-    const allowedFileTypes = ["jpg", "jpeg", "png", "gif"]
+    const allowedFileTypes = ["jpg", "jpeg", "png", "gif", "HEIC", "heic", "JPG", "JPEG", "PNG", "GIF"];
 
     const handleProfilePicChange = async (e) => {
         const file = e.target.files[0];
@@ -42,7 +41,7 @@ function Register() {
             setGeneralError(true);
         }
         else if (file.size > maxImageBytes) {
-            setGeneralErrorPrompt("Image File Size too Big: " + Math.round((file.size)/(1000000)) + "Mb > 30Mb");
+            setGeneralErrorPrompt("Image File Size too Big: " + Math.round((file.size)/(1000000)) + "Mb > "+ Math.round((maxImageBytes)/(1000000)) +"Mb");
             setGeneralError(true);
         }
         else {
