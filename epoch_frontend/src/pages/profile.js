@@ -170,6 +170,31 @@ function Profile() {
                     setIsLoading(false);
                 });
         }
+        else
+        {
+            setFollowDefaults();
+
+            if (user.username === username || username === "profile") {
+                setUserInfo(user);
+                setIsCurrentUser(true);
+            }
+            else
+            {
+                setIsCurrentUser(false);
+
+                getUsernameInfo(username)
+                    .then(data => {
+                        setUserInfo(data);
+                        setViewedID(data.id);
+                    })
+                    .catch(error => {
+                        setIsLoading(false);
+                        setUserNotFound(true);
+                    });
+            }
+
+            setIsLoading(false);
+        }
     }, [setIsLoading, setIsCurrentUser, updateUser, user, username]);
 
     useEffect(() => {

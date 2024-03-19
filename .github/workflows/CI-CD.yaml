@@ -52,10 +52,10 @@ jobs:
             cp credentials/virtual-bonito-412515-d7dae3104a12.json Epoch/epoch_backend/assets/
             cp credentials/fullchain.pem Epoch/epoch_backend/assets/
             cp credentials/privkey.pem Epoch/epoch_backend/assets/
-            cp credentials/db_params.json Epoch/epoch_frontend/assets/
-            cp credentials/virtual-bonito-412515-d7dae3104a12.json Epoch/epoch_frontend/assets/
-            cp credentials/fullchain.pem Epoch/epoch_frontend/assets/
-            cp credentials/privkey.pem Epoch/epoch_frontend/assets/
+            cp credentials/db_params.json Epoch/epoch_frontend/
+            cp credentials/virtual-bonito-412515-d7dae3104a12.json Epoch/epoch_frontend/
+            cp credentials/fullchain.pem Epoch/epoch_frontend/
+            cp credentials/privkey.pem Epoch/epoch_frontend/
             cd Epoch/epoch_frontend/
             npm install
             cd ..
