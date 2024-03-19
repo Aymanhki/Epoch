@@ -97,8 +97,8 @@ describe('Input Field Validation', () => {
         }, {timeout: DEFAULT_WAIT_TIME});
 
         // type a username and password using uuid
-        const username = v4();
-        const password = v4();
+        const username = v4().substring(0, 20);
+        const password = "ThisIsAValidPassword1!"
 
         const usernameInput = screen.getByTestId("username-input-field");
         fireEvent.change(usernameInput, {target: {value: username}});
@@ -133,9 +133,9 @@ describe('Input Field Validation', () => {
         }, {timeout: DEFAULT_WAIT_TIME});
 
         // type a username and password using uuid
-        const name = v4();
-        const username = v4();
-        const password = v4() + "A1!";
+        const name = "Test User";
+        const username = v4().substring(0, 20);
+        const password = "ThisIsAValidPassword1!";
 
         const nameInput = screen.getByTestId("name-input-field");
         fireEvent.change(nameInput, {target: {value: name}});
