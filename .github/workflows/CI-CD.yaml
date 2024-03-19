@@ -6,7 +6,28 @@ on:
       - main
 
 jobs:
+  security-scan:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args:
+            -Dsonar.projectKey=Aymanhki_Epoch
+            -Dsonar.organization=aymanhki
+
+
   test-new-build:
+    needs: security-scan
     runs-on: ubuntu-latest
 
     steps:
@@ -256,7 +277,7 @@ jobs:
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
             docker tag epoch_frontend:$VERSION $DOCKER_USERNAME/epoch_frontend:$VERSION
             docker push $DOCKER_USERNAME/epoch_frontend:$VERSION
-            docker run -d -p 80:80 -p 443:443 epoch_frontend:$VERSION
+            docker run -d -p 443:443 epoch_frontend:$VERSION
             exit
           EOF
         env:

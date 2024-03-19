@@ -4,6 +4,7 @@ import '../styles/PostPopup.css';
 import SmartMedia from "./SmartMedia";
 import {newPost, updatePost} from "../services/post.js"
 import {useSpring, animated} from 'react-spring';
+import {useNavigate} from "react-router-dom";
 
 
 export default function PostPopup({
@@ -23,6 +24,9 @@ export default function PostPopup({
                                       postId,
                                       userId
                                   }) {
+    const maxImageBytes = 30000001;
+    const maxVideoBytes = 200000001;
+    const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif"]
     const [uploadedFile, setUploadedFile] = useState((editPost && postFile) ? postFile : null);
     const [postText, setPostText] = useState((editPost && caption) ? caption : null);
     const [postNow, setPostNow] = useState(false);
@@ -45,20 +49,36 @@ export default function PostPopup({
     const [hasUploadedFile, setHasUploadedFile] = useState((editPost && postFile) ? true : false);
     const [editPostFileChanged, setEditPostFileChanged] = useState(false);
     const [editPostFileRemoved, setEditPostFileRemoved] = useState(false);
+    const checkBoxRef = React.createRef();
+    const navigate = useNavigate();
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
 
         if (selectedFile) {
-            setUploadedFile(selectedFile);
-            setHasUploadedFile(true);
+            if (!allowedFileTypes.includes(selectedFile.type.split('/')[1]) ) {
+                setErrorMessage("Unsupported file type: \""+ (selectedFile.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .mp4, .mp3, .gif");
+                setError(true);
+            }
+            else if (selectedFile.size > maxImageBytes && selectedFile.type.split('/')[1] !== "mp4") {
+                var message = "Image File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > 30Mb"
+                setErrorMessage( message );
+                setError(true);
+            }
+            else if (selectedFile.size > maxVideoBytes && selectedFile.type.split('/')[1] === "mp4") {
+                setErrorMessage("Video File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > 200Mb");
+                setError(true);
+            }
+            else {
+                setUploadedFile(selectedFile);
+                setHasUploadedFile(true);
 
-            if (editPost) {
-                setEditPostFileChanged(true);
+                if (editPost) {
+                    setEditPostFileChanged(true);
+                }
+                setError(false);
             }
         }
-
-        setError(false);
     };
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
@@ -207,8 +227,12 @@ export default function PostPopup({
 
                         setPosting(false);
                     })
-                        .catch((error) => {
-                            setPosting(false)
+                        .catch((error) => {              
+                            if (error.startsWith("No session cookie found") || error.startsWith("Connection refused")) {
+                                // if not logged in or session expired a reload will kick them back to login but only if thats the error we get
+                                window.location.reload();
+                            }
+                            setPosting(false);
                             resetState();
                             setErrorMessage(error);
                             setError(true);
@@ -237,11 +261,16 @@ export default function PostPopup({
                             setShowPopup(false);
                             resetState();
                             setRefreshFeed(true);
+                            navigate("/epoch/profile");
                         }, 2000);
 
                         setPosting(false);
                     })
                         .catch((error) => {
+                            if (error.startsWith("No session cookie found") || error.startsWith("Connection refused")) {
+                                // if not logged in or session expired a reload will kick them back to login 
+                                window.location.reload();
+                            }
                             setPosting(false)
                             resetState();
                             setErrorMessage(error);
@@ -295,7 +324,7 @@ export default function PostPopup({
                             <div className={'uploaded-file-preview'}>
                                 <input
                                     type="file"
-                                    accept="image/*, audio/*, video/*"
+                                    accept=".png,.jpg,.jpeg,.mp4,.mp3,.gif"
                                     onChange={handleFileChange}
                                     style={{
                                         width: '100%',
@@ -322,9 +351,9 @@ export default function PostPopup({
                         <div className={'schedule-checkbox-wrapper'}>
                             <input
                                 className={`schedule-checkbox ${postNow ? 'checked' : ''} ${posting ? 'disabled' : ''}`}
-                                type="checkbox"
+                                type="checkbox" ref={checkBoxRef}
                                 checked={postNow} onChange={handleCheckboxChange}/>
-                            <label className={'schedule-checkbox-label'}>Do you want to post this now?</label>
+                            <label className={'schedule-checkbox-label'} onClick={() => {checkBoxRef.current.click()}}>Do you want to post this now?</label>
                         </div>
 
                         <div className={'schedule-options'}>

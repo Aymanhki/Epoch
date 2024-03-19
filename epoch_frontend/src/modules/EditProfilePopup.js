@@ -38,6 +38,9 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
     const bioRef = useRef(null);
     const currentPasswordRef = useRef(null);
     const newPasswordRef = useRef(null);
+    const maxImageBytes = 30000001;
+    const maxVideoBytes = 200000001;
+    const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif"]
 
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
@@ -73,6 +76,16 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
+
+        // if the bio is being changes, nothing should happen if the length is greater than 240
+
+        if (name === 'bio' && value.length > 240) {
+            setBioError(true);
+            setBioErrorMessage('Bio must be less than 240 characters');
+            bioRef.current.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
         setFormData({
             ...formData,
             [name]: value
@@ -108,6 +121,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
             let invalidUsername = false;
             let invalidDisplayname = false;
             let invalidPassword = false;
+            let invalidBio = false;
             const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$/;
             const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
 
@@ -126,6 +140,15 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                 setDisplaynameErrorMessage('Name must be between 1 and 254 characters');
                 displaynameRef.current.scrollIntoView({ behavior: 'smooth' });
                 displaynameRef.current.focus();
+                return;
+            }
+
+            if (formData.bio > 240) {
+                invalidBio = true;
+                setBioError(true);
+                setBioErrorMessage('Bio must be less than 240 characters');
+                bioRef.current.scrollIntoView({ behavior: 'smooth' });
+                bioRef.current.focus();
                 return;
             }
 
@@ -292,20 +315,40 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
         const file = e.target.files[0];
 
         if(!file) {return;}
-
-        setProfilePicFile(file);
-        setRemovableProfilePic(true);
-        setFormDataChanged(true);
+        if (!allowedFileTypes.includes(file.type.split('/')[1]) ) {
+            alert("Unsupported file type, try: .jpg, .jepg, .png, .mp4, .mp3, .gif");
+        }
+        else if (file.size > maxImageBytes && file.type.split('/')[1] !== "mp4") {
+            alert("Image File Size too Big: Max Image Size is 30Mb");
+        }
+        else if (file.size > maxVideoBytes && file.type.split('/')[1] === "mp4") {
+            alert("Video File Size too Big: Max Video Size is 200Mb");
+        }
+        else {
+            setProfilePicFile(file);
+            setRemovableProfilePic(true);
+            setFormDataChanged(true);
+        }
     }
 
     const onBackgroundPicChange = (e) => {
         const file = e.target.files[0];
 
         if(!file) {return;}
-
-        setBackgroundPicFile(file);
-        setRemovableBackgroundPic(true);
-        setFormDataChanged(true);
+        if (!allowedFileTypes.includes(file.type.split('/')[1]) ) {
+            alert("Unsupported file type, try: .jpg, .jepg, .png, .mp4, .mp3, .gif");
+        }
+        else if (file.size > maxImageBytes && file.type.split('/')[1] !== "mp4") {
+            alert("Image File Size too Big: Max Image Size is 30Mb");
+        }
+        else if (file.size > maxVideoBytes && file.type.split('/')[1] === "mp4") {
+            alert("Video File Size too Big: Max Video Size is 200Mb");
+        }
+        else {
+            setBackgroundPicFile(file);
+            setRemovableBackgroundPic(true);
+            setFormDataChanged(true);
+        }
     }
 
     return (
@@ -412,14 +455,6 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
 
 
                                 <div className={"edit-popup-background-pic-container"}>
-                                    {/*{backgroundPicFile ? (*/}
-                                    {/*    <img src={URL.createObjectURL(backgroundPicFile)} alt={backgroundPicFile.name}*/}
-                                    {/*         className={"edit-popup-background-pic"}/>*/}
-                                    {/*) : (*/}
-                                    {/*    <img src={backgroundPicUrl} alt={backgroundPicName}*/}
-                                    {/*         className={"edit-popup-background-pic"}/>*/}
-                                    {/*)}*/}
-
                                     {removableBackgroundPic && !backgroundPicFile && (
                                         <img src={backgroundPicUrl} alt={backgroundPicName} className={"edit-popup-background-pic"} />
                                     )}
