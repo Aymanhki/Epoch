@@ -719,4 +719,4 @@ if __name__ == '__main__':
 
 
 # python -m pytest ./epoch_backend/tests/webserver_tests.py
-# python -m pytest --cov=epoch_backend -rA --color=yes --disable-warnings --disable-pytest-warnings --cov-report=html ./epoch_backend/tests/webserver_tests.py
+# python -m pytest --cov-config=.coveragerc --cov=epoch_backend -rA --color=yes --disable-warnings --disable-pytest-warnings --cov-report=html ./epoch_backend/tests/webserver_tests.p
