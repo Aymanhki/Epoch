@@ -170,7 +170,7 @@ class integration_tests(unittest.TestCase):
     backend_dir = os.path.join("..", "..", "epoch_backend")
     username = "WebserverTests" # use this username so webservertest deletes this account. 
     password = "Newuser1!"
-    name = str(uuid.uuid4())
+    name = "WebserverTests"
     bio = str(uuid.uuid4())
 
     @classmethod

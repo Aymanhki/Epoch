@@ -32,7 +32,7 @@ class webserver_tests(unittest.TestCase):
     # allow us to go in manually if something happens when deleting this account
     username = "WebserverTests" # str(uuid.uuid4())
     password = "Newuser1!" # str(uuid.uuid4())
-    name = str(uuid.uuid4())
+    name = "TestTest" # str(uuid.uuid4())
     bio = str(uuid.uuid4())
     post_creation_time = '2024-02-22T06:36:12.653Z'
     user_to_follow_id = None
@@ -242,7 +242,7 @@ class webserver_tests(unittest.TestCase):
     def test_m_login_nonexistent_user(self):
         print("Logging in nonexistent user...")
         response = requests.post('http://localhost:8080/api/login/',
-                                 json={'username': str(uuid.uuid4()), 'password': self.password})
+                                 json={'username': "WebserverTests", 'password': self.password})
         self.assertEqual(response.status_code, 401)
         print(response.text)
         print("Nonexistent user not logged in.")
@@ -377,9 +377,9 @@ class webserver_tests(unittest.TestCase):
         print(f"User {i} deleted.")
 
     def test_q_load_test(self):
-        usernames = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
+        usernames = [str(uuid.uuid4()[0:20]) for i in range(EXTREME_TEST_RANGE)]
         passwords = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
-        names = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
+        names = [("ThisIsATestUser") for i in range(EXTREME_TEST_RANGE)]
         bios = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
         session_ids = [None for i in range(EXTREME_TEST_RANGE)]
         user_ids = [None for i in range(EXTREME_TEST_RANGE)]
