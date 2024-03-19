@@ -378,7 +378,7 @@ class webserver_tests(unittest.TestCase):
         print(f"User {i} deleted.")
 
     def test_q_load_test(self):
-        usernames = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
+        usernames = [str(uuid.uuid4())[0:20] for i in range(EXTREME_TEST_RANGE)]
         passwords = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
         names = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
         bios = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
