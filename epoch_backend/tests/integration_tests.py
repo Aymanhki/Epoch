@@ -144,6 +144,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 import requests
 import json
 import pytest
+import random
 
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
 script_dir = os.path.dirname(os.path.abspath(__file__))
