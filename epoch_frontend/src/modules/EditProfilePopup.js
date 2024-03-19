@@ -76,6 +76,16 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
+
+        // if the bio is being changes, nothing should happen if the length is greater than 240
+
+        if (name === 'bio' && value.length > 240) {
+            setBioError(true);
+            setBioErrorMessage('Bio must be less than 240 characters');
+            bioRef.current.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
         setFormData({
             ...formData,
             [name]: value
@@ -111,6 +121,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
             let invalidUsername = false;
             let invalidDisplayname = false;
             let invalidPassword = false;
+            let invalidBio = false;
             const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$/;
             const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
 
@@ -129,6 +140,15 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
                 setDisplaynameErrorMessage('Name must be between 1 and 254 characters');
                 displaynameRef.current.scrollIntoView({ behavior: 'smooth' });
                 displaynameRef.current.focus();
+                return;
+            }
+
+            if (formData.bio > 240) {
+                invalidBio = true;
+                setBioError(true);
+                setBioErrorMessage('Bio must be less than 240 characters');
+                bioRef.current.scrollIntoView({ behavior: 'smooth' });
+                bioRef.current.focus();
                 return;
             }
 
@@ -435,14 +455,6 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
 
 
                                 <div className={"edit-popup-background-pic-container"}>
-                                    {/*{backgroundPicFile ? (*/}
-                                    {/*    <img src={URL.createObjectURL(backgroundPicFile)} alt={backgroundPicFile.name}*/}
-                                    {/*         className={"edit-popup-background-pic"}/>*/}
-                                    {/*) : (*/}
-                                    {/*    <img src={backgroundPicUrl} alt={backgroundPicName}*/}
-                                    {/*         className={"edit-popup-background-pic"}/>*/}
-                                    {/*)}*/}
-
                                     {removableBackgroundPic && !backgroundPicFile && (
                                         <img src={backgroundPicUrl} alt={backgroundPicName} className={"edit-popup-background-pic"} />
                                     )}
