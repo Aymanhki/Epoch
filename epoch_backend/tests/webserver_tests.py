@@ -86,6 +86,10 @@ class webserver_tests(unittest.TestCase):
         return user_to_follow_id
 
     def test_a_register_user(self):
+        # delete our test account if its for some reason still in db
+        response = requests.delete('http://localhost:8080/api/delete/userId/', 
+                                   json={'userId': user_id},
+                                   cookies={'epoch_session_id': session_id})
         print("Registering user...")
         response = requests.post('http://localhost:8080/api/register/',
                                  json={'username': self.username, 'password': self.password, 'name': self.name,
@@ -719,4 +723,4 @@ if __name__ == '__main__':
 
 
 # python -m pytest ./epoch_backend/tests/webserver_tests.py
-# python -m pytest --cov-config=.coveragerc --cov=epoch_backend -rA --color=yes --disable-warnings --disable-pytest-warnings --cov-report=html ./epoch_backend/tests/webserver_tests.p
+# python -m pytest --cov-config=.coveragerc --cov=epoch_backend -rA --color=yes --disable-warnings --disable-pytest-warnings --cov-report=html ./epoch_backend/tests/webserver_tests.py
