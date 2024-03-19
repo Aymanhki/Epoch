@@ -129,21 +129,21 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
             let invalidPassword = false;
             let invalidBio = false;
             const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$/;
-            const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
+            const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,30}$/
 
             if (!formData.username.match(usernameRegex)) {
                 invalidUsername = true;
                 setUsernameError(true);
-                setUsernameErrorMessage('Username must be between 1 and 50 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -');
+                setUsernameErrorMessage('Username must be between 1 and 30 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -');
                 usernameRef.current.scrollIntoView({ behavior: 'smooth' });
                 usernameRef.current.focus();
                 return;
             }
 
-            if (formData.displayname <= 0 || formData.displayname > 255) {
+            if (formData.displayname <= 0 || formData.displayname > 30) {
                 invalidDisplayname = true;
                 setDisplaynameError(true);
-                setDisplaynameErrorMessage('Name must be between 1 and 254 characters');
+                setDisplaynameErrorMessage('Name must be between 1 and 30 characters');
                 displaynameRef.current.scrollIntoView({ behavior: 'smooth' });
                 displaynameRef.current.focus();
                 return;
