@@ -24,6 +24,9 @@ function Register() {
     const [generalErrorPrompt, setGeneralErrorPrompt] = useState('');
     const fileInputRef = React.createRef();
     const navigate = useNavigate();
+    const maxImageBytes = 30000001;
+    const maxVideoBytes = 200000001;
+    const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif"]
 
     const handleProfilePicChange = async (e) => {
         const file = e.target.files[0];
@@ -32,8 +35,18 @@ function Register() {
             setIsLoading(false);
             return;
         }
-
-        setProfilePic(file);
+        if (!allowedFileTypes.includes(file.type.split('/')[1]) ) {
+            alert("Unsupported file type, try: .jpg, .jpeg, .png, .mp4, .mp3, .gif");
+        }
+        else if (file.size > maxImageBytes && file.type.split('/')[1] !== "mp4") {
+            alert("Image File Size too Big: Max Image Size is 30Mb");
+        }
+        else if (file.size > maxVideoBytes && file.type.split('/')[1] === "mp4") {
+            alert("Video File Size too Big: Max Video Size is 200Mb");
+        }
+        else {
+            setProfilePic(file);
+        }
     };
 
     const handleSubmit = (e) => {
