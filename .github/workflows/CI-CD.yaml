@@ -41,7 +41,7 @@ jobs:
       - name: SSH into Google Cloud VM for testing
         run: |
           set -e 
-          sshpass -p ${{ secrets.TESTER_SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.TESTER_SSH_USERNAME }} << EOF
+          sshpass -p ${{ secrets.TESTER_SSH_PASSWORD }} ssh -t -o StrictHostKeyChecking=no ${{ secrets.TESTER_SSH_USERNAME }} << EOF
             echo "Current directory path: $(pwd)"
             cd 
             rm -rf Epoch
@@ -100,7 +100,7 @@ jobs:
 
       - name: SSH into Google Cloud VM for cleanup
         run: |
-          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -t -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
             echo "Current directory path: $(pwd)"
             cd 
             rm -rf Epoch
@@ -249,7 +249,7 @@ jobs:
 
       - name: Deploying Backend (Build and Run Backend Docker Container)
         run: |
-          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -t -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
             echo "Current directory path: $(pwd)"
             cd
             cd Epoch/epoch_backend/
@@ -269,7 +269,7 @@ jobs:
 
       - name: Deploying Frontend (Build and Run Frontend Docker Container)
         run: |
-          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -t -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
             echo "Current directory path: $(pwd)"
             cd
             cd Epoch/epoch_frontend/
