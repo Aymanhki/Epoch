@@ -63,7 +63,7 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
                         src={process.env.PUBLIC_URL + "/images/epoch-logo-400.jpeg"}
                         alt="Epoch"
                         className="logo"
-                        style={{width: "3rem", height: "100%"}}
+                        style={{width: "3rem", height: "100%", borderRadius: "50%"}}
                         onClick={() => navigate('/epoch/home')}
                     />
                     <span style={{textDecorationColor: "transparent"}}>Epoch</span>

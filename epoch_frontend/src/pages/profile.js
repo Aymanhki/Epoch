@@ -111,6 +111,7 @@ function Profile() {
                 .catch(error => {
                     setIsLoading(false);
                     updateUser(null);
+                    setRedirectToLogin(true);
                 });
         }
     }, [setIsLoading, setIsCurrentUser, updateUser, user]);
@@ -120,7 +121,8 @@ function Profile() {
         if (user && (user.username === username || username === "profile")) {
             setUserInfo(user);
             setIsCurrentUser(true);
-        } else if (username !== "profile") {
+        }
+        else if (username !== "profile") {
             setIsLoading(true);
             getUsernameInfo(username)
                 .then(data => {
@@ -133,9 +135,6 @@ function Profile() {
                     console.log("Error fetching user info:", error);
                     setUserNotFound(true);
                 });
-        } else {
-            console.log("Cannot load profile if not logged in.")
-            navigate("/epoch/home");
         }
     }, [setIsLoading, setIsCurrentUser, user, username]);
 
