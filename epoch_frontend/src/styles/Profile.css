@@ -223,6 +223,89 @@
     z-index: 1000;
 }
 
+.profile-delete-account-button {
+    padding: 0.5rem;
+    border-radius: 10%;
+    cursor: pointer;
+    background-color: white;
+    color: red;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    border: none;
+}
+
+.profile-delete-account-button:hover {
+    background-color: red;
+    color: white;
+}
+
+.delete-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    z-index: 1000;
+}
+
+.delete-account-modal {
+    position: absolute;
+    border-radius: 1rem;
+    padding: 1rem;
+    background-color: white;
+    width: 30%;
+    max-height: 50%;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.delete-account-button-yes {
+    padding: 0.5rem;
+    border-radius: 10%;
+    cursor: pointer;
+    background-color: white;
+    color: red;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    border: none;
+
+}
+
+.delete-account-button-yes:hover {
+    background-color: red;
+    color: white;
+}
+
+.delete-account-button-no {
+    padding: 0.5rem;
+    border-radius: 10%;
+    cursor: pointer;
+    background-color: white;
+    color: green;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    border: none;
+
+}
+
+.delete-account-button-no:hover {
+    background-color: green;
+    color: white;
+}
+
+.delete-account-buttons-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+
+}
+
+.delete-account-error {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
 @media (max-width: 1024px) {
     .profile-wrapper {
         width: 80%;
@@ -302,6 +385,10 @@
         width: 90%;
     }
 
+    .delete-account-modal {
+        width: 90%;
+    }
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -339,4 +426,10 @@
         background-color: #333333;
         color: white;
     }
+
+    .delete-account-modal {
+        background-color: #333333;
+        color: white;
+    }
+
 }

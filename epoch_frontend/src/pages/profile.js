@@ -1,4 +1,4 @@
-import {getUserInfo, getUsernameInfo} from '../services/user';
+import {getUserInfo, getUsernameInfo, deleteUser} from '../services/user';
 import {getFollowingList, unfollowAccount, followAccount, profileFollowNetwork} from '../services/following';
 import React, {useState, useEffect, useContext} from 'react';
 import {useParams} from 'react-router-dom';
@@ -10,6 +10,7 @@ import {UserContext} from "../services/UserContext";
 import '../styles/Profile.css'
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import Feed from "../modules/Feed";
 import EditProfilePopup from '../modules/EditProfilePopup';
 import PostPopup from "../modules/PostPopup";
@@ -43,6 +44,11 @@ function Profile() {
     const [showingFol, setShowingFol] = useState(true);
     const [showPopup, setShowPopup] = useState(false);
     const [refreshProfile, setRefreshProfile] = useState(false);
+    const [showDeleteAccountPopup, setShowDeleteAccountPopup] = useState(false);
+    const [deleteAccountError, setDeleteAccountError] = useState(false);
+    const [deleteAccountErrorPrompt, setDeleteAccountErrorPrompt] = useState("");
+    const [deletingAccount, setDeletingAccount] = useState(false);
+
 
     const {transform: inTransform} = useSpring({
         transform: `translateY(${showUserListModal ? 0 : 100}vh)`,
@@ -53,6 +59,17 @@ function Profile() {
         transform: `translateY(${showUserListModal ? 0 : -100}vh)`,
         config: {duration: 300},
     });
+
+    const {transform: inTransformDelete} = useSpring({
+        transform: `translateY(${showDeleteAccountPopup ? 0 : 100}vh)`,
+        config: {duration: 300},
+    });
+
+    const {transform: outTransformDelete} = useSpring({
+        transform: `translateY(${showDeleteAccountPopup ? 0 : -100}vh)`,
+        config: {duration: 300},
+    });
+
 
     function clickedFollow(target, isFollowing) {
         if (isFollowing) {
@@ -102,41 +119,58 @@ function Profile() {
     useEffect(() => {
         setIsLoading(true);
         setFollowDefaults();
+
         if (!user) {
             getUserInfo()
                 .then(data => {
                     updateUser(data);
                     setFollowDefaults();
+
+                    if (data.username === username || username === "profile") {
+                        setUserInfo(data);
+                        setIsCurrentUser(true);
+                    }
+                    else
+                    {
+                        setIsCurrentUser(false);
+
+                        getUsernameInfo(username)
+                            .then(data => {
+                                setUserInfo(data);
+                                setViewedID(data.id);
+                            })
+                            .catch(error => {
+                                setIsLoading(false);
+                                setUserNotFound(true);
+                            });
+                    }
+
+                    setIsLoading(false);
+
                 })
                 .catch(error => {
                     setIsLoading(false);
                     updateUser(null);
-                    setRedirectToLogin(true);
-                });
-        }
-    }, [setIsLoading, setIsCurrentUser, updateUser, user]);
 
-    useEffect(() => {
-        setFollowDefaults();
-        if (user && (user.username === username || username === "profile")) {
-            setUserInfo(user);
-            setIsCurrentUser(true);
-        }
-        else if (username !== "profile") {
-            setIsLoading(true);
-            getUsernameInfo(username)
-                .then(data => {
-                    setUserInfo(data);
-                    setIsCurrentUser(false);
-                    setViewedID(data.id)
-                })
-                .catch(error => {
+                    if (username !== "profile") {
+                        getUsernameInfo(username)
+                            .then(data => {
+                                setUserInfo(data);
+                                setViewedID(data.id);
+                            })
+                            .catch(error => {
+                                setUserNotFound(true);
+                            });
+                    }
+                    else
+                    {
+                        setRedirectToLogin(true);
+                    }
+
                     setIsLoading(false);
-                    console.log("Error fetching user info:", error);
-                    setUserNotFound(true);
                 });
         }
-    }, [setIsLoading, setIsCurrentUser, user, username]);
+    }, [setIsLoading, setIsCurrentUser, updateUser, user, username]);
 
     useEffect(() => {
         if (viewedId && user) {
@@ -202,8 +236,9 @@ function Profile() {
     }, [showUserListModal, followerList, followingList, showingFol]);
 
     useEffect(() => {
-        setIsLoading(true);
+
         if (refreshProfile) {
+            setIsLoading(true);
             getUserInfo()
                 .then(data => {
                     updateUser(data);
@@ -214,11 +249,37 @@ function Profile() {
                 .catch(error => {
                     console.log("Error fetching user info:", error);
                     setIsLoading(false);
+
                 });
         }
     }, [refreshProfile, setRefreshProfile, updateUser]);
 
-    if (!user && !userInfo) {
+    const onDeleteAccount = () => {
+
+        if(!user || deletingAccount) { return; }
+
+        setShowDeleteAccountPopup(false);
+        setIsLoading(true);
+        setDeletingAccount(true);
+
+        deleteUser(user.id)
+            .then(data => {
+                setIsLoading(false);
+                updateUser(null);
+                navigate('/epoch/login');
+                setDeletingAccount(false);
+            })
+            .catch(error => {
+                setDeleteAccountError(true);
+                setDeleteAccountErrorPrompt(error);
+                setShowDeleteAccountPopup(true);
+                setIsLoading(false);
+                setDeletingAccount(false);
+            });
+
+    }
+
+    if (!user && !userInfo || deletingAccount) {
         return <Spinner/>
     }
 
@@ -232,9 +293,9 @@ function Profile() {
 
     return (
         <>
-        {user && (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
+        {(user && (!deletingAccount)) && (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
                           showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>)}
-        {isLoading ? (
+        {(isLoading || deletingAccount) ? (
             <Spinner/>
         ) : (
             <div className="profile-page-container">
@@ -268,6 +329,9 @@ function Profile() {
                                                              onClick={() => setShowEditProfilePopup(!showEditProfilePopup)}/>
                                     <FavoriteBorderOutlinedIcon className={'profile-favorite-button'}
                                                                 onClick={() => navigate('/epoch/favorites')}></FavoriteBorderOutlinedIcon>
+                                    <DeleteForeverOutlinedIcon className={'profile-delete-account-button'}
+                                                                onClick={() => setShowDeleteAccountPopup(true)}></DeleteForeverOutlinedIcon>
+
                                 </div>
 
                             ) : (
@@ -339,6 +403,35 @@ function Profile() {
                             </li>
                         )}
                     </ul>
+                </div>
+
+            </animated.div>
+
+            <animated.div
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transform: showDeleteAccountPopup ? inTransformDelete : outTransformDelete,
+                    zIndex: 1000
+                }}
+            >
+                <div className="delete-modal-overlay" onClick={() => setShowDeleteAccountPopup(false)}></div>
+
+                <div className="delete-account-modal">
+                    <h3 className="delete-account-header">Are you sure you want to delete your account?</h3>
+                    {deleteAccountError && <p className="delete-account-error">{deleteAccountErrorPrompt}</p>}
+
+                    <div className={'delete-account-buttons-wrapper'}>
+                    <button className="delete-account-button-no" onClick={() => setShowDeleteAccountPopup(false)}>No</button>
+                    <button className="delete-account-button-yes" onClick={onDeleteAccount}>Yes</button>
+                    </div>
                 </div>
 
             </animated.div>

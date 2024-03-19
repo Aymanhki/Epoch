@@ -24,6 +24,9 @@ export default function PostPopup({
                                       postId,
                                       userId
                                   }) {
+    const maxImageBytes = 30000001;
+    const maxVideoBytes = 200000001;
+    const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif"]
     const [uploadedFile, setUploadedFile] = useState((editPost && postFile) ? postFile : null);
     const [postText, setPostText] = useState((editPost && caption) ? caption : null);
     const [postNow, setPostNow] = useState(false);
@@ -53,15 +56,29 @@ export default function PostPopup({
         const selectedFile = e.target.files[0];
 
         if (selectedFile) {
-            setUploadedFile(selectedFile);
-            setHasUploadedFile(true);
+            if (!allowedFileTypes.includes(selectedFile.type.split('/')[1]) ) {
+                setErrorMessage("Unsupported file type: \""+ (selectedFile.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .mp4, .mp3, .gif");
+                setError(true);
+            }
+            else if (selectedFile.size > maxImageBytes && selectedFile.type.split('/')[1] !== "mp4") {
+                var message = "Image File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > 30Mb"
+                setErrorMessage( message );
+                setError(true);
+            }
+            else if (selectedFile.size > maxVideoBytes && selectedFile.type.split('/')[1] === "mp4") {
+                setErrorMessage("Video File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > 200Mb");
+                setError(true);
+            }
+            else {
+                setUploadedFile(selectedFile);
+                setHasUploadedFile(true);
 
-            if (editPost) {
-                setEditPostFileChanged(true);
+                if (editPost) {
+                    setEditPostFileChanged(true);
+                }
+                setError(false);
             }
         }
-
-        setError(false);
     };
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
@@ -307,7 +324,7 @@ export default function PostPopup({
                             <div className={'uploaded-file-preview'}>
                                 <input
                                     type="file"
-                                    accept="image/*, audio/*, video/*"
+                                    accept=".png,.jpg,.jpeg,.mp4,.mp3,.gif"
                                     onChange={handleFileChange}
                                     style={{
                                         width: '100%',

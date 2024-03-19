@@ -64,7 +64,7 @@ jobs:
             pkill geckodriver
             pkill firefox
             export CI=true
-            if ! pytest --cov-config=.coveragerc --cov=epoch_backend -rA --color=yes --disable-warnings --disable-pytest-warnings --show-capture=no ./epoch_backend/tests/integration_tests.py ./epoch_backend/tests/webserver_tests.py ./epoch_backend/tests/following_unit_tests.py; then
+            if ! pytest --cov=epoch_backend -rA --color=yes --disable-warnings --disable-pytest-warnings --show-capture=no ./epoch_backend/tests/integration_tests.py ./epoch_backend/tests/webserver_tests.py ./epoch_backend/tests/following_unit_tests.py; then
               echo "Webserver Backend Test(s) failed. Exiting with status 1."
               exit 1
             fi
@@ -277,7 +277,7 @@ jobs:
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
             docker tag epoch_frontend:$VERSION $DOCKER_USERNAME/epoch_frontend:$VERSION
             docker push $DOCKER_USERNAME/epoch_frontend:$VERSION
-            docker run -d -p 80:80 -p 443:443 epoch_frontend:$VERSION
+            docker run -d -p 443:443 epoch_frontend:$VERSION
             exit
           EOF
         env:

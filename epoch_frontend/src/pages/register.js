@@ -16,14 +16,19 @@ function Register() {
     const [usernameError, setUsernameError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
     const [nameError, setNameError] = useState(false);
+    const [bioError, setBioError] = useState(false);
     const [generalError, setGeneralError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [usernameErrorPrompt, setUsernameErrorPrompt] = useState('');
     const [passwordErrorPrompt, setPasswordErrorPrompt] = useState('');
     const [nameErrorPrompt, setNameErrorPrompt] = useState('');
     const [generalErrorPrompt, setGeneralErrorPrompt] = useState('');
+    const [bioErrorPrompt, setBioErrorPrompt] = useState('');
     const fileInputRef = React.createRef();
     const navigate = useNavigate();
+    const maxImageBytes = 30000001;
+    const maxVideoBytes = 200000001;
+    const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif"]
 
     const handleProfilePicChange = async (e) => {
         const file = e.target.files[0];
@@ -32,8 +37,18 @@ function Register() {
             setIsLoading(false);
             return;
         }
-
-        setProfilePic(file);
+        if (!allowedFileTypes.includes(file.type.split('/')[1]) ) {
+            alert("Unsupported file type, try: .jpg, .jpeg, .png, .mp4, .mp3, .gif");
+        }
+        else if (file.size > maxImageBytes && file.type.split('/')[1] !== "mp4") {
+            alert("Image File Size too Big: Max Image Size is 30Mb");
+        }
+        else if (file.size > maxVideoBytes && file.type.split('/')[1] === "mp4") {
+            alert("Video File Size too Big: Max Video Size is 200Mb");
+        }
+        else {
+            setProfilePic(file);
+        }
     };
 
     const handleSubmit = (e) => {
@@ -42,6 +57,7 @@ function Register() {
         let wrongUsername = false;
         let wrongPassword = false;
         let wrongName = false;
+        let wrongBio = false;
 
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$/;
         const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
@@ -74,8 +90,14 @@ function Register() {
             wrongName = false;
         }
         
+        if (bio.length > 240) {
+            setBioError(true);
+            setBioErrorPrompt('Bio must be less than 240 characters');
+            wrongBio = true;
+        }
 
-        if (!wrongUsername && !wrongPassword && !wrongName) {
+
+        if (!wrongUsername && !wrongPassword && !wrongName && !wrongBio) {
 
             setRegisteringPrompt('Registering...');
             setIsLoading(true);
@@ -213,9 +235,19 @@ function Register() {
                                        setGeneralError(false);
                                    }}/>
 
-                            <label htmlFor="bio">Bio</label>
+                            <label htmlFor="bio">Bio {bioError && <span style={{color: 'red'}}>* {bioErrorPrompt}</span>}</label>
                             <textarea className="bio-textarea" id="bio" name="bio" value={bio}
-                                      onChange={(e) => setBio(e.target.value)}/>
+                                      onChange={(e) =>{
+                                          if (e.target.value.length < 240) {
+                                            setBio(e.target.value)
+                                            setBioError(false);
+                                            }
+                                          else
+                                          {
+                                            setBioError(true);
+                                            setBioErrorPrompt('Bio must be less than 240 characters');
+                                          }
+                                      }}/>
 
                             <label htmlFor="username">Username {usernameError &&
                                 <span style={{color: 'red'}}>* {usernameErrorPrompt}</span>}
