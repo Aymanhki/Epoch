@@ -133,7 +133,6 @@
 
 import random
 import unittest
-import uuid
 import os
 import time
 from pathlib import Path
@@ -169,10 +168,10 @@ class integration_tests(unittest.TestCase):
     driver = None
     frontend_dir = os.path.join("..", "..", "epoch_frontend")
     backend_dir = os.path.join("..", "..", "epoch_backend")
-    username = "WebserverTests"+str(random.randomint(1000,9999)) # use this username so webservertest deletes this account. 
+    username = "WebserverTests"+str(random.randint(1000,9999)) # use this username so webservertest deletes this account. 
     password = "Newuser1!"
     name = "WebserverTests"
-    bio = str(uuid.uuid4())
+    bio = "some bio"
 
     @classmethod
     def setUpClass(cls):
