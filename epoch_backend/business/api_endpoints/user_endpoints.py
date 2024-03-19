@@ -184,6 +184,10 @@ def register_user(conn, request_data):
     name = data.get("name")
     origin = get_origin_from_headers(headers)
 
+    if len(bio) > 240 or len(name) > 255 or len(username) > 255:
+        send_response(conn, 400, "Bad Request", body=b"Invalid request data", headers=get_cors_headers(origin))
+        return
+
     if access_user_persistence().get_user(username) is None:
         new_user = user(None, name, username, password, bio, None, None, None)
         user_id = access_user_persistence().add_user(new_user)
@@ -337,6 +341,10 @@ def update_user_info(conn, request_data):
         new_background_pic_type = data.get('new_background_pic_type')
         new_background_pic_name = data.get('new_background_pic_name')
         created_at = data.get('created_at')
+
+        if len(bio) > 240 or len(name) > 255 or len(username) > 255:
+            send_response(conn, 400, "Bad Request", body=b"Invalid request data", headers=get_cors_headers(origin))
+            return
 
 
         required_fields = ['userID', 'username', 'displayname', 'bio', 'password', 'created_at', 'profile_pic_id']

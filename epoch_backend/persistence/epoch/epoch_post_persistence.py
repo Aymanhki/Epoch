@@ -2,7 +2,7 @@ from ..interfaces.post_persistence import post_persistence
 from ...objects.post import post
 from ...objects.media import media
 from ...objects.user import user
-from ...business.utils import get_db_connection, get_posts_media, get_profile_info, get_post_dict, get_posts_users_info, delete_file_from_bucket
+from ...business.utils import get_db_connection, get_posts_media, get_profile_info, get_post_dict, get_posts_users_info, delete_file_from_bucket, is_file_in_bucket
 import base64
 import json
 import datetime
@@ -48,8 +48,41 @@ class epoch_post_persistence(post_persistence):
         cursor.execute("DELETE FROM favorites WHERE post_id=%s", (post_id,))
         cursor.execute("DELETE FROM comments WHERE post_id=%s", (post_id,))
         cursor.execute("DELETE FROM votes WHERE post_id=%s", (post_id,))
+        connection.commit()
+        cursor.execute("SELECT * FROM media_content WHERE media_id IN (SELECT media_id FROM posts WHERE post_id=%s)", (post_id,))
+        medias = cursor.fetchall()
+        connection.commit()
         cursor.execute("DELETE FROM posts WHERE post_id=%s", (post_id,))
         connection.commit()
+
+        # check if the post media is referenced in any other tables
+        for current_media in medias:
+            try:
+                reference_count = 0
+                cursor.execute("SELECT COUNT(*) FROM posts WHERE media_id IN (SELECT media_id FROM media_content WHERE path=%s)", (current_media[5],))
+                reference_count += cursor.fetchone()[0]
+                cursor.execute("SELECT COUNT(*) FROM users WHERE profile_pic IN (SELECT media_id FROM media_content WHERE path=%s)", (current_media[5],))
+                reference_count += cursor.fetchone()[0]
+                cursor.execute("SELECT COUNT(*) FROM users WHERE background_pic IN (SELECT media_id FROM media_content WHERE path=%s)", (current_media[5],))
+                reference_count += cursor.fetchone()[0]
+
+                if reference_count == 0:
+                    delete_file_from_bucket(current_media[5])
+
+                    if is_file_in_bucket(current_media[5]):
+                        raise Exception("Failed to delete file from bucket")
+
+                    cursor.execute("DELETE FROM media_content WHERE path=%s", (current_media[5],))
+                    connection.commit()
+                    cursor.execute("SELECT * FROM media_content WHERE path=%s", (current_media[5],))
+                    media = cursor.fetchone()
+
+                    if media:
+                        raise Exception("Failed to delete media from database")
+
+            except Exception as e:
+                print(f"Failed to delete media: {e}")
+
         connection.close()
 
     def get_all_user_posts(self, user_id: int):
