@@ -285,16 +285,14 @@ class integration_tests(unittest.TestCase):
         login.click()
         WebDriverWait(driver, default_element_wait_timeout).until(
             lambda driver: driver.get_cookie("epoch_session_id") is not None)
-        WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
         driver.get("http://localhost:3000/profile")
         WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.CLASS_NAME, "profile-delete-account-button") is not None)
-        delete = driver.find_element(By.CLASS_NAME, "profile-delete-account-button")
+            lambda driver: driver.find_element(By.ID, "profile-delete-account-button") is not None)
+        delete = driver.find_element(By.ID, "profile-delete-account-button")
         delete.click()
         WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.CLASS_NAME, "delete-account-button-yes") is not None)
-        yes = driver.find_element(By.CLASS_NAME, "delete-account-button-yes")
+            lambda driver: driver.find_element(By.ID, "delete-account-button-yes") is not None)
+        yes = driver.find_element(By.ID, "delete-account-button-yes")
         yes.click()
 
 if __name__ == "__main__":

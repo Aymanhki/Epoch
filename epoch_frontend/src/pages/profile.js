@@ -360,6 +360,7 @@ function Profile() {
                                     <FavoriteBorderOutlinedIcon className={'profile-favorite-button'}
                                                                 onClick={() => navigate('/epoch/favorites')}></FavoriteBorderOutlinedIcon>
                                     <DeleteForeverOutlinedIcon className={'profile-delete-account-button'}
+                                    data-testid="profile-delete-account-button" id="profile-delete-account-button"
                                                                 onClick={() => setShowDeleteAccountPopup(true)}></DeleteForeverOutlinedIcon>
 
                                 </div>
@@ -460,7 +461,8 @@ function Profile() {
 
                     <div className={'delete-account-buttons-wrapper'}>
                     <button className="delete-account-button-no" onClick={() => setShowDeleteAccountPopup(false)}>No</button>
-                    <button className="delete-account-button-yes" onClick={onDeleteAccount}>Yes</button>
+                    <button className="delete-account-button-yes" data-testid="delete-account-button-yes" id="delete-account-button-yes" 
+                    onClick={onDeleteAccount}>Yes</button>
                     </div>
                 </div>
 
