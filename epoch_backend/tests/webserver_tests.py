@@ -464,9 +464,10 @@ class webserver_tests(unittest.TestCase):
     def make_post(self):
         print("creating a post!")
         today = datetime.date.today()
+        postbody ="someText #"+self.username
         response = requests.post('http://localhost:8080/api/post/', 
                                 cookies={'epoch_session_id': self.get_session_id()},
-                                json={'postText': 'someText #webservertest', 'file': base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'),
+                                json={'postText': postbody, 'file': base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'),
                                        'fileType': 'image/jpeg', 'fileName': 'test.jpg', 'postNow': 'true', 'selectedDate': self.post_creation_time,
                                        'createdAt': self.post_creation_time, 'username': self.username })
         self.assertEqual(response.status_code, 200)
@@ -542,10 +543,11 @@ class webserver_tests(unittest.TestCase):
     def test_z04_hashtag_tests(self): # GET "/api/post/hashtag/" - Get all post with hash tag
         self.register_test_user()
         self.make_post()
+        hashtag = "#"+self.username
         print("Getting all post with the hashtag")
         response = requests.get('http://localhost:8080/api/post/hashtag/', 
                                 cookies={'epoch_session_id': self.get_session_id()},
-                                headers={"Hashtag": "webservertest"})
+                                headers={"Hashtag": hashtag})
         self.assertEqual(response.status_code, 200)
         response_json = response.json()
         self.assertEqual(response_json[0]["username"], self.username)
