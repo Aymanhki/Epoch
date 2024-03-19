@@ -111,7 +111,7 @@ function Profile() {
                 .catch(error => {
                     setIsLoading(false);
                     updateUser(null);
-                    setRedirectToLogin(true);
+                    //setRedirectToLogin(true); // doesnt allow user to view other's profiles if not logged in
                 });
         }
     }, [setIsLoading, setIsCurrentUser, updateUser, user]);
@@ -121,6 +121,9 @@ function Profile() {
         if (user && (user.username === username || username === "profile")) {
             setUserInfo(user);
             setIsCurrentUser(true);
+        }
+        else if (!user && (username === "profile")) {
+            setRedirectToLogin(true);
         }
         else if (username !== "profile") {
             setIsLoading(true);
