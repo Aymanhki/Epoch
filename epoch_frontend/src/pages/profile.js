@@ -119,52 +119,58 @@ function Profile() {
     useEffect(() => {
         setIsLoading(true);
         setFollowDefaults();
+
         if (!user) {
             getUserInfo()
                 .then(data => {
                     updateUser(data);
                     setFollowDefaults();
-                })
-                .catch(error => {
-                    setIsLoading(false);
-                    updateUser(null);
-                    //setRedirectToLogin(true); // doesnt allow user to view other's profiles if not logged in
-                });
-        }
-    }, [setIsLoading, setIsCurrentUser, updateUser, user]);
 
-    useEffect(() => {
-        setFollowDefaults();
-        if (user && (user.username === username || username === "profile")) {
-            setUserInfo(user);
-            setIsCurrentUser(true);
-        }
-        else if (!user && (username === "profile")) {
-            setRedirectToLogin(true);
-        }
-        else if (username !== "profile") {
-            setIsLoading(true);
-            getUsernameInfo(username)
-                .then(data => {
-                    setUserInfo(data);
-
-                    if (user && user.username === data.username) {
+                    if (data.username === username || username === "profile") {
+                        setUserInfo(data);
                         setIsCurrentUser(true);
                     }
                     else
                     {
                         setIsCurrentUser(false);
+
+                        getUsernameInfo(username)
+                            .then(data => {
+                                setUserInfo(data);
+                                setViewedID(data.id);
+                            })
+                            .catch(error => {
+                                setIsLoading(false);
+                                setUserNotFound(true);
+                            });
                     }
 
-                    setViewedID(data.id)
+                    setIsLoading(false);
+
                 })
                 .catch(error => {
                     setIsLoading(false);
-                    console.log("Error fetching user info:", error);
-                    setUserNotFound(true);
+                    updateUser(null);
+
+                    if (username !== "profile") {
+                        getUsernameInfo(username)
+                            .then(data => {
+                                setUserInfo(data);
+                                setViewedID(data.id);
+                            })
+                            .catch(error => {
+                                setUserNotFound(true);
+                            });
+                    }
+                    else
+                    {
+                        setRedirectToLogin(true);
+                    }
+
+                    setIsLoading(false);
                 });
         }
-    }, [setIsLoading, setIsCurrentUser, user, username]);
+    }, [setIsLoading, setIsCurrentUser, updateUser, user, username]);
 
     useEffect(() => {
         if (viewedId && user) {
@@ -230,8 +236,9 @@ function Profile() {
     }, [showUserListModal, followerList, followingList, showingFol]);
 
     useEffect(() => {
-        setIsLoading(true);
+
         if (refreshProfile) {
+            setIsLoading(true);
             getUserInfo()
                 .then(data => {
                     updateUser(data);
@@ -242,6 +249,7 @@ function Profile() {
                 .catch(error => {
                     console.log("Error fetching user info:", error);
                     setIsLoading(false);
+
                 });
         }
     }, [refreshProfile, setRefreshProfile, updateUser]);
