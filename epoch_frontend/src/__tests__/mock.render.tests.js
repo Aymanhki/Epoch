@@ -51,8 +51,8 @@ const mockPost = {
 }
 
 
-const username = v4();
-const password = v4() + "A1!";
+const username = v4().substring(0, 20);
+const password = "ThisIsAValidPassword1!";
 
 describe('Render Pages', () => {
     beforeEach(() => {
