@@ -242,9 +242,8 @@ class integration_tests(unittest.TestCase):
         register.click()
         WebDriverWait(driver, default_element_wait_timeout).until(
             lambda driver: driver.get_cookie("epoch_session_id") is not None)
-        driver.get("http://localhost:3000/profile")
-        WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: self.name in driver.page_source)
-        driver.delete_cookie("epoch_session_id")
+        WebDriverWait(driver, default_element_wait_timeout).until(
+            lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
         
     def test_2_logout(self):
         driver = self.driver
