@@ -326,7 +326,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
             setProfilePicError(true);
         }
         else if (file.size > maxImageBytes) {
-            setProfilePicErrorMessage("Image File Size too Big: " + Math.round((file.size)/(1000000)) + "Mb > 30Mb");
+            setProfilePicErrorMessage("Image File Size too Big: " + Math.round((file.size)/(1000000)) + "Mb > "+ Math.round((maxImageBytes)/(1000000)) +"Mb");
             setProfilePicError(true);
         }
         else {
@@ -346,7 +346,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
             setBackgroundPicError(true);
         }
         else if (file.size > maxImageBytes) {
-            setBackgroundPicErrorMessage("Image File Size too Big: " + Math.round((file.size)/(1000000)) + "Mb > 30Mb");
+            setBackgroundPicErrorMessage("Image File Size too Big: " + Math.round((file.size)/(1000000)) + "Mb > "+ Math.round((maxImageBytes)/(1000000)) +"Mb");
             setBackgroundPicError(true);
         }
         else {

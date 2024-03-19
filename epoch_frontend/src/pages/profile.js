@@ -15,6 +15,7 @@ import Feed from "../modules/Feed";
 import EditProfilePopup from '../modules/EditProfilePopup';
 import PostPopup from "../modules/PostPopup";
 import {useSpring, animated} from 'react-spring';
+import NoSessionNavBar from '../modules/NoSessionNavBar';
 
 
 function Profile() {
@@ -318,8 +319,9 @@ function Profile() {
 
     return (
         <>
-        {(user && (!deletingAccount)) && (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
-                          showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>)}
+        {(user && (!deletingAccount))  ? (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
+                          showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>) :
+                          (<NoSessionNavBar/>)}
         {(isLoading || deletingAccount) ? (
             <Spinner/>
         ) : (
