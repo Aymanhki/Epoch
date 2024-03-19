@@ -1,4 +1,5 @@
 import datetime
+import random
 import signal
 import subprocess
 import unittest
@@ -30,8 +31,8 @@ class webserver_tests(unittest.TestCase):
     server_thread = None
     web_server = None
     # allow us to go in manually if something happens when deleting this account
-    username = "WebserverTests" # str(uuid.uuid4())
-    password = "Newuser1!" # str(uuid.uuid4())
+    username = "WebserverTests"+str(random.randomint(1000,9999))
+    password = "Newuser1!"
     name = "some name"
     bio = "a big long bio with lots of words but no special characters."
     post_creation_time = '2024-02-22T06:36:12.653Z'
