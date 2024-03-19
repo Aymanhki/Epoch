@@ -238,7 +238,7 @@ jobs:
             fi
 
       - name: Create Release
-        if: steps.is_major.outputs.is_major == 'true'
+        if: always()
         uses: actions/create-release@v1
         id: create_release
         env:
