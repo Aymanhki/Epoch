@@ -168,7 +168,7 @@ class integration_tests(unittest.TestCase):
     driver = None
     frontend_dir = os.path.join("..", "..", "epoch_frontend")
     backend_dir = os.path.join("..", "..", "epoch_backend")
-    username = "WebserverTests"
+    username = "WebserverTests" # use this username so webservertest deletes this account. 
     password = "Newuser1!"
     name = str(uuid.uuid4())
     bio = str(uuid.uuid4())
