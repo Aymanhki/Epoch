@@ -3,7 +3,6 @@ omit =
     epoch_backend/tests/*
     epoch_backend/business/db_controller/*
     epoch_backend/persistence/interfaces/*
-    epoch_backend/business/services.py
     epoch_backend/main.py
     */__init__.py
 
