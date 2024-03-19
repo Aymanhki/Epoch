@@ -27,7 +27,6 @@ jobs:
 
 
   test-new-build:
-    needs: security-scan
     runs-on: ubuntu-latest
 
     steps:
@@ -85,7 +84,9 @@ jobs:
           EOF
 
   clean-old-build:
-    needs: test-new-build
+    needs:
+      - test-new-build
+      - security-scan
     runs-on: ubuntu-latest
 
     steps:

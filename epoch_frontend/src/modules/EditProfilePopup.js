@@ -44,7 +44,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
     const newPasswordRef = useRef(null);
     const maxImageBytes = 30000001;
     const maxVideoBytes = 200000001;
-    const allowedFileTypes = ["jpg", "jpeg", "png", "gif"]
+    const allowedFileTypes = ["jpg", "jpeg", "png", "gif", "HEIC", "JPG", "JPEG", "PNG", "GIF", "heic"];
 
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({

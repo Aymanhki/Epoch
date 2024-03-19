@@ -26,7 +26,7 @@ export default function PostPopup({
                                   }) {
     const maxImageBytes = 30000001;
     const maxVideoBytes = 200000001;
-    const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif"]
+    const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif", "webm", "mov", "HEIC", "heic", "JPG", "JPEG", "PNG", "MP4", "MP3", "GIF", "WEBM", "MOV"];
     const [uploadedFile, setUploadedFile] = useState((editPost && postFile) ? postFile : null);
     const [postText, setPostText] = useState((editPost && caption) ? caption : null);
     const [postNow, setPostNow] = useState(false);
@@ -57,7 +57,7 @@ export default function PostPopup({
 
         if (selectedFile) {
             if (!allowedFileTypes.includes(selectedFile.type.split('/')[1]) ) {
-                setErrorMessage("Unsupported file type: \""+ (selectedFile.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .mp4, .mp3, .gif");
+                setErrorMessage("Unsupported file type: \""+ (selectedFile.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .mp4, .mp3, .gif, .webm, .mov");
                 setError(true);
             }
             else if (selectedFile.size > maxImageBytes && selectedFile.type.split('/')[1] !== "mp4") {
@@ -324,7 +324,7 @@ export default function PostPopup({
                             <div className={'uploaded-file-preview'}>
                                 <input
                                     type="file"
-                                    accept=".png,.jpg,.jpeg,.mp4,.mp3,.gif"
+                                    accept=".png,.jpg,.jpeg,.mp4,.mp3,.gif,.webm,.mov,.HEIC,.heic,.JPG,.JPEG,.PNG,.MP4,.MP3,.GIF,.WEBM,.MOV"
                                     onChange={handleFileChange}
                                     style={{
                                         width: '100%',
