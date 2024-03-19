@@ -243,7 +243,7 @@ class webserver_tests(unittest.TestCase):
     def test_m_login_nonexistent_user(self):
         print("Logging in nonexistent user...")
         response = requests.post('http://localhost:8080/api/login/',
-                                 json={'username': str(uuid.uuid4()), 'password': self.password})
+                                 json={'username': 'somenonexistentuser', 'password': self.password})
         self.assertEqual(response.status_code, 401)
         print(response.text)
         print("Nonexistent user not logged in.")
