@@ -133,6 +133,9 @@ function Profile() {
                     console.log("Error fetching user info:", error);
                     setUserNotFound(true);
                 });
+        } else {
+            console.log("Cannot load profile if not logged in.")
+            navigate("/epoch/home");
         }
     }, [setIsLoading, setIsCurrentUser, user, username]);
 
