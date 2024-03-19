@@ -31,7 +31,7 @@ class webserver_tests(unittest.TestCase):
     server_thread = None
     web_server = None
     # allow us to go in manually if something happens when deleting this account
-    username = "WebserverTests"+str(random.randomint(1000,9999))
+    username = "WebserverTests"+str(random.randint(1000,9999))
     password = "Newuser1!"
     name = "some name"
     bio = "a big long bio with lots of words but no special characters."
