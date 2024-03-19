@@ -41,6 +41,7 @@ function Userlist() {
             .catch(error => {
                 setIsLoading(false);
                 console.log("Error fetching following list:", error);
+                navigate("/epoch/home");
             });
     }, [setFullUserList, navigate, updateUser, user, setIsLoading]);
 

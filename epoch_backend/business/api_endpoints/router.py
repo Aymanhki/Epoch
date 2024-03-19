@@ -20,6 +20,7 @@ no_auth_endpoints = [
     "/api/user/",
     "/api/follow/accountList/",
     "/api/follow/followingList/",
+    "/api/follow/followerList/",
     "/api/follow/follow/",
     "/api/follow/unFollow/",
     "/api/upload/profile/1/",
@@ -38,13 +39,16 @@ def handle_routing(relative_path, request_data, conn, method):
                 return
 
         handle_api_request(method, relative_path, request_data, conn)
-
+    
     else:
+        send_response(conn, 404, "Not Found", body=b"<h1>404 Not Found</h1>")
+    ''' # Not Used
         if relative_path == '/':
             relative_path = INDEX_HTML_PATH
 
         full_path = os.path.join(HOME_PATH, relative_path.lstrip('/'))
         handle_static_request(method, conn, full_path)
+    '''
 
 
 def handle_api_request(method, path, request_data, conn):
@@ -214,7 +218,7 @@ def handle_api_request(method, path, request_data, conn):
 
     return
 
-
+''' # Not Implemented
 def handle_static_request(method, conn, path):
     absolute_path = os.path.abspath(path)
 
@@ -242,3 +246,4 @@ def handle_static_request(method, conn, path):
         body = file.read()
         send_response(conn, 200, "OK", body=body, headers=headers)
         return
+'''

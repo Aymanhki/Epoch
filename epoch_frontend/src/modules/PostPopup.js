@@ -4,6 +4,7 @@ import '../styles/PostPopup.css';
 import SmartMedia from "./SmartMedia";
 import {newPost, updatePost} from "../services/post.js"
 import {useSpring, animated} from 'react-spring';
+import {useNavigate} from "react-router-dom";
 
 
 export default function PostPopup({
@@ -46,6 +47,7 @@ export default function PostPopup({
     const [editPostFileChanged, setEditPostFileChanged] = useState(false);
     const [editPostFileRemoved, setEditPostFileRemoved] = useState(false);
     const checkBoxRef = React.createRef();
+    const navigate = useNavigate();
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -208,8 +210,12 @@ export default function PostPopup({
 
                         setPosting(false);
                     })
-                        .catch((error) => {
-                            setPosting(false)
+                        .catch((error) => {              
+                            if (error.startsWith("No session cookie found") || error.startsWith("Connection refused")) {
+                                // if not logged in or session expired a reload will kick them back to login but only if thats the error we get
+                                window.location.reload();
+                            }
+                            setPosting(false);
                             resetState();
                             setErrorMessage(error);
                             setError(true);
@@ -238,11 +244,16 @@ export default function PostPopup({
                             setShowPopup(false);
                             resetState();
                             setRefreshFeed(true);
+                            navigate("/epoch/profile");
                         }, 2000);
 
                         setPosting(false);
                     })
                         .catch((error) => {
+                            if (error.startsWith("No session cookie found") || error.startsWith("Connection refused")) {
+                                // if not logged in or session expired a reload will kick them back to login 
+                                window.location.reload();
+                            }
                             setPosting(false)
                             resetState();
                             setErrorMessage(error);
