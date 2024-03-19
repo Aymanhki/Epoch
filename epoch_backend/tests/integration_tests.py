@@ -130,7 +130,7 @@
 # if __name__ == '__main__':
 #     unittest.main()
 
-
+import time
 import random
 import unittest
 import os
@@ -290,6 +290,7 @@ class integration_tests(unittest.TestCase):
             lambda driver: driver.find_element(By.ID, "profile-delete-account-button") is not None)
         delete = driver.find_element(By.ID, "profile-delete-account-button")
         delete.click()
+        time.sleep(2)
         WebDriverWait(driver, default_element_wait_timeout).until(
             lambda driver: driver.find_element(By.ID, "delete-account-button-yes") is not None)
         yes = driver.find_element(By.ID, "delete-account-button-yes")
