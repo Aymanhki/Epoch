@@ -28,7 +28,7 @@ function Register() {
     const navigate = useNavigate();
     const maxImageBytes = 30000001;
     const maxVideoBytes = 200000001;
-    const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif"]
+    const allowedFileTypes = ["jpg", "jpeg", "png", "gif"]
 
     const handleProfilePicChange = async (e) => {
         const file = e.target.files[0];
@@ -38,16 +38,16 @@ function Register() {
             return;
         }
         if (!allowedFileTypes.includes(file.type.split('/')[1]) ) {
-            alert("Unsupported file type, try: .jpg, .jpeg, .png, .mp4, .mp3, .gif");
+            setGeneralErrorPrompt(("Unsupported file type: \""+ (file.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .gif"));
+            setGeneralError(true);
         }
-        else if (file.size > maxImageBytes && file.type.split('/')[1] !== "mp4") {
-            alert("Image File Size too Big: Max Image Size is 30Mb");
-        }
-        else if (file.size > maxVideoBytes && file.type.split('/')[1] === "mp4") {
-            alert("Video File Size too Big: Max Video Size is 200Mb");
+        else if (file.size > maxImageBytes) {
+            setGeneralErrorPrompt("Image File Size too Big: " + Math.round((file.size)/(1000000)) + "Mb > 30Mb");
+            setGeneralError(true);
         }
         else {
             setProfilePic(file);
+            setGeneralError(false);
         }
     };
 

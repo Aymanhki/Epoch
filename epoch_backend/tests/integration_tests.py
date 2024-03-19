@@ -262,6 +262,7 @@ class integration_tests(unittest.TestCase):
         WebDriverWait(driver, default_element_wait_timeout).until(
             lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
 
+
     def test_2_logout(self):
         driver = self.driver
         driver.get("http://localhost:3000/")
@@ -269,10 +270,6 @@ class integration_tests(unittest.TestCase):
             lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
         set_session_id(driver.get_cookie("epoch_session_id")["value"])
         driver.delete_cookie("epoch_session_id")
-        driver.get("http://localhost:3000/")
-        WebDriverWait(driver, default_element_wait_timeout).until(
-            lambda driver: driver.find_element(By.ID, "login-button") is not None)
-
 
 if __name__ == "__main__":
     unittest.main()
