@@ -25,7 +25,7 @@ export default function PostPopup({
                                       userId
                                   }) {
     const maxImageBytes = 30000001;
-    const maxVideoBytes = 300000001;
+    const maxVideoBytes = 200000001;
     const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif"]
     const [uploadedFile, setUploadedFile] = useState((editPost && postFile) ? postFile : null);
     const [postText, setPostText] = useState((editPost && caption) ? caption : null);
@@ -59,17 +59,17 @@ export default function PostPopup({
             if (!allowedFileTypes.includes(selectedFile.type.split('/')[1]) ) {
                 alert("Unsupported file type, try: .jpg, .jepg, .png, .mp4, .mp3, .gif");
                 setError(true);
-                setErrorMessage("Unsupported file type, try: .jpg, .jepg, .png, .mp4, .mp3, .gif");
+                setErrorMessage("Unsupported file type, try: .jpg, .jpeg, .png, .mp4, .mp3, .gif");
             }
-            else if (selectedFile.size > maxImageBytes && selectedFile.type.split('/')[1] !== ".mp4") {
+            else if (selectedFile.size > maxImageBytes && selectedFile.type.split('/')[1] !== "mp4") {
                 alert("Image File Size too Big: Max Image Size is 30Mb");
                 setError(true);
                 setErrorMessage("Image File Size too Big: ", selectedFile.size, " > 30Mb" );
             }
-            else if (selectedFile.size > maxVideoBytes && selectedFile.type.split('/')[1] === ".mp4") {
-                alert("Video File Size too Big: Max Video Size is 300Mb");
+            else if (selectedFile.size > maxVideoBytes && selectedFile.type.split('/')[1] === "mp4") {
+                alert("Video File Size too Big: Max Video Size is 200Mb");
                 setError(true);
-                setErrorMessage("Video File Size too Big: ", selectedFile.size, " > 300Mb");
+                setErrorMessage("Video File Size too Big: ", selectedFile.size, " > 200Mb");
             }
             else {
                 setUploadedFile(selectedFile);

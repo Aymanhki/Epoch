@@ -242,10 +242,22 @@ class integration_tests(unittest.TestCase):
         register.click()
         WebDriverWait(driver, default_element_wait_timeout).until(
             lambda driver: driver.get_cookie("epoch_session_id") is not None)
+        driver.get("http://localhost:3000/profile")
         WebDriverWait(driver, default_element_wait_timeout).until(lambda driver: self.name in driver.page_source)
         driver.delete_cookie("epoch_session_id")
+        
+    def test_2_logout(self):
+        driver = self.driver
+        driver.get("http://localhost:3000/")
+        WebDriverWait(driver, default_element_wait_timeout).until(
+            lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
+        set_session_id(driver.get_cookie("epoch_session_id")["value"])
+        driver.delete_cookie("epoch_session_id")
+        driver.get("http://localhost:3000/")
+        WebDriverWait(driver, default_element_wait_timeout).until(
+            lambda driver: driver.find_element(By.ID, "login-button") is not None)
 
-    def test_1_login(self):
+    def test_3_login(self):
         driver = self.driver
         driver.get("http://localhost:3000/login")
         WebDriverWait(driver, default_element_wait_timeout).until(
@@ -261,7 +273,7 @@ class integration_tests(unittest.TestCase):
         WebDriverWait(driver, default_element_wait_timeout).until(
             lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
 
-    def test_2_logout(self):
+    def test_4_logout(self):
         driver = self.driver
         driver.get("http://localhost:3000/")
         WebDriverWait(driver, default_element_wait_timeout).until(
