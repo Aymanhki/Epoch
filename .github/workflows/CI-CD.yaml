@@ -6,6 +6,29 @@ on:
       - main
 
 jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: SonarCloud Scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          ./gradlew sonarqube \
+            -Dsonar.projectKey=Aymanhki_Epoch \
+            -Dsonar.organization=aymanhki \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=$SONAR_TOKEN
+
   test-new-build:
     runs-on: ubuntu-latest
 
