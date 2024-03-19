@@ -33,7 +33,7 @@ class webserver_tests(unittest.TestCase):
     username = "WebserverTests" # str(uuid.uuid4())
     password = "Newuser1!" # str(uuid.uuid4())
     name = "some name"
-    bio = "a big long bio"
+    bio = "a big long bio with lots of words but no special characters."
     post_creation_time = '2024-02-22T06:36:12.653Z'
     user_to_follow_id = None
 
