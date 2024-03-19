@@ -59,7 +59,7 @@ function Register() {
         let wrongBio = false;
 
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$/;
-        const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
+        const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,30}$/
 
 
         if (!password.match(passwordRegex)) {
@@ -73,16 +73,16 @@ function Register() {
 
         if (!username.match(usernameRegex)) {
             setUsernameError(true);
-            setUsernameErrorPrompt('Username must be between 1 and 50 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -');
+            setUsernameErrorPrompt('Username must be between 1 and 30 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -');
             wrongUsername = true;
         } else {
             setUsernameError(false);
             wrongUsername = false;
         }
 
-        if (name.length <= 0 || name.length > 255) {
+        if (name.length <= 0 || name.length > 30) {
             setNameError(true);
-            setNameErrorPrompt('Name must be between 1 and 254 characters');
+            setNameErrorPrompt('Name must be between 1 and 30 characters');
             wrongName = true;
         } else {
             setNameError(false);

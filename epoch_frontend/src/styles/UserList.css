@@ -1,8 +1,9 @@
 .user-list-page {
     display: flex;
     justify-content: center;
+    align-items: center;
     width: 100%;
-    margin-bottom: 5rem;
+
 }
 
 .user-list-container {
@@ -29,7 +30,8 @@
     align-items: center;
     width: 100%;
     margin: 0;
-    padding: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 .MuiTextField-root .list-search-bar {
@@ -67,6 +69,8 @@
 .username {
     font-size: x-large;
     cursor: pointer;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .username:hover {
@@ -137,11 +141,35 @@
         font-size: large;
     }
 
+    .user-list-page {
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    .user-list-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
     .search-follow-button {
         font-size: small;
         padding:0.5rem;
         margin: 0;
     }
+
+    .search-follow-button:hover {
+        font-size: small;
+        padding:0.5rem;
+        margin: 0;
+    }
+
+
 
     .user-list-item {
        width: 100%;

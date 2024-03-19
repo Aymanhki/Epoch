@@ -346,9 +346,12 @@ function Profile() {
                                 )}
                             </div>
                         )}
-                        <h1 className="profile-name">{userInfo.name}</h1>
-                        <h2 className="profile-username">@{userInfo.username}</h2>
-                        <h3 className="profile-bio">{userInfo.bio}</h3>
+
+                        <div className="profile-info-limiter">
+                            <div><h1 className="profile-name">{userInfo.name}</h1></div>
+                            <div><h2 className="profile-username">@{userInfo.username}</h2></div>
+                            <div><h3 className="profile-bio">{userInfo.bio}</h3></div>
+                        </div>
                         {user !== null && (
                             isCurrentUser ? (
                                 <div className={'profile-buttons-wrapper'}>
