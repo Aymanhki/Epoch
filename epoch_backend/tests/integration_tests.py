@@ -168,8 +168,8 @@ class integration_tests(unittest.TestCase):
     driver = None
     frontend_dir = os.path.join("..", "..", "epoch_frontend")
     backend_dir = os.path.join("..", "..", "epoch_backend")
-    username = str(uuid.uuid4())
-    password = str(uuid.uuid4()) + "A1!"
+    username = "WebserverTests"
+    password = "Newuser1!"
     name = str(uuid.uuid4())
     bio = str(uuid.uuid4())
 
