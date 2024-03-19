@@ -190,9 +190,11 @@ def upload_file_to_cloud(username, file_name, file, content_type):
     bucket = client.get_bucket(BUCKET_NAME)
 
     blob = bucket.blob(path)
-    blob.upload_from_string(file, content_type=content_type)
-
     file_url = f"https://storage.googleapis.com/{BUCKET_NAME}/{path}"
+
+    if not is_file_in_bucket(file_url):
+        blob.upload_from_string(file, content_type=content_type, timeout=100000)
+
     client.close()
 
     return file_url

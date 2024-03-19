@@ -46,6 +46,7 @@ export default function PostPopup({
     const [hasUploadedFile, setHasUploadedFile] = useState((editPost && postFile) ? true : false);
     const [editPostFileChanged, setEditPostFileChanged] = useState(false);
     const [editPostFileRemoved, setEditPostFileRemoved] = useState(false);
+    const checkBoxRef = React.createRef();
     const navigate = useNavigate();
 
     const handleFileChange = (e) => {
@@ -333,9 +334,9 @@ export default function PostPopup({
                         <div className={'schedule-checkbox-wrapper'}>
                             <input
                                 className={`schedule-checkbox ${postNow ? 'checked' : ''} ${posting ? 'disabled' : ''}`}
-                                type="checkbox"
+                                type="checkbox" ref={checkBoxRef}
                                 checked={postNow} onChange={handleCheckboxChange}/>
-                            <label className={'schedule-checkbox-label'}>Do you want to post this now?</label>
+                            <label className={'schedule-checkbox-label'} onClick={() => {checkBoxRef.current.click()}}>Do you want to post this now?</label>
                         </div>
 
                         <div className={'schedule-options'}>
