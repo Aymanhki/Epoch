@@ -152,6 +152,7 @@ os.chdir(script_dir)
 
 servers_wait_time = 10
 default_element_wait_timeout = 60
+element_appear_wait_time = 3
 session_id = None
 
 from epoch_backend.business.utils import terminate_processes_on_port
@@ -290,7 +291,7 @@ class integration_tests(unittest.TestCase):
             lambda driver: driver.find_element(By.ID, "profile-delete-account-button") is not None)
         delete = driver.find_element(By.ID, "profile-delete-account-button")
         delete.click()
-        time.sleep(2)
+        time.sleep(element_appear_wait_time)
         WebDriverWait(driver, default_element_wait_timeout).until(
             lambda driver: driver.find_element(By.ID, "delete-account-button-yes") is not None)
         yes = driver.find_element(By.ID, "delete-account-button-yes")
