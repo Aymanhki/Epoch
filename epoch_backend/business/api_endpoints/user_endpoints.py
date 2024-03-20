@@ -190,8 +190,8 @@ def register_user(conn, request_data):
     name = data.get("name")
     origin = get_origin_from_headers(headers)
 
-    if len(bio) > 240 or len(name) > 255 or len(username) > 255 \
-        or not re.match(r'^[a-zA-Z0-9_.@$-]{1,49}$', username) \
+    if len(bio) > 240 or len(name) > 30 or len(username) > 30 \
+        or not re.match(r'^[a-zA-Z0-9_.@$-]{1,30}$', username) \
         or not re.match(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$', password):
         send_response(conn, 400, "Bad Request", body=b"Invalid request data", headers=get_cors_headers(origin))
         return
