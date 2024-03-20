@@ -26,7 +26,6 @@ no_auth_endpoints = [
     "/api/upload/profile/1/",
     "/api/user/posts/",
     "/api/post/hashtag/",
-    "/api/delete/userId/",
 ]
 
 
