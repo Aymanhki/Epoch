@@ -88,7 +88,7 @@ function Register() {
             setNameError(false);
             wrongName = false;
         }
-
+        
         if (bio.length > 240) {
             setBioError(true);
             setBioErrorPrompt('Bio must be less than 240 characters');
