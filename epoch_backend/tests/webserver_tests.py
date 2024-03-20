@@ -1,4 +1,5 @@
 import datetime
+import random
 import signal
 import subprocess
 import unittest
@@ -30,10 +31,10 @@ class webserver_tests(unittest.TestCase):
     server_thread = None
     web_server = None
     # allow us to go in manually if something happens when deleting this account
-    username = "WebserverTests" # str(uuid.uuid4())
-    password = "Newuser1!" # str(uuid.uuid4())
-    name = str(uuid.uuid4())
-    bio = str(uuid.uuid4())
+    username = "WebserverTests"+str(random.randint(1000,9999))
+    password = "Newuser1!"
+    name = "some name"
+    bio = "a big long bio with lots of words but no special characters."
     post_creation_time = '2024-02-22T06:36:12.653Z'
     user_to_follow_id = None
 
@@ -86,6 +87,12 @@ class webserver_tests(unittest.TestCase):
         return user_to_follow_id
 
     def test_a_register_user(self):
+        # delete our test account if its for some reason still in db
+        self.register_test_user()
+        response = requests.delete('http://localhost:8080/api/delete/userId/', 
+                                   json={'userId': self.get_user_id()},
+                                   cookies={'epoch_session_id': self.get_session_id()})
+                                   
         print("Registering user...")
         response = requests.post('http://localhost:8080/api/register/',
                                  json={'username': self.username, 'password': self.password, 'name': self.name,
@@ -236,7 +243,7 @@ class webserver_tests(unittest.TestCase):
     def test_m_login_nonexistent_user(self):
         print("Logging in nonexistent user...")
         response = requests.post('http://localhost:8080/api/login/',
-                                 json={'username': str(uuid.uuid4()), 'password': self.password})
+                                 json={'username': 'somenonexistentuser', 'password': self.password})
         self.assertEqual(response.status_code, 401)
         print(response.text)
         print("Nonexistent user not logged in.")
@@ -371,9 +378,9 @@ class webserver_tests(unittest.TestCase):
         print(f"User {i} deleted.")
 
     def test_q_load_test(self):
-        usernames = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
+        usernames = [str(uuid.uuid4())[0:20] for i in range(EXTREME_TEST_RANGE)]
         passwords = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
-        names = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
+        names = [str(uuid.uuid4())[0:20] for i in range(EXTREME_TEST_RANGE)]
         bios = [str(uuid.uuid4()) for i in range(EXTREME_TEST_RANGE)]
         session_ids = [None for i in range(EXTREME_TEST_RANGE)]
         user_ids = [None for i in range(EXTREME_TEST_RANGE)]
@@ -457,9 +464,10 @@ class webserver_tests(unittest.TestCase):
     def make_post(self):
         print("creating a post!")
         today = datetime.date.today()
+        postbody ="someText #"+self.username
         response = requests.post('http://localhost:8080/api/post/', 
                                 cookies={'epoch_session_id': self.get_session_id()},
-                                json={'postText': 'someText #webservertest', 'file': base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'),
+                                json={'postText': postbody, 'file': base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'),
                                        'fileType': 'image/jpeg', 'fileName': 'test.jpg', 'postNow': 'true', 'selectedDate': self.post_creation_time,
                                        'createdAt': self.post_creation_time, 'username': self.username })
         self.assertEqual(response.status_code, 200)
@@ -522,9 +530,9 @@ class webserver_tests(unittest.TestCase):
         response_json = response.json()
         self.assertEqual(response_json["name"], 'cEDRICtESTS')
         print("Updating with missing fields")
-        response = requests.post('http://localhost:8080/api/user/', 
-                                cookies = {'epoch_session_id': self.get_session_id()},
-                                json = {'username': self.username, 'userID': self.get_user_id()})
+        response = requests.post('http://localhost:8080/api/user/',
+                              cookies = {'epoch_session_id': self.get_session_id()},
+                               json = {'username': self.username, 'userID': self.get_user_id()})
         self.assertEqual(response.status_code, 400) # missing fields
     
     def test_z03_create_post(self): # POST "/api/post/" 
@@ -535,10 +543,11 @@ class webserver_tests(unittest.TestCase):
     def test_z04_hashtag_tests(self): # GET "/api/post/hashtag/" - Get all post with hash tag
         self.register_test_user()
         self.make_post()
+        hashtag = "#"+self.username
         print("Getting all post with the hashtag")
         response = requests.get('http://localhost:8080/api/post/hashtag/', 
                                 cookies={'epoch_session_id': self.get_session_id()},
-                                headers={"Hashtag": "webservertest"})
+                                headers={"Hashtag": hashtag})
         self.assertEqual(response.status_code, 200)
         response_json = response.json()
         self.assertEqual(response_json[0]["username"], self.username)
@@ -719,4 +728,4 @@ if __name__ == '__main__':
 
 
 # python -m pytest ./epoch_backend/tests/webserver_tests.py
-# python -m pytest --cov-config=.coveragerc --cov=epoch_backend -rA --color=yes --disable-warnings --disable-pytest-warnings --cov-report=html ./epoch_backend/tests/webserver_tests.p
+# python -m pytest --cov-config=.coveragerc --cov=epoch_backend -rA --color=yes --disable-warnings --disable-pytest-warnings --cov-report=html ./epoch_backend/tests/webserver_tests.py

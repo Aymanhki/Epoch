@@ -15,6 +15,7 @@ import Feed from "../modules/Feed";
 import EditProfilePopup from '../modules/EditProfilePopup';
 import PostPopup from "../modules/PostPopup";
 import {useSpring, animated} from 'react-spring';
+import NoSessionNavBar from '../modules/NoSessionNavBar';
 
 
 function Profile() {
@@ -170,6 +171,31 @@ function Profile() {
                     setIsLoading(false);
                 });
         }
+        else
+        {
+            setFollowDefaults();
+
+            if (user.username === username || username === "profile") {
+                setUserInfo(user);
+                setIsCurrentUser(true);
+            }
+            else
+            {
+                setIsCurrentUser(false);
+
+                getUsernameInfo(username)
+                    .then(data => {
+                        setUserInfo(data);
+                        setViewedID(data.id);
+                    })
+                    .catch(error => {
+                        setIsLoading(false);
+                        setUserNotFound(true);
+                    });
+            }
+
+            setIsLoading(false);
+        }
     }, [setIsLoading, setIsCurrentUser, updateUser, user, username]);
 
     useEffect(() => {
@@ -293,8 +319,9 @@ function Profile() {
 
     return (
         <>
-        {(user && (!deletingAccount)) && (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
-                          showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>)}
+        {(user && (!deletingAccount))  ? (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
+                          showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>) :
+                          (<NoSessionNavBar/>)}
         {(isLoading || deletingAccount) ? (
             <Spinner/>
         ) : (
@@ -319,9 +346,12 @@ function Profile() {
                                 )}
                             </div>
                         )}
-                        <h1 className="profile-name">{userInfo.name}</h1>
-                        <h2 className="profile-username">@{userInfo.username}</h2>
-                        <h3 className="profile-bio">{userInfo.bio}</h3>
+
+                        <div className="profile-info-limiter">
+                            <div><h1 className="profile-name">{userInfo.name}</h1></div>
+                            <div><h2 className="profile-username">@{userInfo.username}</h2></div>
+                            <div><h3 className="profile-bio">{userInfo.bio}</h3></div>
+                        </div>
                         {user !== null && (
                             isCurrentUser ? (
                                 <div className={'profile-buttons-wrapper'}>
@@ -330,6 +360,7 @@ function Profile() {
                                     <FavoriteBorderOutlinedIcon className={'profile-favorite-button'}
                                                                 onClick={() => navigate('/epoch/favorites')}></FavoriteBorderOutlinedIcon>
                                     <DeleteForeverOutlinedIcon className={'profile-delete-account-button'}
+                                    data-testid="profile-delete-account-button" id="profile-delete-account-button"
                                                                 onClick={() => setShowDeleteAccountPopup(true)}></DeleteForeverOutlinedIcon>
 
                                 </div>
@@ -430,7 +461,8 @@ function Profile() {
 
                     <div className={'delete-account-buttons-wrapper'}>
                     <button className="delete-account-button-no" onClick={() => setShowDeleteAccountPopup(false)}>No</button>
-                    <button className="delete-account-button-yes" onClick={onDeleteAccount}>Yes</button>
+                    <button className="delete-account-button-yes" data-testid="delete-account-button-yes" id="delete-account-button-yes" 
+                    onClick={onDeleteAccount}>Yes</button>
                     </div>
                 </div>
 

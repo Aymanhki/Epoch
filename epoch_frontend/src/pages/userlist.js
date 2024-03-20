@@ -80,13 +80,14 @@ function Userlist() {
 
     return (
         <>
-            {user ? (
-                isLoading ? <Spinner/> : (
-                    <>
-                        <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
-                                showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>
+            {user && (
+                <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
+                            showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>)}
+            {isLoading ? <Spinner/> : (
+
                         <div className={"user-list-page"}>
                             <div className="user-list-container">
+
 
 
                                 <div className="user-list-search-bar-container">
@@ -107,14 +108,17 @@ function Userlist() {
                                 
                                 
                             </div>
-                        </div>
+
+
                         <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
                                    username={user.username} profilePic={user.profile_pic_data} refreshFeed={refreshFeed}
                                    setRefreshFeed={setRefreshFeed}/>
+                        </div>
 
-                    </>
-                )
-            ):navigate("/epoch/home")}
+
+
+            )}
+
         </>
     );
 }

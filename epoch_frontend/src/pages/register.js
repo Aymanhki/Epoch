@@ -27,8 +27,7 @@ function Register() {
     const fileInputRef = React.createRef();
     const navigate = useNavigate();
     const maxImageBytes = 30000001;
-    const maxVideoBytes = 200000001;
-    const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif"]
+    const allowedFileTypes = ["jpg", "jpeg", "png", "gif", "HEIC", "heic", "JPG", "JPEG", "PNG", "GIF"];
 
     const handleProfilePicChange = async (e) => {
         const file = e.target.files[0];
@@ -38,16 +37,16 @@ function Register() {
             return;
         }
         if (!allowedFileTypes.includes(file.type.split('/')[1]) ) {
-            alert("Unsupported file type, try: .jpg, .jpeg, .png, .mp4, .mp3, .gif");
+            setGeneralErrorPrompt(("Unsupported file type: \""+ (file.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .gif"));
+            setGeneralError(true);
         }
-        else if (file.size > maxImageBytes && file.type.split('/')[1] !== "mp4") {
-            alert("Image File Size too Big: Max Image Size is 30Mb");
-        }
-        else if (file.size > maxVideoBytes && file.type.split('/')[1] === "mp4") {
-            alert("Video File Size too Big: Max Video Size is 200Mb");
+        else if (file.size > maxImageBytes) {
+            setGeneralErrorPrompt("Image File Size too Big: " + Math.round((file.size)/(1000000)) + "Mb > "+ Math.round((maxImageBytes)/(1000000)) +"Mb");
+            setGeneralError(true);
         }
         else {
             setProfilePic(file);
+            setGeneralError(false);
         }
     };
 
@@ -60,8 +59,8 @@ function Register() {
         let wrongBio = false;
 
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$/;
-        const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,49}$/
-        
+        const usernameRegex = /^[a-zA-Z0-9_.@$-]{1,30}$/
+
 
         if (!password.match(passwordRegex)) {
             setPasswordError(true);
@@ -74,16 +73,16 @@ function Register() {
 
         if (!username.match(usernameRegex)) {
             setUsernameError(true);
-            setUsernameErrorPrompt('Username must be between 1 and 50 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -');
+            setUsernameErrorPrompt('Username must be between 1 and 30 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -');
             wrongUsername = true;
         } else {
             setUsernameError(false);
             wrongUsername = false;
         }
 
-        if (name.length <= 0 || name.length > 255) {
+        if (name.length <= 0 || name.length > 30) {
             setNameError(true);
-            setNameErrorPrompt('Name must be between 1 and 254 characters');
+            setNameErrorPrompt('Name must be between 1 and 30 characters');
             wrongName = true;
         } else {
             setNameError(false);

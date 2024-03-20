@@ -27,7 +27,6 @@ jobs:
 
 
   test-new-build:
-    needs: security-scan
     runs-on: ubuntu-latest
 
     steps:
@@ -42,7 +41,7 @@ jobs:
       - name: SSH into Google Cloud VM for testing
         run: |
           set -e 
-          sshpass -p ${{ secrets.TESTER_SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.TESTER_SSH_USERNAME }} << EOF
+          sshpass -p ${{ secrets.TESTER_SSH_PASSWORD }} ssh -t -o StrictHostKeyChecking=no ${{ secrets.TESTER_SSH_USERNAME }} << EOF
             echo "Current directory path: $(pwd)"
             cd 
             rm -rf Epoch
@@ -52,10 +51,10 @@ jobs:
             cp credentials/virtual-bonito-412515-d7dae3104a12.json Epoch/epoch_backend/assets/
             cp credentials/fullchain.pem Epoch/epoch_backend/assets/
             cp credentials/privkey.pem Epoch/epoch_backend/assets/
-            cp credentials/db_params.json Epoch/epoch_frontend/assets/
-            cp credentials/virtual-bonito-412515-d7dae3104a12.json Epoch/epoch_frontend/assets/
-            cp credentials/fullchain.pem Epoch/epoch_frontend/assets/
-            cp credentials/privkey.pem Epoch/epoch_frontend/assets/
+            cp credentials/db_params.json Epoch/epoch_frontend/
+            cp credentials/virtual-bonito-412515-d7dae3104a12.json Epoch/epoch_frontend/
+            cp credentials/fullchain.pem Epoch/epoch_frontend/
+            cp credentials/privkey.pem Epoch/epoch_frontend/
             cd Epoch/epoch_frontend/
             npm install
             cd ..
@@ -85,7 +84,9 @@ jobs:
           EOF
 
   clean-old-build:
-    needs: test-new-build
+    needs:
+      - test-new-build
+      - security-scan
     runs-on: ubuntu-latest
 
     steps:
@@ -99,7 +100,7 @@ jobs:
 
       - name: SSH into Google Cloud VM for cleanup
         run: |
-          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -t -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
             echo "Current directory path: $(pwd)"
             cd 
             rm -rf Epoch
@@ -237,7 +238,7 @@ jobs:
             fi
 
       - name: Create Release
-        if: steps.is_major.outputs.is_major == 'true'
+        if: always()
         uses: actions/create-release@v1
         id: create_release
         env:
@@ -248,7 +249,7 @@ jobs:
 
       - name: Deploying Backend (Build and Run Backend Docker Container)
         run: |
-          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -t -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
             echo "Current directory path: $(pwd)"
             cd
             cd Epoch/epoch_backend/
@@ -268,7 +269,7 @@ jobs:
 
       - name: Deploying Frontend (Build and Run Frontend Docker Container)
         run: |
-          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -t -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }} << EOF
             echo "Current directory path: $(pwd)"
             cd
             cd Epoch/epoch_frontend/

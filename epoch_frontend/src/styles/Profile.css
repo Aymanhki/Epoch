@@ -89,7 +89,16 @@
 
 .profile-name {
     margin-bottom: 1rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
 
+.profile-info-limiter {
+    margin: auto;
+    width: 80%;
+    text-align: center;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .profile-username {
@@ -353,8 +362,9 @@
 
     .profile-name {
         font-size: 5vw;
-        margin-bottom: 0.3rem;
     }
+
+
 
     .profile-username {
         font-size: 3vw;
