@@ -25,7 +25,7 @@ no_auth_endpoints = [
     "/api/follow/unFollow/",
     "/api/upload/profile/1/",
     "/api/user/posts/",
-    "/api/post/hashtag/"
+    "/api/post/hashtag/",
 ]
 
 
