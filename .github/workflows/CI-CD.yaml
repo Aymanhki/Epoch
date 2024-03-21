@@ -28,11 +28,12 @@ jobs:
 
   local-test-new-build:
     runs-on: ubuntu-latest
+    permissions: write-all
+    needs: security-scan
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-
       - name: Install SSH Client and sshpass
         run: |
           sudo apt-get update
@@ -84,9 +85,7 @@ jobs:
           EOF
 
   clean-old-build:
-    needs:
-      - local-test-new-build
-      - security-scan
+    needs: local-test-new-build
     runs-on: ubuntu-latest
 
     steps:
@@ -310,8 +309,6 @@ jobs:
             cd
             rm -rf epoch_tests_results
             mkdir epoch_tests_results
-            sudo apt-get install -y openjdk-8-jre-headless
-            sudo apt-get install -y jmeter
             jmeter -n -t EpochLoadTestPlan.jmx -l ./epoch_tests_results/test_results_$(curl -s "https://registry.hub.docker.com/v2/repositories/$DOCKER_USERNAME/epoch_frontend/tags/?page_size=1" | jq -r '.results[0].name')_$(date +%Y-%m-%d_%H-%M-%S).csv
             cd Epoch/
             rm -rf epoch_tests_results
