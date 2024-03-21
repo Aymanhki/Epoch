@@ -85,7 +85,7 @@ jobs:
 
   clean-old-build:
     needs:
-      - test-new-build
+      - local-test-new-build
       - security-scan
     runs-on: ubuntu-latest
 
@@ -291,7 +291,8 @@ jobs:
 
   server-test-new-build:
     runs-on: ubuntu-latest
-
+    permissions: write-all
+    needs: deploy-new-build
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
