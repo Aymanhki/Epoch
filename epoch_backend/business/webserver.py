@@ -22,7 +22,7 @@ class webserver:
         self.host = host
         self.port = port
         self.server_socket.bind((host, port))
-        self.server_socket.listen(1000)
+        self.server_socket.listen(10000)
         self.active_threads = []
         self.thread_lock = threading.Lock()
         self.running = True
