@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'README.md'
+      - 'epoch_tests_results/**'
+      - 'epoch_tests_results/*'
+      - 'epoch_tests_results/'
+      - 'epoch_tests_results'
 
 jobs:
   security-scan:
