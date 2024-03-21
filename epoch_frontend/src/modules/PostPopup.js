@@ -60,7 +60,7 @@ export default function PostPopup({
                 setErrorMessage("Unsupported file type: \""+ (selectedFile.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .mp4, .mp3, .gif, .webm, .mov, .heic, .m4a");
                 setError(true);
             }
-            else if (selectedFile.size > maxImageBytes && selectedFile.type.split('/')[0] === "video") {
+            else if (selectedFile.size > maxImageBytes && selectedFile.type.split('/')[0] !== "video") {
                 setErrorMessage( "Image File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > "+ Math.round((maxImageBytes)/(1000000)) +"Mb" );
                 setError(true);
             }

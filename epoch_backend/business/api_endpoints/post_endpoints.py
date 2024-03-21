@@ -60,8 +60,12 @@ def new_post(conn, request_data):
 
             if media_id is not None and file_uploaded:
                 new_post = post(user_id, media_id, post_text, selected_date, created_at)
-                access_post_persistence().add_post(new_post)
-                send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
+                post_id = access_post_persistence().add_post(new_post)
+
+                if post_id is not None:
+                    send_response(conn, 200, "OK", json.dumps({"postId": post_id}).encode('UTF-8'), headers=get_cors_headers(origin))
+                else:
+                    send_response(conn, 500, "Internal Server Error", b"<h1>500 Internal Server Error</h1>", headers=get_cors_headers(origin))
             else:
                 send_response(conn, 500, "Internal Server Error", b"<h1>500 Internal Server Error</h1>",
                               headers=get_cors_headers(origin))

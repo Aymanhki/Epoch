@@ -17,14 +17,19 @@ class epoch_post_persistence(post_persistence):
         cursor = connection.cursor()
         if new_post.media_id is not None:
             cursor.execute(
-                "INSERT INTO posts (user_id, media_id, caption, created_at, release) VALUES (%s, %s, %s, %s, %s)",
+                "INSERT INTO posts (user_id, media_id, caption, created_at, release) VALUES (%s, %s, %s, %s, %s) RETURNING post_id",
                 (new_post.user_id, new_post.media_id, new_post.caption, new_post.created_at, new_post.release))
         else:
-            cursor.execute("INSERT INTO posts (user_id, caption, created_at, release) VALUES (%s, %s, %s, %s)",
-                           (new_post.user_id, new_post.caption, new_post.created_at, new_post.release))
+            cursor.execute(
+                "INSERT INTO posts (user_id, caption, created_at, release) VALUES (%s, %s, %s, %s) RETURNING post_id",
+                (new_post.user_id, new_post.caption, new_post.created_at, new_post.release))
+
+        post_id = cursor.fetchone()[0]
 
         connection.commit()
         connection.close()
+
+        return post_id
 
     def get_post(self, post_id: int):
         connection = get_db_connection()
