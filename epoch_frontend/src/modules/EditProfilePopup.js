@@ -308,6 +308,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
         setRemovableProfilePic(false);
         setRemovedOldProfilePic(true);
         setFormDataChanged(true);
+        document.getElementById("profilePic").value = null;
     }
 
     const onRemoveBackgroundPic = () => {
@@ -315,6 +316,7 @@ function EditProfilePopup({onClose, user, showEditProfilePopup, setShowEditProfi
         setRemovableBackgroundPic(false);
         setRemovedOldBackgroundPic(true);
         setFormDataChanged(true);
+        document.getElementById("backgroundPic").value = null;  
     }
 
     const onProfilePicChange = (e) => {

@@ -125,6 +125,7 @@ export default function PostPopup({
     }
 
     const handleClosing = () => {
+        handleRemoveMedia();
         if (!posting) {
             setUploadedFile(null);
             setShowPopup(false);
@@ -147,6 +148,7 @@ export default function PostPopup({
                 setEditPostFileRemoved(true);
             }
         }
+        document.getElementById("file").value = null;
     };
 
     const handlePost = () => {
