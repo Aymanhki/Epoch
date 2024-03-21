@@ -123,11 +123,6 @@ jobs:
             cd
             cp credentials/get_version.sh Epoch/epoch_backend/
             cp credentials/get_version.sh Epoch/epoch_frontend/
-            cd Epoch/epoch_frontend/
-            chmod +x get_version.sh
-            cd
-            cd Epoch/epoch_backend/
-            chmod +x get_version.sh
             exit
           EOF
 
@@ -319,7 +314,7 @@ jobs:
             git commit -m "Load Test results for $(curl -s "https://registry.hub.docker.com/v2/repositories/$DOCKER_USERNAME/epoch_backend/tags/?page_size=1" | jq -r '.results[0].name')_$(date +%Y-%m-%d_%H-%M-%S).csv"
             git config --global user.email $EMAIL
             git config --global user.name $NAME
-            git push origin main
+            git push https://$NAME:${{ secrets.GIT_PAT }}@github.com/$NAME/Epoch
             exit
           EOF
         env:
