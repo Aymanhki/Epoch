@@ -25,15 +25,16 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
 
     useEffect(() => {
         const closeDropdownOnOutsideClick = (event) => {
-            if (isDropdownOpen && !event.target.closest(".dropdown")) {
+            const dropdown = document.querySelector(".dropdown");
+            if (isDropdownOpen && !dropdown.contains(event.target)){
                 setIsDropdownOpen(false);
             }
         };
 
-        document.body.addEventListener("click", closeDropdownOnOutsideClick);
+        document.addEventListener("click", closeDropdownOnOutsideClick);
 
         return () => {
-            document.body.removeEventListener("click", closeDropdownOnOutsideClick);
+            document.removeEventListener("click", closeDropdownOnOutsideClick);
         };
     }, [isDropdownOpen]);
 
