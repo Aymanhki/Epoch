@@ -34,6 +34,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [releaseDay, setReleaseDay] = useState(-1);
     const [releaseYear, setReleaseYear] = useState(-1);
     const [releaseHour, setReleaseHour] = useState('');
+    const [releaseMinute, setReleaseMinute] = useState(-1);
+    const [releaseSecond, setReleaseSecond] = useState(-1);
     const [fileBlob, setFileBlob] = useState(null);
     const [updating, setUpdating] = useState(false);
     const [updatingMessage, setUpdatingMessage] = useState('');
@@ -46,8 +48,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [downVoted, setDownVoted] = useState(false);
     const [voteResult, setVoteResult] = useState(0);
     const [originalVote, setOriginalVote] = useState(0);
-    const [favoritedByUsernameList, setFavoritedByUsernameList] = useState(post.favorited_by_usernames);
-    const [voteByUsernameList, setVoteByUsernameList] = useState(post.votes_by_usernames);
+    const [favoritedByUsernameList, setFavoritedByUsernameList] = useState((post && post.favorited_by_usernames) ? post.favorited_by_usernames : []);
+    const [voteByUsernameList, setVoteByUsernameList] = useState((post && post.votes_by_usernames) ? post.votes_by_usernames : []);
     const [showFavoritedByList, setShowFavoritedByList] = useState(false);
     const [showVoteByList, setShowVoteByList] = useState(false);
 
@@ -73,6 +75,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         setReleaseMonth(parseInt(date.getMonth() + 1));
         setReleaseDay(parseInt(date.getDate()));
         setReleaseYear(parseInt(date.getFullYear()));
+        setReleaseMinute(parseInt(date.getMinutes()));
+        setReleaseSecond(parseInt(date.getSeconds()));
 
         let hour = date.getHours();
         let finalHour = (hour > 12) ? ((hour - 12) + ':00 PM') : (hour + ':00 AM');
@@ -573,7 +577,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                                 }
                             }}></ArrowCircleUpSharpIcon>
                             <button className={'vote-count'} onClick={() => {
-                                if (voteResult != 0) {
+                                if (voteByUsernameList.length > 0) {
                                     setShowFavoritedByList(false);
                                     setShowVoteByList(true);
                                 }
@@ -630,14 +634,14 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
                                profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
                                setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} postFile={fileBlob}
-                               year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour}
+                               year={releaseYear} month={releaseMonth}  day={releaseDay} hour={releaseHour}  minute={releaseMinute} second={releaseSecond}
                                postId={post.post_id} userId={postViewer.id}/>)
                 :
                 (showPostPopup && postViewer && postAdmin) && (
                     <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
                                profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
                                setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear}
-                               month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id}
+                               month={releaseMonth} day={releaseDay} hour={releaseHour} minute={releaseMinute} second={releaseSecond} postId={post.post_id}
                                userId={postViewer.id}/>)
             }
         </div>
