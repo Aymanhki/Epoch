@@ -21,6 +21,8 @@ export default function PostPopup({
                                       month,
                                       day,
                                       hour,
+                                      minute,
+                                      second,
                                       postId,
                                       userId
                                   }) {
@@ -34,8 +36,8 @@ export default function PostPopup({
     const [selectedMonth, setSelectedMonth] = useState((editPost && month) ? month : null);
     const [selectedDay, setSelectedDay] = useState((editPost && day) ? day : null);
     const [selectedHour, setSelectedHour] = useState((editPost && hour) ? hour : null);
-    const [selectedMinute, setSelectedMinute] = useState(null);
-    const [selectedSecond, setSelectedSecond] = useState(null);
+    const [selectedMinute, setSelectedMinute] = useState((editPost && minute) ? minute : null);
+    const [selectedSecond, setSelectedSecond] = useState((editPost && second) ? second : null);
     const [postButtonPrompt, setPostButtonPrompt] = useState((editPost) ? 'Save' : 'Post');
     const [error, setError] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -103,6 +105,8 @@ export default function PostPopup({
             setSelectedMonth(null);
             setSelectedDay(null);
             setSelectedHour(null);
+            setSelectedMinute(null);
+            setSelectedSecond(null);
         }
 
     }, [postNow, editPost]);
