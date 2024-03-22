@@ -172,7 +172,7 @@ export default function PostPopup({
             }
 
             if (postNow === false) {
-                if (!selectedYear || !selectedMonth || !selectedDay || !selectedHour) {
+                if (!selectedYear || !selectedMonth || !selectedDay || !selectedHour || !selectedMinute || !selectedSecond) {
                     setErrorMessage('Date and time must be selected');
                     setError(true);
                     return;
@@ -191,7 +191,7 @@ export default function PostPopup({
                 setSelectedMonth(parseInt(selectedMonth))
                 setSelectedYear(parseInt(selectedYear))
 
-                selectedDate = new Date(Date.UTC(selectedYear, selectedMonth - 1, selectedDay, hours, 0, 0, 0));
+                selectedDate = new Date(Date.UTC(selectedYear, selectedMonth - 1, selectedDay, hours, selectedMinute, selectedSecond, 0));
 
                 if (selectedDate < today) {
                     setErrorMessage('Date and time must be in the future');
@@ -409,6 +409,34 @@ export default function PostPopup({
                                     {hours.map((hour) => (
                                         <option key={hour} value={hour}>
                                             {hour}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <select value={selectedMinute || ''} onChange={(e) => {
+                                    setSelectedMinute(e.target.value);
+                                    setError(false);
+                                }
+                                } className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`}
+                                        disabled={postNow}>
+                                    <option value="">Select Minute</option>
+                                    {minutes.map((minute) => (
+                                        <option key={minute} value={minute}>
+                                            {minute}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <select value={selectedSecond || ''} onChange={(e) => {
+                                    setSelectedSecond(e.target.value);
+                                    setError(false);
+                                }
+                                } className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`}
+                                        disabled={postNow}>
+                                    <option value="">Select Second</option>
+                                    {seconds.map((second) => (
+                                        <option key={second} value={second}>
+                                            {second}
                                         </option>
                                     ))}
                                 </select>
