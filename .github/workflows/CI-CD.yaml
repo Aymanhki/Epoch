@@ -10,6 +10,10 @@ on:
       - 'epoch_tests_results/*'
       - 'epoch_tests_results/'
       - 'epoch_tests_results'
+      - 'epoch_project_documents/**'
+      - 'epoch_project_documents/*'
+      - 'epoch_project_documents/'
+      - 'epoch_project_documents'
 
 jobs:
   security-scan:

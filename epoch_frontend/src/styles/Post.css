@@ -229,7 +229,21 @@
 
 .favorited-by-count {
     font-weight: bold;
+    font-size: large;
+    cursor: pointer;
+    text-decoration: underline;
 
+    background-color: white;
+    color: #1a2a6c;
+}
+
+.favorited-by-count:hover {
+    font-weight: bold;
+    font-size: large;
+    text-decoration: underline;
+    cursor: pointer;
+    background-color: white;
+    color: #1a2a6c;
 }
 
 .favorite-button-wrapper {
@@ -244,6 +258,25 @@
     align-items: center;
     justify-content: center;
     gap: 1rem;
+}
+
+.vote-count {
+    font-weight: bold;
+    font-size: large;
+    text-decoration: underline;
+    cursor: pointer;
+    background-color: white;
+    color: #1a2a6c;
+}
+
+.vote-count:hover {
+    cursor: pointer;
+    text-decoration: underline;
+    background-color: white;
+    color: #1a2a6c;
+    font-weight: bold;
+    font-size: large;
+
 }
 
 .view-comments-button {
@@ -428,4 +461,29 @@
     .hashtag {
         color: lightblue;
     }
+
+    .vote-count {
+        background: inherit;
+        border: 0 solid #444444;
+        color: white;
+    }
+
+    .vote-count:hover {
+        background: inherit;
+        border: 0 solid #444444;
+        color: white;
+    }
+
+    .favorited-by-count {
+        background: inherit;
+        border: 0 solid #444444;
+        color: white;
+    }
+
+    .favorited-by-count:hover {
+        background: inherit;
+        border: 0 solid #444444;
+        color: white;
+    }
+
 }
