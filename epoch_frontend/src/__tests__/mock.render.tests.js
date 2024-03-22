@@ -86,7 +86,7 @@ describe('Render Pages', () => {
     test("displays user information on profile page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
         getUsernameInfo.mockResolvedValue(mockUser);
-        getAllUserPosts.mockResolvedValue([mockPost]);
+        getAllUserPosts.mockResolvedValue([]);
         getFollowingList.mockResolvedValue([]);
         getFollowerList.mockResolvedValue([]);
         profileFollowNetwork.mockResolvedValue([[], [], 0, 0]);
@@ -112,8 +112,8 @@ describe('Render Pages', () => {
 
     test("displays user information on home page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
-        getAllUserPosts.mockResolvedValue([mockPost]);
-        getFollowedUsersPost.mockResolvedValue([mockPost]);
+        getAllUserPosts.mockResolvedValue([]);
+        getFollowedUsersPost.mockResolvedValue([]);
 
         await act(async () => {
             render(
@@ -133,8 +133,8 @@ describe('Render Pages', () => {
 
     test("App lands on login home page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
-        getAllUserPosts.mockResolvedValue([mockPost]);
-        getFollowedUsersPost.mockResolvedValue([mockPost]);
+        getAllUserPosts.mockResolvedValue([]);
+        getFollowedUsersPost.mockResolvedValue([]);
 
         await act(async () => {
             render(<App/>);

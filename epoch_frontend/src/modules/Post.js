@@ -498,7 +498,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:-1});
             setVoteByUsernameList(updatedVoteByUsernameList);
         }
-    }, [vote]);
+    }, [vote, voteByUsernameList, postViewer, post, voteResult]);
 
     return (
         <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
@@ -572,7 +572,12 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                                     onVotePost(post.post_id, postViewer.id, vote, 'upVote');
                                 }
                             }}></ArrowCircleUpSharpIcon>
-                            <button className={'vote-count'} onClick={() => {setShowFavoritedByList(false); setShowVoteByList(true);}}>{voteResult}</button>
+                            <button className={'vote-count'} onClick={() => {
+                                if (voteResult != 0) {
+                                    setShowFavoritedByList(false);
+                                    setShowVoteByList(true);
+                                }
+                            }}>{voteResult}</button>
                             <ArrowCircleDownSharpIcon className={`down-vote-button ${downVoted ? 'active' : ''}`} onClick={() => {
                                 if(vote === -1)
                                 {
@@ -593,7 +598,12 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     {postViewer && (
                         <div className={'favorite-button-wrapper'}>
                             <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`} onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
-                            <button className={'favorited-by-count'} onClick={() => {setShowVoteByList(false); setShowFavoritedByList(true);}}>
+                            <button className={'favorited-by-count'} onClick={() => {
+                                if (favoritedByCount > 0) {
+                                    setShowVoteByList(false);
+                                    setShowFavoritedByList(true);
+                                }
+                            }}>
                                 {favoritedByCount}</button>
                         </div>)}
 
@@ -611,8 +621,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                 )}
             </div>
 
-            {(post &&  favoritedByUsernameList.length > 0 ) && (<PopupUserList showUserListModal={showFavoritedByList} setShowUserListModal={setShowFavoritedByList} popupList={favoritedByUsernameList}/>)}
-            {(post && voteByUsernameList.length !== 0 ) && (<PopupUserList showUserListModal={showVoteByList} setShowUserListModal={setShowVoteByList} popupList={voteByUsernameList}/>)}
+            <PopupUserList showUserListModal={showFavoritedByList} setShowUserListModal={setShowFavoritedByList} popupList={favoritedByUsernameList}/>
+             <PopupUserList showUserListModal={showVoteByList} setShowUserListModal={setShowVoteByList} popupList={voteByUsernameList}/>
 
             
             {(post.file) ?
