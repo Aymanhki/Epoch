@@ -12,6 +12,7 @@ import ArrowCircleUpSharpIcon from '@mui/icons-material/ArrowCircleUpSharp';
 import ArrowCircleDownSharpIcon from '@mui/icons-material/ArrowCircleDownSharp';
 import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../services/post";
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import PopupUserList from "./PopupUserList";
 
 
 export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
@@ -45,6 +46,10 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [downVoted, setDownVoted] = useState(false);
     const [voteResult, setVoteResult] = useState(0);
     const [originalVote, setOriginalVote] = useState(0);
+    const [favoritedByUsernameList, setFavoritedByUsernameList] = useState(post.favorited_by_usernames);
+    const [voteByUsernameList, setVoteByUsernameList] = useState(post.votes_by_usernames);
+    const [showFavoritedByList, setShowFavoritedByList] = useState(false);
+    const [showVoteByList, setShowVoteByList] = useState(false);
 
 
     useEffect(() => {
@@ -122,6 +127,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                         }, 5000);
                     });
             }
+
+            setShowFavoritedByList(false);
         }
     }
 
@@ -226,6 +233,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         // 5. user has downvoted the post and wants to upvote
         // 6. user has upvoted the post and wants to downvote
 
+        setShowVoteByList(false)
         if (vote === 0 && action === 'upVote') {
             setVote(1);
             setUpVoted(true);
@@ -458,7 +466,39 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     }, [post.votes, postViewer]);
 
 
+    useEffect(() => {
+        if (favorited)
+        {
+            let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            updatedFavoritedByUsernameList.push({username:postViewer.username, user_id:postViewer.id});
+            setFavoritedByUsernameList(updatedFavoritedByUsernameList);
+        }
+        else
+        {
+            let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            setFavoritedByUsernameList(updatedFavoritedByUsernameList);
+        }
+    }, [favorited, favoritedByUsernameList, postViewer, post, favoritedByCount]);
 
+    useEffect(() => {
+        if (vote == 0)
+        {
+            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            setVoteByUsernameList(updatedVoteByUsernameList);
+        }
+        else if(vote == 1)
+        {
+            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:1});
+            setVoteByUsernameList(updatedVoteByUsernameList);
+        }
+        else
+        {
+            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:-1});
+            setVoteByUsernameList(updatedVoteByUsernameList);
+        }
+    }, [vote]);
 
     return (
         <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
@@ -532,7 +572,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                                     onVotePost(post.post_id, postViewer.id, vote, 'upVote');
                                 }
                             }}></ArrowCircleUpSharpIcon>
-                            <p className={'vote-count'}>{voteResult}</p>
+                            <button className={'vote-count'} onClick={() => {setShowFavoritedByList(false); setShowVoteByList(true);}}>{voteResult}</button>
                             <ArrowCircleDownSharpIcon className={`down-vote-button ${downVoted ? 'active' : ''}`} onClick={() => {
                                 if(vote === -1)
                                 {
@@ -553,7 +593,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     {postViewer && (
                         <div className={'favorite-button-wrapper'}>
                             <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`} onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
-                            <p className={'favorited-by-count'}>{favoritedByCount}</p>
+                            <button className={'favorited-by-count'} onClick={() => {setShowVoteByList(false); setShowFavoritedByList(true);}}>
+                                {favoritedByCount}</button>
                         </div>)}
 
 
@@ -569,6 +610,9 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     </div>
                 )}
             </div>
+
+            {(post &&  favoritedByUsernameList.length > 0 ) && (<PopupUserList showUserListModal={showFavoritedByList} setShowUserListModal={setShowFavoritedByList} popupList={favoritedByUsernameList}/>)}
+            {(post && voteByUsernameList.length !== 0 ) && (<PopupUserList showUserListModal={showVoteByList} setShowUserListModal={setShowVoteByList} popupList={voteByUsernameList}/>)}
 
             
             {(post.file) ?
