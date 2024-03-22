@@ -48,8 +48,8 @@ const mockPost = {
     file_type: "image/jpeg",
     favorited_by: [],
     favorited_by_count: 0,
-    favoritedByUsernameList: [],
-    voteByUsernameList: [],
+    favorited_by_usernames: [],
+    votes_by_usernames: [],
 }
 
 
