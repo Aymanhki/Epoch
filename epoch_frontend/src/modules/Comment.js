@@ -96,7 +96,7 @@ function Comment({commentObject, commentViewer, refreshComments, setRefreshComme
       {showDeletePopup ? (
         <>
         <div className='delete-comment-header-wrapper'>
-          <h3 className="delete-comment-header">Are you sure you want to delete your comment? {errorMessage}</h3>
+          <h3 className="delete-comment-header">Are you sure you want to delete this comment?</h3>
         </div>
 
           <div className={'delete-comment-buttons-wrapper'}>
