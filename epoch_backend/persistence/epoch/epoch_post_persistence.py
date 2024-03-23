@@ -179,10 +179,18 @@ class epoch_post_persistence(post_persistence):
     def favorite_post(self, post_id: int, user_id: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO favorites (user_id, post_id) VALUES (%s, %s)", (user_id, post_id))
+        cursor.execute("INSERT INTO favorites (user_id, post_id) VALUES (%s, %s) ON CONFLICT DO NOTHING", (user_id, post_id))
         connection.commit()
         cursor.execute("UPDATE posts SET favorite_count = favorite_count + 1 WHERE post_id = %s", (post_id,))
         connection.commit()
+        cursor.execute("SELECT * FROM users left join posts on users.user_id = posts.user_id WHERE posts.post_id = %s", (post_id,))
+        user_info = cursor.fetchone()
+        cursor.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
+        fav_user_info = cursor.fetchone()
+
+        if (user_info[0] != user_id):
+            cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (user_info[0], "favorite", post_id, fav_user_info[2], fav_user_info[1]))
+            connection.commit()
         connection.close()
 
     def remove_favorite_post(self, post_id: int, user_id: int):
@@ -192,6 +200,14 @@ class epoch_post_persistence(post_persistence):
         connection.commit()
         cursor.execute("UPDATE posts SET favorite_count = favorite_count - 1 WHERE post_id = %s", (post_id,))
         connection.commit()
+        cursor.execute("SELECT * FROM users left join posts on users.user_id = posts.user_id WHERE posts.post_id = %s", (post_id,))
+        user_info = cursor.fetchone()
+        cursor.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
+        fav_user_info = cursor.fetchone()
+
+        if (user_info[0] != user_id):
+            cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (user_info[0], "delete-favorite", post_id, fav_user_info[2], fav_user_info[1]))
+            connection.commit()
         connection.close()
 
     def get_favorites(self, user_id: int):
@@ -227,6 +243,19 @@ class epoch_post_persistence(post_persistence):
             cursor.execute("UPDATE posts SET votes_count = votes_count - 1 WHERE post_id = %s", (post_id,))
 
         connection.commit()
+
+        cursor.execute("SELECT * FROM users left join posts on users.user_id = posts.user_id WHERE posts.post_id = %s", (post_id,))
+        user_info = cursor.fetchone()
+        cursor.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
+        vote_user_info = cursor.fetchone()
+
+        if (user_info[0] != user_id):
+            if vote == 1:
+                cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (user_info[0], "up-vote", post_id, vote_user_info[2], vote_user_info[1]))
+            else:
+                cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (user_info[0], "down-vote", post_id, vote_user_info[2], vote_user_info[1]))
+            connection.commit()
+
         connection.close()
 
     def remove_vote_post(self, post_id: int, user_id: int, vote: int):
@@ -241,4 +270,16 @@ class epoch_post_persistence(post_persistence):
             cursor.execute("UPDATE posts SET votes_count = votes_count + 1 WHERE post_id = %s", (post_id,))
 
         connection.commit()
+
+        cursor.execute("SELECT * FROM users left join posts on users.user_id = posts.user_id WHERE posts.post_id = %s", (post_id,))
+        user_info = cursor.fetchone()
+        cursor.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
+        vote_user_info = cursor.fetchone()
+
+        if (user_info[0] != user_id):
+            if vote == 1:
+                cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (user_info[0], "delete-up-vote", post_id, vote_user_info[2], vote_user_info[1]))
+            else:
+                cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (user_info[0], "delete-down-vote", post_id, vote_user_info[2], vote_user_info[1]))
+            connection.commit()
         connection.close()

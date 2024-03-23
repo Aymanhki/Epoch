@@ -130,6 +130,8 @@ export default function PostPopup({
         setSelectedDay(null);
         setSelectedHour(null);
         setHasUploadedFile(false);
+        setSelectedMinute(null);
+        setSelectedSecond(null);
     }
 
     const handleClosing = () => {

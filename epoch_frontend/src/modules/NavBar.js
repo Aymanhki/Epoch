@@ -10,14 +10,17 @@ import {removeSessionCookie} from "../services/user";
 import {UserContext} from "../services/UserContext";
 import SmartMedia from "./SmartMedia";
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import NotificationsActiveRoundedIcon from '@mui/icons-material/NotificationsActiveRounded';
+import NotificationsPopup from "./NotificationsPopup";
 
-
-const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPopup}) => {
+const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPopup, userId}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const {updateUser} = useContext(UserContext);
-
+    const [newUnreadNotifications, setNewUnreadNotifications] = useState(false);
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -57,7 +60,10 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
     }
 
     return (
+
         <div className="navbar">
+            <NotificationsPopup showNotifications={showNotifications} setShowNotifications={setShowNotifications} newUnreadNotifications={newUnreadNotifications} setNewUnreadNotifications={setNewUnreadNotifications} userId={userId}/>
+
             <div className="left">
                 <div className="logo-container" onClick={() => navigate('/epoch/home')}>
                     <img
@@ -95,6 +101,10 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
                     <SearchOutlinedIcon className="search-icon"/>
                 </NavLink>
 
+                <NavLink  className="active" onClick={() =>{ setShowNotifications(!showNotifications); }}>
+                    {newUnreadNotifications ? <NotificationsActiveRoundedIcon/> : <NotificationsNoneOutlinedIcon/>}
+                </NavLink>
+
                 <div className={`dropdown ${isDropdownOpen ? 'open' : ''}`} onClick={toggleDropdown}>
                     <div className="navbar-profile-photo-container">
                         {profilePic ? (
@@ -122,6 +132,7 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
 
 
                 </div>
+
             </div>
 
         </div>
