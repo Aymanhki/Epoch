@@ -82,7 +82,7 @@ function Userlist() {
         <>
             {user && (
                 <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
-                            showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>)}
+                            showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} userId={user.id}/>)}
             {isLoading ? <Spinner/> : (
 
                         <div className={"user-list-page"}>

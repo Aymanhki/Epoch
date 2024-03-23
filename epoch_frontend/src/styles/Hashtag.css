@@ -1,7 +1,7 @@
 .hashtag-page-container {
     display: flex;
     justify-content: center;
-    margin-top: 1rem;
+    margin-top: 5rem;
 }
 
 .hashtag-feed-wrapper {
@@ -23,5 +23,9 @@
 @media (max-width: 768px) {
     .hashtag-feed-wrapper {
         width: 100%;
+    }
+
+    .hashtag-page-container {
+        margin-top: 1rem;
     }
 }

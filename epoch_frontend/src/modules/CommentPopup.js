@@ -40,6 +40,7 @@ export default function CommentPopup({
         setCommentText('');
         setCommenting(false);
         setShowPopup(false);
+        setCommentButtonPrompt('Comment')
     }
 
     const handleComment = () => {

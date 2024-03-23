@@ -312,7 +312,7 @@ function Profile() {
     return (
         <>
         {(user && (!deletingAccount))  ? (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
-                          showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>) :
+                          showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} userId={user.id}/>) :
                           (<NoSessionNavBar/>)}
         {(isLoading || deletingAccount) ? (
             <Spinner/>
