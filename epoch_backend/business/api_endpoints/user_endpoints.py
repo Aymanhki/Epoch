@@ -178,13 +178,21 @@ def register_user(conn, request_data):
         body += conn.recv(1024).decode('UTF-8')
 
     data = json.loads(body)
+    required_fields = ['username', 'password', 'bio', 'name']
+    for field in required_fields:
+        if field not in data:
+            send_response(conn, 400, "Bad Request", body=b"Missing required fields", headers=get_cors_headers(origin))
+            return
+    
     username = data.get("username")
     password = data.get("password")
     bio = data.get("bio")
     name = data.get("name")
     origin = get_origin_from_headers(headers)
 
-    if len(bio) > 240 or len(name) > 255 or len(username) > 255:
+    if len(bio) > 240 or len(name) > 30 or len(username) > 30 \
+        or not re.match(r'^[a-zA-Z0-9_.@$-]{1,30}$', username) \
+        or not re.match(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$', password):
         send_response(conn, 400, "Bad Request", body=b"Invalid request data", headers=get_cors_headers(origin))
         return
 
@@ -342,7 +350,7 @@ def update_user_info(conn, request_data):
         new_background_pic_name = data.get('new_background_pic_name')
         created_at = data.get('created_at')
 
-        if len(bio) > 240 or len(name) > 255 or len(username) > 255:
+        if (bio and (len(bio) > 240)) or (name and (len(name) > 30)) or (username and (len(username) > 30)):
             send_response(conn, 400, "Bad Request", body=b"Invalid request data", headers=get_cors_headers(origin))
             return
 
@@ -353,8 +361,8 @@ def update_user_info(conn, request_data):
                 send_response(conn, 400, "Bad Request", body=b"Missing required fields", headers=get_cors_headers(origin))
                 return
 
-        if len(data.get('displayname', '')) > 255 \
-                or not re.match(r'^[a-zA-Z0-9_.@$-]{1,49}$', data.get('username', '')) \
+        if len(data.get('displayname', '')) > 30 \
+                or not re.match(r'^[a-zA-Z0-9_.@$-]{1,30}$', data.get('username', '')) \
                 or not re.match(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=|\\{}[\]:;<>,.?/~]).{8,254}$', data.get('password', '')):
 
             send_response(conn, 400, "Bad Request", body=b"Invalid request data", headers=get_cors_headers(origin))

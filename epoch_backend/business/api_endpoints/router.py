@@ -9,6 +9,7 @@ from ..db_controller.access_session_persistence import access_session_persistenc
 from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, update_post, get_followed_users_posts, favorite_post, remove_favorite_post, get_favorites, vote_post, remove_vote_post
 from ..api_endpoints.comment_endpoints import new_comment, get_all_comments_post, delete_comment
 from ..api_endpoints.post_endpoints import new_post, get_all_user_posts, get_all_hashtag_posts, delete_post, update_post, get_followed_users_posts, favorite_post, remove_favorite_post, get_favorites
+from ..api_endpoints.notification_endpoints import get_user_notifications, mark_notification_read, mark_all_notifications_read
 
 HOME_PATH = os.path.normpath('.././epoch_frontend/build/')
 INDEX_HTML_PATH = os.path.normpath('/index.html')
@@ -25,7 +26,7 @@ no_auth_endpoints = [
     "/api/follow/unFollow/",
     "/api/upload/profile/1/",
     "/api/user/posts/",
-    "/api/post/hashtag/"
+    "/api/post/hashtag/",
 ]
 
 
@@ -83,12 +84,14 @@ def handle_api_request(method, path, request_data, conn):
 
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+
     elif path == "/api/delete/username/":
         if method == "DELETE":
             delete_by_username(conn, request_data)
 
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
+
     elif path == "/api/user/":
         if method == "GET":
             get_user_from_name(conn, request_data)
@@ -190,22 +193,25 @@ def handle_api_request(method, path, request_data, conn):
             upload_profile_pic(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed</h1>")
-    # Comment paths
+
     elif path.startswith("/api/comments/post/"):
         if method == "POST":
             new_comment(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
+
     elif path.startswith("/api/comments/delete/"):
         if method == "DELETE":
             delete_comment(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
+
     elif path.startswith("/api/comments/get/"):
         if method == "GET":
             get_all_comments_post(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
+
     elif path.startswith("/api/vote/post/"):
         if method == "POST":
             vote_post(conn, request_data)
@@ -213,6 +219,17 @@ def handle_api_request(method, path, request_data, conn):
             remove_vote_post(conn, request_data)
         else:
             send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
+
+    elif path.startswith("/api/notifications/"):
+        if method == "GET" and path.startswith("/api/notifications/user/"):
+            get_user_notifications(conn, request_data)
+        elif method == "PUT" and path.startswith("/api/notifications/id/"):
+            mark_notification_read(conn, request_data)
+        elif method == "PUT" and path.startswith("/api/notifications/read/all/user/"):
+            mark_all_notifications_read(conn, request_data)
+        else:
+            send_response(conn, 405, "Method Not Allowed", body=b"<h1>405 Method Not Allowed>")
+
     else:
         send_response(conn, 404, "Not Found", body=b"<h1>404 Not Found</h1>")
 

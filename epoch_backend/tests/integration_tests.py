@@ -130,9 +130,9 @@
 # if __name__ == '__main__':
 #     unittest.main()
 
-
+import time
+import random
 import unittest
-import uuid
 import os
 import time
 from pathlib import Path
@@ -144,6 +144,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 import requests
 import json
 import pytest
+import random
 
 TEST_PROFILE_PIC_BINARY = bytearray(open(Path(__file__).parent / 'test.jpg', 'rb').read())
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -151,6 +152,7 @@ os.chdir(script_dir)
 
 servers_wait_time = 10
 default_element_wait_timeout = 60
+element_appear_wait_time = 3
 session_id = None
 
 from epoch_backend.business.utils import terminate_processes_on_port
@@ -168,10 +170,10 @@ class integration_tests(unittest.TestCase):
     driver = None
     frontend_dir = os.path.join("..", "..", "epoch_frontend")
     backend_dir = os.path.join("..", "..", "epoch_backend")
-    username = str(uuid.uuid4())
-    password = str(uuid.uuid4()) + "A1!"
-    name = str(uuid.uuid4())
-    bio = str(uuid.uuid4())
+    username = "WebserverTests"+str(random.randint(1000,9999)) # use this username so webservertest deletes this account. 
+    password = "Newuser1!"
+    name = "WebserverTests"
+    bio = "some bio"
 
     @classmethod
     def setUpClass(cls):
@@ -262,6 +264,7 @@ class integration_tests(unittest.TestCase):
         WebDriverWait(driver, default_element_wait_timeout).until(
             lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
 
+
     def test_2_logout(self):
         driver = self.driver
         driver.get("http://localhost:3000/")
@@ -269,10 +272,30 @@ class integration_tests(unittest.TestCase):
             lambda driver: driver.find_element(By.CLASS_NAME, "home-feed") is not None)
         set_session_id(driver.get_cookie("epoch_session_id")["value"])
         driver.delete_cookie("epoch_session_id")
-        driver.get("http://localhost:3000/")
+
+    def test_3_delete_account(self):
+        driver = self.driver
+        driver.get("http://localhost:3000/login")
         WebDriverWait(driver, default_element_wait_timeout).until(
             lambda driver: driver.find_element(By.ID, "login-button") is not None)
-
+        username = driver.find_element(By.NAME, "username")
+        username.send_keys(self.username)
+        password = driver.find_element(By.NAME, "password")
+        password.send_keys(self.password)
+        login = driver.find_element(By.ID, "login-button")
+        login.click()
+        WebDriverWait(driver, default_element_wait_timeout).until(
+            lambda driver: driver.get_cookie("epoch_session_id") is not None)
+        driver.get("http://localhost:3000/profile")
+        WebDriverWait(driver, default_element_wait_timeout).until(
+            lambda driver: driver.find_element(By.ID, "profile-delete-account-button") is not None)
+        delete = driver.find_element(By.ID, "profile-delete-account-button")
+        delete.click()
+        time.sleep(element_appear_wait_time)
+        WebDriverWait(driver, default_element_wait_timeout).until(
+            lambda driver: driver.find_element(By.ID, "delete-account-button-yes") is not None)
+        yes = driver.find_element(By.ID, "delete-account-button-yes")
+        yes.click()
 
 if __name__ == "__main__":
     unittest.main()

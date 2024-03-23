@@ -1,7 +1,7 @@
 .profile-page-container {
     display: flex;
     justify-content: center;
-    margin-top: 1rem;
+    margin-top: 5rem;
 }
 
 .profile-wrapper {
@@ -89,7 +89,16 @@
 
 .profile-name {
     margin-bottom: 1rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
 
+.profile-info-limiter {
+    margin: auto;
+    width: 80%;
+    text-align: center;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .profile-username {
@@ -165,62 +174,6 @@
 .profile-favorite-button:hover {
     background-color: red;
     color: white;
-}
-
-.popup-user-list {
-    list-style: none;
-    padding: 0;
-}
-
-.popup-list-item {
-    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
-    margin: 1rem;
-    padding: 1rem;
-    border-radius: 1rem;
-}
-
-.user-list-modal {
-    position: absolute;
-    border-radius: 1rem;
-    padding: 1rem;
-    background-color: white;
-    width: 50%;
-    max-height: 50%;
-    z-index: 1000;
-    overflow-y: auto;
-}
-
-.popup-user-list {
-    list-style: none;
-    padding: 0;
-}
-
-.popup-list-item {
-    padding: 8px 0;
-}
-
-.popup-list-item .p {
-    margin: 0;
-    padding: 0;
-}
-
-.popup-list-item .username {
-    cursor: pointer;
-    color: #333;
-    padding-left: 1rem;
-    margin-left: 1rem;
-    height: 100%;
-}
-
-.modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 0.5rem;
-    z-index: 1000;
 }
 
 .profile-delete-account-button {
@@ -322,10 +275,6 @@
         margin-bottom: 15rem;
     }
 
-    .user-list-modal {
-        width: 80%;
-    }
-
     .counts-wrapper {
         margin-bottom: 1rem;
     }
@@ -353,8 +302,9 @@
 
     .profile-name {
         font-size: 5vw;
-        margin-bottom: 0.3rem;
     }
+
+
 
     .profile-username {
         font-size: 3vw;
@@ -381,9 +331,6 @@
         font-size: 0.5rem;
     }
 
-    .user-list-modal {
-        width: 90%;
-    }
 
     .delete-account-modal {
         width: 90%;
@@ -417,15 +364,7 @@
         color: white;
     }
 
-    .popup-list-item .username {
-        cursor: pointer;
-        color: #ffffff;
-    }
 
-    .user-list-modal {
-        background-color: #333333;
-        color: white;
-    }
 
     .delete-account-modal {
         background-color: #333333;

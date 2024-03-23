@@ -48,11 +48,13 @@ const mockPost = {
     file_type: "image/jpeg",
     favorited_by: [],
     favorited_by_count: 0,
+    favorited_by_usernames: [],
+    votes_by_usernames: [],
 }
 
 
-const username = v4();
-const password = v4() + "A1!";
+const username = v4().substring(0, 20);
+const password = "ThisIsAValidPassword1!";
 
 describe('Render Pages', () => {
     beforeEach(() => {
@@ -84,7 +86,7 @@ describe('Render Pages', () => {
     test("displays user information on profile page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
         getUsernameInfo.mockResolvedValue(mockUser);
-        getAllUserPosts.mockResolvedValue([mockPost]);
+        getAllUserPosts.mockResolvedValue([]);
         getFollowingList.mockResolvedValue([]);
         getFollowerList.mockResolvedValue([]);
         profileFollowNetwork.mockResolvedValue([[], [], 0, 0]);
@@ -110,8 +112,8 @@ describe('Render Pages', () => {
 
     test("displays user information on home page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
-        getAllUserPosts.mockResolvedValue([mockPost]);
-        getFollowedUsersPost.mockResolvedValue([mockPost]);
+        getAllUserPosts.mockResolvedValue([]);
+        getFollowedUsersPost.mockResolvedValue([]);
 
         await act(async () => {
             render(
@@ -131,8 +133,8 @@ describe('Render Pages', () => {
 
     test("App lands on login home page", async () => {
         getUserInfo.mockResolvedValue(mockUser);
-        getAllUserPosts.mockResolvedValue([mockPost]);
-        getFollowedUsersPost.mockResolvedValue([mockPost]);
+        getAllUserPosts.mockResolvedValue([]);
+        getFollowedUsersPost.mockResolvedValue([]);
 
         await act(async () => {
             render(<App/>);

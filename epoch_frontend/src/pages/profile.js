@@ -15,7 +15,8 @@ import Feed from "../modules/Feed";
 import EditProfilePopup from '../modules/EditProfilePopup';
 import PostPopup from "../modules/PostPopup";
 import {useSpring, animated} from 'react-spring';
-
+import NoSessionNavBar from '../modules/NoSessionNavBar';
+import PopupUserList from "../modules/PopupUserList";
 
 function Profile() {
     const {username} = useParams();
@@ -50,15 +51,7 @@ function Profile() {
     const [deletingAccount, setDeletingAccount] = useState(false);
 
 
-    const {transform: inTransform} = useSpring({
-        transform: `translateY(${showUserListModal ? 0 : 100}vh)`,
-        config: {duration: 300},
-    });
 
-    const {transform: outTransform} = useSpring({
-        transform: `translateY(${showUserListModal ? 0 : -100}vh)`,
-        config: {duration: 300},
-    });
 
     const {transform: inTransformDelete} = useSpring({
         transform: `translateY(${showDeleteAccountPopup ? 0 : 100}vh)`,
@@ -169,6 +162,31 @@ function Profile() {
 
                     setIsLoading(false);
                 });
+        }
+        else
+        {
+            setFollowDefaults();
+
+            if (user.username === username || username === "profile") {
+                setUserInfo(user);
+                setIsCurrentUser(true);
+            }
+            else
+            {
+                setIsCurrentUser(false);
+
+                getUsernameInfo(username)
+                    .then(data => {
+                        setUserInfo(data);
+                        setViewedID(data.id);
+                    })
+                    .catch(error => {
+                        setIsLoading(false);
+                        setUserNotFound(true);
+                    });
+            }
+
+            setIsLoading(false);
         }
     }, [setIsLoading, setIsCurrentUser, updateUser, user, username]);
 
@@ -293,8 +311,9 @@ function Profile() {
 
     return (
         <>
-        {(user && (!deletingAccount)) && (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
-                          showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>)}
+        {(user && (!deletingAccount))  ? (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
+                          showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} userId={user.id}/>) :
+                          (<NoSessionNavBar/>)}
         {(isLoading || deletingAccount) ? (
             <Spinner/>
         ) : (
@@ -319,9 +338,12 @@ function Profile() {
                                 )}
                             </div>
                         )}
-                        <h1 className="profile-name">{userInfo.name}</h1>
-                        <h2 className="profile-username">@{userInfo.username}</h2>
-                        <h3 className="profile-bio">{userInfo.bio}</h3>
+
+                        <div className="profile-info-limiter">
+                            <div><h1 className="profile-name">{userInfo.name}</h1></div>
+                            <div><h2 className="profile-username">@{userInfo.username}</h2></div>
+                            <div><h3 className="profile-bio">{userInfo.bio}</h3></div>
+                        </div>
                         {user !== null && (
                             isCurrentUser ? (
                                 <div className={'profile-buttons-wrapper'}>
@@ -330,6 +352,7 @@ function Profile() {
                                     <FavoriteBorderOutlinedIcon className={'profile-favorite-button'}
                                                                 onClick={() => navigate('/epoch/favorites')}></FavoriteBorderOutlinedIcon>
                                     <DeleteForeverOutlinedIcon className={'profile-delete-account-button'}
+                                    data-testid="profile-delete-account-button" id="profile-delete-account-button"
                                                                 onClick={() => setShowDeleteAccountPopup(true)}></DeleteForeverOutlinedIcon>
 
                                 </div>
@@ -377,35 +400,8 @@ function Profile() {
 
 
 
+            <PopupUserList showUserListModal={showUserListModal} setShowUserListModal={setShowUserListModal} popupList={popupList}/>
 
-            <animated.div
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transform: showUserListModal ? inTransform : outTransform,
-                    zIndex: 1000
-                }}
-            >
-                <div className="modal-overlay" onClick={() => setShowUserListModal(false)}></div>
-
-                <div className="user-list-modal">
-                    <ul className="popup-user-list">
-                        {popupList && popupList.map && popupList.map(account =>
-                            <li key={account.user_id} className="popup-list-item">
-                                <p className="username" onClick={() => navigate('/epoch/' + account.username)}>@{account.username}</p>
-                            </li>
-                        )}
-                    </ul>
-                </div>
-
-            </animated.div>
 
             <animated.div
                 style={{
@@ -430,7 +426,8 @@ function Profile() {
 
                     <div className={'delete-account-buttons-wrapper'}>
                     <button className="delete-account-button-no" onClick={() => setShowDeleteAccountPopup(false)}>No</button>
-                    <button className="delete-account-button-yes" onClick={onDeleteAccount}>Yes</button>
+                    <button className="delete-account-button-yes" data-testid="delete-account-button-yes" id="delete-account-button-yes"
+                    onClick={onDeleteAccount}>Yes</button>
                     </div>
                 </div>
 

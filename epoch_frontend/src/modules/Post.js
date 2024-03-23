@@ -12,6 +12,7 @@ import ArrowCircleUpSharpIcon from '@mui/icons-material/ArrowCircleUpSharp';
 import ArrowCircleDownSharpIcon from '@mui/icons-material/ArrowCircleDownSharp';
 import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../services/post";
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import PopupUserList from "./PopupUserList";
 
 
 export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
@@ -33,6 +34,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [releaseDay, setReleaseDay] = useState(-1);
     const [releaseYear, setReleaseYear] = useState(-1);
     const [releaseHour, setReleaseHour] = useState('');
+    const [releaseMinute, setReleaseMinute] = useState(-1);
+    const [releaseSecond, setReleaseSecond] = useState(-1);
     const [fileBlob, setFileBlob] = useState(null);
     const [updating, setUpdating] = useState(false);
     const [updatingMessage, setUpdatingMessage] = useState('');
@@ -45,6 +48,10 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [downVoted, setDownVoted] = useState(false);
     const [voteResult, setVoteResult] = useState(0);
     const [originalVote, setOriginalVote] = useState(0);
+    const [favoritedByUsernameList, setFavoritedByUsernameList] = useState((post && post.favorited_by_usernames) ? post.favorited_by_usernames : []);
+    const [voteByUsernameList, setVoteByUsernameList] = useState((post && post.votes_by_usernames) ? post.votes_by_usernames : []);
+    const [showFavoritedByList, setShowFavoritedByList] = useState(false);
+    const [showVoteByList, setShowVoteByList] = useState(false);
 
 
     useEffect(() => {
@@ -68,6 +75,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         setReleaseMonth(parseInt(date.getMonth() + 1));
         setReleaseDay(parseInt(date.getDate()));
         setReleaseYear(parseInt(date.getFullYear()));
+        setReleaseMinute(parseInt(date.getMinutes()));
+        setReleaseSecond(parseInt(date.getSeconds()));
 
         let hour = date.getHours();
         let finalHour = (hour > 12) ? ((hour - 12) + ':00 PM') : (hour + ':00 AM');
@@ -122,6 +131,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                         }, 5000);
                     });
             }
+
+            setShowFavoritedByList(false);
         }
     }
 
@@ -226,6 +237,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         // 5. user has downvoted the post and wants to upvote
         // 6. user has upvoted the post and wants to downvote
 
+        setShowVoteByList(false)
         if (vote === 0 && action === 'upVote') {
             setVote(1);
             setUpVoted(true);
@@ -458,7 +470,39 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     }, [post.votes, postViewer]);
 
 
+    useEffect(() => {
+        if (favorited)
+        {
+            let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            updatedFavoritedByUsernameList.push({username:postViewer.username, user_id:postViewer.id});
+            setFavoritedByUsernameList(updatedFavoritedByUsernameList);
+        }
+        else
+        {
+            let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            setFavoritedByUsernameList(updatedFavoritedByUsernameList);
+        }
+    }, [favorited, favoritedByUsernameList, postViewer, post, favoritedByCount]);
 
+    useEffect(() => {
+        if (vote == 0)
+        {
+            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            setVoteByUsernameList(updatedVoteByUsernameList);
+        }
+        else if(vote == 1)
+        {
+            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:1});
+            setVoteByUsernameList(updatedVoteByUsernameList);
+        }
+        else
+        {
+            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:-1});
+            setVoteByUsernameList(updatedVoteByUsernameList);
+        }
+    }, [vote, voteByUsernameList, postViewer, post, voteResult]);
 
     return (
         <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
@@ -532,7 +576,12 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                                     onVotePost(post.post_id, postViewer.id, vote, 'upVote');
                                 }
                             }}></ArrowCircleUpSharpIcon>
-                            <p className={'vote-count'}>{voteResult}</p>
+                            <button className={'vote-count'} onClick={() => {
+                                if (voteByUsernameList.length > 0) {
+                                    setShowFavoritedByList(false);
+                                    setShowVoteByList(true);
+                                }
+                            }}>{voteResult}</button>
                             <ArrowCircleDownSharpIcon className={`down-vote-button ${downVoted ? 'active' : ''}`} onClick={() => {
                                 if(vote === -1)
                                 {
@@ -553,7 +602,13 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     {postViewer && (
                         <div className={'favorite-button-wrapper'}>
                             <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`} onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
-                            <p className={'favorited-by-count'}>{favoritedByCount}</p>
+                            <button className={'favorited-by-count'} onClick={() => {
+                                if (favoritedByCount > 0) {
+                                    setShowVoteByList(false);
+                                    setShowFavoritedByList(true);
+                                }
+                            }}>
+                                {favoritedByCount}</button>
                         </div>)}
 
 
@@ -570,20 +625,23 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                 )}
             </div>
 
+            <PopupUserList showUserListModal={showFavoritedByList} setShowUserListModal={setShowFavoritedByList} popupList={favoritedByUsernameList}/>
+             <PopupUserList showUserListModal={showVoteByList} setShowUserListModal={setShowVoteByList} popupList={voteByUsernameList}/>
+
             
             {(post.file) ?
                 (showPostPopup && fileBlob && postViewer && postAdmin) && (
                     <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
                                profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
                                setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} postFile={fileBlob}
-                               year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour}
+                               year={releaseYear} month={releaseMonth}  day={releaseDay} hour={releaseHour}  minute={releaseMinute} second={releaseSecond}
                                postId={post.post_id} userId={postViewer.id}/>)
                 :
                 (showPostPopup && postViewer && postAdmin) && (
                     <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
                                profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
                                setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear}
-                               month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id}
+                               month={releaseMonth} day={releaseDay} hour={releaseHour} minute={releaseMinute} second={releaseSecond} postId={post.post_id}
                                userId={postViewer.id}/>)
             }
         </div>

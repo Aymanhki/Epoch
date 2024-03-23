@@ -1,5 +1,6 @@
 import {fillUserList} from "../services/following";
-import React, {useState, useEffect, useContext} from 'react';
+import {getUserInfo} from '../services/user';
+import React, {useState, useEffect} from 'react';
 import {useNavigate} from "react-router-dom";
 import {Spinner} from '../modules/Spinner'
 import NavBar from "../modules/NavBar";
@@ -16,12 +17,11 @@ function Userlist() {
     const [changedStatus, changeStatus] = useState(false);
     const [showNewPostPopup, setShowNewPostPopup] = useState(false);
     const [refreshFeed, setRefreshFeed] = useState(false);
-    const {user} = useContext(UserContext);
-    const {updateUser} = useContext(UserContext);
     const navigate = useNavigate();
     const [searchInput, setSearchInput] = useState("");
     const [darkMode, setDarkMode] = useState(false);
-
+    const [userInfo, setUserInfo] = useState({});
+    let reloadUser = false;
 
     let handleChange = (event) => {
         setSearchInput(event.target.value.toLowerCase());
@@ -29,9 +29,20 @@ function Userlist() {
 
     useEffect(() => {
         setIsLoading(true);
-        if (!user) {
-            updateUser(null);
-        }
+            getUserInfo()
+                .then(data => {
+                    setUserInfo(data);
+                    setIsLoading(false);
+                })
+                .catch(error => {
+                    console.log("Error fetching user info:", error);
+                    setIsLoading(false);
+
+                });
+    },[reloadUser])
+
+    useEffect(() => {
+        setIsLoading(true);
         fillUserList()
             .then(data => {
                 setFullUserList(data);
@@ -43,7 +54,7 @@ function Userlist() {
                 console.log("Error fetching following list:", error);
                 navigate("/epoch/home");
             });
-    }, [setFullUserList, navigate, updateUser, user, setIsLoading]);
+    }, [setFullUserList, navigate, setIsLoading]);
 
     useEffect(() => {
         changeStatus(false);
@@ -80,41 +91,51 @@ function Userlist() {
 
     return (
         <>
-            {user ? (
+            {userInfo ? (
+
                 isLoading ? <Spinner/> : (
                     <>
-                        <NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
-                                showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>
-                        <div className={"user-list-page"}>
-                            <div className="user-list-container">
+
+                    <NavBar profilePic={userInfo.profile_pic_data} profilePicType={userInfo.profile_pic_type}
+                                showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} userId={userInfo.id}/>
+
+                            <div className={"user-list-page"}>
+
+                                <div className="user-list-container">
 
 
-                                <div className="user-list-search-bar-container">
-                                    <TextField className="list-search-bar"
-                                               label="Search users.."
-                                               variant="outlined"
-                                               onChange={handleChange}
-                                               value={searchInput}
-                                               InputProps={{style: {width: "100%"}}}
-                                               sx={{
-                                                   input: {
-                                                       color: darkMode ? 'white' : '#1a2a6c', // Change color based on dark mode
-                                                   }
-                                               }}
-                                    />
+
+                                    <div className="user-list-search-bar-container">
+
+                                        <TextField className="list-search-bar"
+                                                label="Search users.."
+                                                variant="outlined"
+                                                onChange={handleChange}
+                                                value={searchInput}
+                                                InputProps={{style: {width: "100%"}}}
+                                                sx={{
+                                                    input: {
+                                                        color: darkMode ? 'white' : '#1a2a6c', // Change color based on dark mode
+                                                    }
+                                                }}
+                                        />
+
+                                    </div>
+
+                                    { (filteredList.length > 0 || searchInput.length > 0) ? (<UserListModule userList={filteredList}/>) : (<UserListModule userList={fullUserList}/>) }
+
                                 </div>
-                                { (filteredList.length > 0 || searchInput.length > 0) ? (<UserListModule userList={filteredList}/>) : (<UserListModule userList={fullUserList}/>) }
-                                
-                                
-                            </div>
-                        </div>
-                        <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
-                                   username={user.username} profilePic={user.profile_pic_data} refreshFeed={refreshFeed}
-                                   setRefreshFeed={setRefreshFeed}/>
 
-                    </>
+                            <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
+                                    username={userInfo.username} profilePic={userInfo.profile_pic_data} refreshFeed={refreshFeed}
+                                    setRefreshFeed={setRefreshFeed}/>
+
+                            </div>
+
+
+                </>
                 )
-            ):navigate("/epoch/home")}
+            ):(reloadUser=!reloadUser)}
         </>
     );
 }
