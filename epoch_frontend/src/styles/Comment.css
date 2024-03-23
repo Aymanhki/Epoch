@@ -101,54 +101,6 @@
     color: white;
 }
 
-.delete-comment-button-yes {
-    padding: 0.5rem;
-    border-radius: 10%;
-    cursor: pointer;
-    background-color: white;
-    color: red;
-    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
-    border: none;
-
-}
-
-.delete-comment-button-yes:hover {
-    background-color: red;
-    color: white;
-}
-
-.delete-comment-button-no {
-    padding: 0.5rem;
-    border-radius: 10%;
-    cursor: pointer;
-    background-color: white;
-    color: green;
-    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
-    border: none;
-
-}
-
-.delete-comment-button-no:hover {
-    background-color: green;
-    color: white;
-}
-
-.delete-comment-header {
-    color: red;
-}
-
-.delete-comment-header-wrapper {
-    display: flex;
-    justify-content: center;
-}
-
-.delete-comment-buttons-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
-    gap: 1rem;
-}
-
 @media (max-width: 768px) {
     .view-comments-button {
         padding: 0.5rem 1rem;
