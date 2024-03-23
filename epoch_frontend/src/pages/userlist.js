@@ -54,7 +54,7 @@ function Userlist() {
                 console.log("Error fetching following list:", error);
                 navigate("/epoch/home");
             });
-    }, [setFullUserList, navigate, updateUser, user, setIsLoading]);
+    }, [setFullUserList, navigate, setIsLoading]);
 
     useEffect(() => {
         changeStatus(false);
@@ -97,7 +97,7 @@ function Userlist() {
                     <>
 
                     <NavBar profilePic={userInfo.profile_pic_data} profilePicType={userInfo.profile_pic_type}
-                                showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>
+                                showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} userId={userInfo.id}/>
 
                             <div className={"user-list-page"}>
 
