@@ -15,11 +15,16 @@ function Comment({commentObject, commentViewer, refreshComments, setRefreshComme
   const [showOverlay, setShowOverlay] = useState(false);
   const [deleted, setDeleted] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
 
   const handleProfilePhotoClick = (imageUrl) => {
     setOverlayImageUrl(imageUrl);
     setShowOverlay(true);
   };
+
+  const donothing = () => {
+
+  }
 
     const onDeleteComment = (comm_id) => {
         if (deleting) {return;}
@@ -27,6 +32,7 @@ function Comment({commentObject, commentViewer, refreshComments, setRefreshComme
         setDeleting(true);
         setErrorMessage('Deleting comment...');
         setError(true);
+
       deleteComment(comm_id, commentObject.post_id, commentViewer.id)
         .then(() => {
           setDeleted(true);
@@ -66,7 +72,7 @@ function Comment({commentObject, commentViewer, refreshComments, setRefreshComme
           {error && (<p className="comment-error-message">{errorMessage}</p>)}
 
           {commentViewer.username === commentObject.username && (
-            <DeleteForeverOutlinedIcon className="delete-comment-icon" onClick={() => onDeleteComment(commentObject.comm_id)}/>
+            <DeleteForeverOutlinedIcon className="delete-comment-icon" onClick={() => setShowDeletePopup(!showDeletePopup)}/>
           )}
         </div>
 
@@ -87,9 +93,20 @@ function Comment({commentObject, commentViewer, refreshComments, setRefreshComme
         </div>
 
       </div>
-    </div>
+      {showDeletePopup ? (
+        <>
+        <div className='delete-comment-header-wrapper'>
+          <h3 className="delete-comment-header">Are you sure you want to delete your comment? {errorMessage}</h3>
+        </div>
 
+          <div className={'delete-comment-buttons-wrapper'}>
+            <button className="delete-comment-button-no" onClick={() => setShowDeletePopup(false)}>No</button>
+            <button className="delete-comment-button-yes" onClick={() => onDeleteComment(commentObject.comm_id)}>Yes</button>
+          </div>
+        </>
+          ):(donothing)}
+      </div>
   );
 }
 
-export default Comment
+export default Comment;
