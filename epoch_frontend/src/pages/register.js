@@ -64,7 +64,7 @@ function Register() {
 
         if (!password.match(passwordRegex)) {
             setPasswordError(true);
-            setPasswordErrorPrompt('Password must be between 1 and 254 characters, at least one uppercase letter, one lowercase letter, one number, and one special character');
+            setPasswordErrorPrompt('Password must be between 8 and 254 characters, at least one uppercase letter, one lowercase letter, one number, and one special character');
             wrongPassword = true;
         } else {
             setPasswordError(false);
