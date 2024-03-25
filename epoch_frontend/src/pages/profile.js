@@ -51,8 +51,6 @@ function Profile() {
     const [deletingAccount, setDeletingAccount] = useState(false);
 
 
-
-
     const {transform: inTransformDelete} = useSpring({
         transform: `translateY(${showDeleteAccountPopup ? 0 : 100}vh)`,
         config: {duration: 300},
@@ -117,7 +115,6 @@ function Profile() {
             getUserInfo()
                 .then(data => {
                     updateUser(data);
-                    setFollowDefaults();
 
                     if (data.username === username || username === "profile") {
                         setUserInfo(data);
@@ -165,7 +162,6 @@ function Profile() {
         }
         else
         {
-            setFollowDefaults();
 
             if (user.username === username || username === "profile") {
                 setUserInfo(user);
@@ -208,7 +204,7 @@ function Profile() {
 
     }, [setIsFollowing, setIsFollowingPrompt, viewedId, user]);
 
-    useEffect(() => {
+    const fetchProfileFollowData = () => {
         if (isCurrentUser) {
             profileFollowNetwork("self")
                 .then(data => {
@@ -221,7 +217,7 @@ function Profile() {
                 .catch(error => {
                     console.log("Error fetching follower list:", error);
                     setIsLoading(false);
-                })
+                });
         } else if (viewedId && viewedId > -1) {
             profileFollowNetwork(viewedId)
                 .then(data => {
@@ -230,19 +226,21 @@ function Profile() {
                     setFollowingList(data[2]);
                     setFollowerList(data[3]);
                     setIsLoading(false);
-                    if(isFollowing) {
+                    if (isFollowing) {
                         setIsFollowingPrompt('Unfollow');
-                    }
-                    else {
-                        setIsFollowingPrompt('Follow')
+                    } else {
+                        setIsFollowingPrompt('Follow');
                     }
                 })
                 .catch(error => {
-                        console.log("Error fetching follower list:", error);
-                        setIsLoading(false);
-                    }
-                )
+                    console.log("Error fetching follower list:", error);
+                    setIsLoading(false);
+                });
         }
+    };
+
+    useEffect(() => {
+        fetchProfileFollowData();
     }, [isCurrentUser, viewedId, user, isFollowing]);
 
     useEffect(() => {
@@ -363,12 +361,16 @@ function Profile() {
                             )
                         )}
                         <div className="counts-wrapper">
+                            
+                            {(followingCount === "...." || followerCount === "....") && fetchProfileFollowData()}
+                            
                             <button className="following-count" onClick={() => {
                                 if (followingCount > 0) {
                                     handleCountClick("following")
                                 }
                             }}>
                                 Following: {followingCount}
+                                
                             </button>
                             <button className="follower-count" onClick={() => {
                                 if(followerCount > 0) {
@@ -376,6 +378,7 @@ function Profile() {
                                 }
                             }}>
                                 Followers: {followerCount}
+                                
                             </button>
                         </div>
                     </div>
