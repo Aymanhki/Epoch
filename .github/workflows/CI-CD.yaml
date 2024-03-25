@@ -4,6 +4,16 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'ReadMe.md'
+      - 'epoch_tests_results/**'
+      - 'epoch_tests_results/*'
+      - 'epoch_tests_results/'
+      - 'epoch_tests_results'
+      - 'epoch_project_documents/**'
+      - 'epoch_project_documents/*'
+      - 'epoch_project_documents/'
+      - 'epoch_project_documents'
 
 jobs:
   security-scan:
@@ -26,13 +36,14 @@ jobs:
             -Dsonar.organization=aymanhki
 
 
-  test-new-build:
+  local-test-new-build:
     runs-on: ubuntu-latest
+    permissions: write-all
+    needs: security-scan
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-
       - name: Install SSH Client and sshpass
         run: |
           sudo apt-get update
@@ -84,9 +95,7 @@ jobs:
           EOF
 
   clean-old-build:
-    needs:
-      - test-new-build
-      - security-scan
+    needs: local-test-new-build
     runs-on: ubuntu-latest
 
     steps:
@@ -124,11 +133,6 @@ jobs:
             cd
             cp credentials/get_version.sh Epoch/epoch_backend/
             cp credentials/get_version.sh Epoch/epoch_frontend/
-            cd Epoch/epoch_frontend/
-            chmod +x get_version.sh
-            cd
-            cd Epoch/epoch_backend/
-            chmod +x get_version.sh
             exit
           EOF
 
@@ -288,3 +292,46 @@ jobs:
 
 
         if: success()
+
+  server-test-new-build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    needs: deploy-new-build
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install SSH Client and sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client sshpass
+
+      - name: SSH into Google Cloud VM for testing
+        run: |
+          set -e 
+          sshpass -p ${{ secrets.TESTER_SSH_PASSWORD }} ssh -t -o StrictHostKeyChecking=no ${{ secrets.TESTER_SSH_USERNAME }} << EOF
+            echo "Current directory path: $(pwd)"
+            cd
+            rm -rf epoch_tests_results
+            mkdir epoch_tests_results
+            jmeter -n -t EpochLoadTestPlan.jmx -l ./epoch_tests_results/test_results_$(curl -s "https://registry.hub.docker.com/v2/repositories/$DOCKER_USERNAME/epoch_frontend/tags/?page_size=1" | jq -r '.results[0].name')_$(date +%Y-%m-%d_%H-%M-%S).csv
+            cd Epoch/
+            rm -rf epoch_tests_results
+            cd ..
+            mv epoch_tests_results Epoch/
+            cd Epoch/
+            git add epoch_tests_results
+            git commit -m "Load Test results for $(curl -s "https://registry.hub.docker.com/v2/repositories/$DOCKER_USERNAME/epoch_backend/tags/?page_size=1" | jq -r '.results[0].name')_$(date +%Y-%m-%d_%H-%M-%S).csv"
+            git config --global user.email $EMAIL
+            git config --global user.name $NAME
+            git push https://$NAME:${{ secrets.GIT_PAT }}@github.com/$NAME/Epoch
+            exit
+          EOF
+        env:
+            DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+            GIT_PAT: ${{ secrets.GIT_PAT }}
+            EMAIL: ${{ secrets.EMAIL }}
+            NAME: ${{ secrets.NAME }}
+
+
+            

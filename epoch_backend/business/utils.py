@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 import os
 import pytz
 import json
@@ -156,9 +156,9 @@ def get_cors_headers(origin="*"):
     return {
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment-Id, Vote",
+        "Access-Control-Allow-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment-Id, Vote, Notif-Id, Limit, Offset, Session-Id",
         "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment-Id, Vote",
+        "Access-Control-Requested-Headers": "Content-Type, Set-Cookie, Authorization, File-Name, User-Id, X-Requested-With, X-HTTP-Method-Override, Accept, Origin, X-Custom-Header, Cache-Control, X-File-Name, X-File-Size, X-File-Type, X-File-Last-Modified, X-File-Chunk-Number, X-File-Total-Chunks, Content-Length, Hashtag, Post-Id, Comment-Id, Vote, Notif-Id, Limit, Offset, Session-Id",
     }
 
 
@@ -321,9 +321,10 @@ def get_post_dict(current_post, posts_media, username, profile_picture_url, prof
     post_dict["profile_picture_type"] = profile_picture_type
     post_dict["profile_picture_name"] = profile_picture_name
     post_dict["username"] = username
-    post_dict["release"] = current_post[5].strftime("%Y-%m-%d %H:%M:%S")
     post_dict["caption"] = current_post[3]
-    post_dict["created_at"] = current_post[4].strftime("%Y-%m-%d %H:%M:%S")
+    post_dict["created_at"] = current_post[4].isoformat()
+    post_dict["release"] = current_post[5].isoformat()
+    post_dict["time_zone"] = current_post[8]
 
     if current_post[2] is not None:
         post_media = posts_media.get(i)
@@ -338,13 +339,17 @@ def get_post_dict(current_post, posts_media, username, profile_picture_url, prof
 
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT user_id FROM favorites WHERE post_id=%s", (current_post[0],))
+    cursor.execute("SELECT favorites.user_id, users.username FROM favorites left join users on favorites.user_id=users.user_id WHERE post_id=%s", (current_post[0],))
     favorites = cursor.fetchall()
-    cursor.execute("SELECT user_id, vote FROM votes WHERE post_id=%s", (current_post[0],))
+    cursor.execute("SELECT votes.user_id, votes.vote, users.username FROM votes left join users on votes.user_id=users.user_id WHERE post_id=%s", (current_post[0],))
     votes = cursor.fetchall()
+
     connection.close()
     post_dict["favorited_by"] = [favorite[0] for favorite in favorites]
     post_dict["favorited_by_count"] = len(post_dict["favorited_by"])
+
+    post_dict["favorited_by_usernames"] = [{"user_id": favorite[0], "username": favorite[1]} for favorite in favorites]
+    post_dict["votes_by_usernames"] = [{"user_id": vote[0], "vote": vote[1], "username": vote[2]} for vote in votes]
     post_dict["votes"] = {vote[0]: vote[1] for vote in votes}
     post_dict["votes_count"] = len(post_dict["votes"])
 

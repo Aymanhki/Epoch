@@ -16,7 +16,7 @@ import EditProfilePopup from '../modules/EditProfilePopup';
 import PostPopup from "../modules/PostPopup";
 import {useSpring, animated} from 'react-spring';
 import NoSessionNavBar from '../modules/NoSessionNavBar';
-
+import PopupUserList from "../modules/PopupUserList";
 
 function Profile() {
     const {username} = useParams();
@@ -50,16 +50,6 @@ function Profile() {
     const [deleteAccountErrorPrompt, setDeleteAccountErrorPrompt] = useState("");
     const [deletingAccount, setDeletingAccount] = useState(false);
 
-
-    const {transform: inTransform} = useSpring({
-        transform: `translateY(${showUserListModal ? 0 : 100}vh)`,
-        config: {duration: 300},
-    });
-
-    const {transform: outTransform} = useSpring({
-        transform: `translateY(${showUserListModal ? 0 : -100}vh)`,
-        config: {duration: 300},
-    });
 
     const {transform: inTransformDelete} = useSpring({
         transform: `translateY(${showDeleteAccountPopup ? 0 : 100}vh)`,
@@ -125,7 +115,6 @@ function Profile() {
             getUserInfo()
                 .then(data => {
                     updateUser(data);
-                    setFollowDefaults();
 
                     if (data.username === username || username === "profile") {
                         setUserInfo(data);
@@ -173,7 +162,6 @@ function Profile() {
         }
         else
         {
-            setFollowDefaults();
 
             if (user.username === username || username === "profile") {
                 setUserInfo(user);
@@ -216,7 +204,7 @@ function Profile() {
 
     }, [setIsFollowing, setIsFollowingPrompt, viewedId, user]);
 
-    useEffect(() => {
+    const fetchProfileFollowData = () => {
         if (isCurrentUser) {
             profileFollowNetwork("self")
                 .then(data => {
@@ -229,7 +217,7 @@ function Profile() {
                 .catch(error => {
                     console.log("Error fetching follower list:", error);
                     setIsLoading(false);
-                })
+                });
         } else if (viewedId && viewedId > -1) {
             profileFollowNetwork(viewedId)
                 .then(data => {
@@ -238,19 +226,21 @@ function Profile() {
                     setFollowingList(data[2]);
                     setFollowerList(data[3]);
                     setIsLoading(false);
-                    if(isFollowing) {
+                    if (isFollowing) {
                         setIsFollowingPrompt('Unfollow');
-                    }
-                    else {
-                        setIsFollowingPrompt('Follow')
+                    } else {
+                        setIsFollowingPrompt('Follow');
                     }
                 })
                 .catch(error => {
-                        console.log("Error fetching follower list:", error);
-                        setIsLoading(false);
-                    }
-                )
+                    console.log("Error fetching follower list:", error);
+                    setIsLoading(false);
+                });
         }
+    };
+
+    useEffect(() => {
+        fetchProfileFollowData();
     }, [isCurrentUser, viewedId, user, isFollowing]);
 
     useEffect(() => {
@@ -320,7 +310,7 @@ function Profile() {
     return (
         <>
         {(user && (!deletingAccount))  ? (<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
-                          showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>) :
+                          showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} userId={user.id}/>) :
                           (<NoSessionNavBar/>)}
         {(isLoading || deletingAccount) ? (
             <Spinner/>
@@ -371,12 +361,16 @@ function Profile() {
                             )
                         )}
                         <div className="counts-wrapper">
+                            
+                            {(followingCount === "...." || followerCount === "....") && fetchProfileFollowData()}
+                            
                             <button className="following-count" onClick={() => {
                                 if (followingCount > 0) {
                                     handleCountClick("following")
                                 }
                             }}>
                                 Following: {followingCount}
+                                
                             </button>
                             <button className="follower-count" onClick={() => {
                                 if(followerCount > 0) {
@@ -384,6 +378,7 @@ function Profile() {
                                 }
                             }}>
                                 Followers: {followerCount}
+                                
                             </button>
                         </div>
                     </div>
@@ -408,35 +403,8 @@ function Profile() {
 
 
 
+            <PopupUserList showUserListModal={showUserListModal} setShowUserListModal={setShowUserListModal} popupList={popupList}/>
 
-            <animated.div
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transform: showUserListModal ? inTransform : outTransform,
-                    zIndex: 1000
-                }}
-            >
-                <div className="modal-overlay" onClick={() => setShowUserListModal(false)}></div>
-
-                <div className="user-list-modal">
-                    <ul className="popup-user-list">
-                        {popupList && popupList.map && popupList.map(account =>
-                            <li key={account.user_id} className="popup-list-item">
-                                <p className="username" onClick={() => navigate('/epoch/' + account.username)}>@{account.username}</p>
-                            </li>
-                        )}
-                    </ul>
-                </div>
-
-            </animated.div>
 
             <animated.div
                 style={{

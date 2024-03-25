@@ -21,6 +21,8 @@ export default function PostPopup({
                                       month,
                                       day,
                                       hour,
+                                      minute,
+                                      second,
                                       postId,
                                       userId
                                   }) {
@@ -34,6 +36,8 @@ export default function PostPopup({
     const [selectedMonth, setSelectedMonth] = useState((editPost && month) ? month : null);
     const [selectedDay, setSelectedDay] = useState((editPost && day) ? day : null);
     const [selectedHour, setSelectedHour] = useState((editPost && hour) ? hour : null);
+    const [selectedMinute, setSelectedMinute] = useState((editPost && minute) ? minute : null);
+    const [selectedSecond, setSelectedSecond] = useState((editPost && second) ? second : null);
     const [postButtonPrompt, setPostButtonPrompt] = useState((editPost) ? 'Save' : 'Post');
     const [error, setError] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -46,6 +50,8 @@ export default function PostPopup({
     const daysInMonth = (year, month) => new Date(year, month, 0).getDate();
     const days = Array.from({length: 31}, (_, index) => index + 1);
     const hours = ["12:00 AM", "1:00 AM", "2:00 AM", "3:00 AM", "4:00 AM", "5:00 AM", "6:00 AM", "7:00 AM", "8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM", "6:00 PM", "7:00 PM", "8:00 PM", "9:00 PM", "10:00 PM", "11:00 PM"]
+    const minutes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+    const seconds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
     const [hasUploadedFile, setHasUploadedFile] = useState((editPost && postFile) ? true : false);
     const [editPostFileChanged, setEditPostFileChanged] = useState(false);
     const [editPostFileRemoved, setEditPostFileRemoved] = useState(false);
@@ -60,7 +66,7 @@ export default function PostPopup({
                 setErrorMessage("Unsupported file type: \""+ (selectedFile.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .mp4, .mp3, .gif, .webm, .mov, .heic, .m4a");
                 setError(true);
             }
-            else if (selectedFile.size > maxImageBytes && selectedFile.type.split('/')[0] === "video") {
+            else if (selectedFile.size > maxImageBytes && selectedFile.type.split('/')[0] !== "video") {
                 setErrorMessage( "Image File Size too Big: " + Math.round((selectedFile.size)/(1000000)) + "Mb > "+ Math.round((maxImageBytes)/(1000000)) +"Mb" );
                 setError(true);
             }
@@ -99,6 +105,8 @@ export default function PostPopup({
             setSelectedMonth(null);
             setSelectedDay(null);
             setSelectedHour(null);
+            setSelectedMinute(null);
+            setSelectedSecond(null);
         }
 
     }, [postNow, editPost]);
@@ -122,6 +130,8 @@ export default function PostPopup({
         setSelectedDay(null);
         setSelectedHour(null);
         setHasUploadedFile(false);
+        setSelectedMinute(null);
+        setSelectedSecond(null);
     }
 
     const handleClosing = () => {
@@ -154,8 +164,15 @@ export default function PostPopup({
     const handlePost = () => {
         if (!posting) {
             let selectedDate;
+            let selectedDateUTC;
             const now = new Date();
             const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
+            const timezoneOffset = -now.getTimezoneOffset();
+            const offsetHours = Math.floor(timezoneOffset / 60);
+            const offsetMinutes = Math.abs(timezoneOffset) % 60;
+            const offsetSign = timezoneOffset >= 0 ? '+' : '-';
+            const offsetString = `${offsetSign}${Math.abs(offsetHours).toString().padStart(2, '0')}:${offsetMinutes.toString().padStart(2, '0')}`;
+            const todayUTC = now.toISOString();
 
             if (!postText && !uploadedFile) {
                 setErrorMessage('Post text or media file is required');
@@ -170,7 +187,7 @@ export default function PostPopup({
             }
 
             if (postNow === false) {
-                if (!selectedYear || !selectedMonth || !selectedDay || !selectedHour) {
+                if (!selectedYear || !selectedMonth || !selectedDay || !selectedHour || !selectedMinute || !selectedSecond) {
                     setErrorMessage('Date and time must be selected');
                     setError(true);
                     return;
@@ -189,7 +206,8 @@ export default function PostPopup({
                 setSelectedMonth(parseInt(selectedMonth))
                 setSelectedYear(parseInt(selectedYear))
 
-                selectedDate = new Date(Date.UTC(selectedYear, selectedMonth - 1, selectedDay, hours, 0, 0, 0));
+                selectedDate = new Date(Date.UTC(selectedYear, selectedMonth - 1, selectedDay, hours, selectedMinute, selectedSecond, 0));
+                selectedDateUTC = new Date(selectedYear, selectedMonth - 1, selectedDay, hours, selectedMinute, selectedSecond, 0).toISOString();
 
                 if (selectedDate < today) {
                     setErrorMessage('Date and time must be in the future');
@@ -209,9 +227,10 @@ export default function PostPopup({
                         fileType: uploadedFile ? uploadedFile.type : null,
                         fileName: uploadedFile ? uploadedFile.name : null,
                         postNow: postNow,
-                        selectedDate: postNow ? today : selectedDate,
-                        createdAt: today,
+                        selectedDate: postNow ? todayUTC : selectedDateUTC,
+                        createdAt: todayUTC,
                         username: username,
+                        time_zone: offsetString
                     }
 
                     newPost(postObject).then((resolve) => {
@@ -247,10 +266,11 @@ export default function PostPopup({
                         fileName: uploadedFile ? uploadedFile.name : null,
                         oldFileRemoved: editPostFileRemoved,
                         postNow: postNow,
-                        selectedDate: postNow ? today : selectedDate,
-                        createdAt: today,
+                        selectedDate: postNow ? todayUTC : selectedDateUTC,
+                        createdAt: todayUTC,
                         username: username,
-                        postId: postId
+                        postId: postId,
+                        time_zone: offsetString
                     }
 
                     updatePost(postObject, userId).then((resolve) => {
@@ -407,6 +427,34 @@ export default function PostPopup({
                                     {hours.map((hour) => (
                                         <option key={hour} value={hour}>
                                             {hour}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <select value={selectedMinute || ''} onChange={(e) => {
+                                    setSelectedMinute(e.target.value);
+                                    setError(false);
+                                }
+                                } className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`}
+                                        disabled={postNow}>
+                                    <option value="">Select Minute</option>
+                                    {minutes.map((minute) => (
+                                        <option key={minute} value={minute}>
+                                            {minute}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <select value={selectedSecond || ''} onChange={(e) => {
+                                    setSelectedSecond(e.target.value);
+                                    setError(false);
+                                }
+                                } className={`schedule-select ${(postNow || posting) ? 'disabled' : ''}`}
+                                        disabled={postNow}>
+                                    <option value="">Select Second</option>
+                                    {seconds.map((second) => (
+                                        <option key={second} value={second}>
+                                            {second}
                                         </option>
                                     ))}
                                 </select>

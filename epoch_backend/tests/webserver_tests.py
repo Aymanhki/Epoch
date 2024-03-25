@@ -469,7 +469,7 @@ class webserver_tests(unittest.TestCase):
                                 cookies={'epoch_session_id': self.get_session_id()},
                                 json={'postText': postbody, 'file': base64.b64encode(TEST_PROFILE_PIC_BINARY).decode('utf-8'),
                                        'fileType': 'image/jpeg', 'fileName': 'test.jpg', 'postNow': 'true', 'selectedDate': self.post_creation_time,
-                                       'createdAt': self.post_creation_time, 'username': self.username })
+                                       'createdAt': self.post_creation_time, 'username': self.username, 'time_zone': '+5:00'})
         self.assertEqual(response.status_code, 200)
         print("Created a post!")
 

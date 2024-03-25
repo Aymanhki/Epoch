@@ -11,13 +11,13 @@
 .comment-body {
     width: 100%;
     display: grid;
-    grid-template-columns: 5rem 1fr;
+    grid-template-columns: 3rem 1fr;
     gap: 1rem;
 }
 
 .comment-header {
     display: grid;
-    grid-template-columns: 5rem 1fr 1fr;
+    grid-template-columns: 3rem 1fr 1fr;
     gap: 1rem;
     margin-bottom: 0.5rem;
 }
@@ -39,8 +39,8 @@
 
 .comment-profile-photo-container {
     position: relative;
-    width: 5rem;
-    height: 5rem;
+    width: 3rem;
+    height: 3rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -51,8 +51,8 @@
 
 .comment-profile-photo {
     position: relative;
-    width: 5rem;
-    height: 5rem;
+    width: 3rem;
+    height: 3rem;
     display: flex;
     align-items: center;
     justify-content: center;

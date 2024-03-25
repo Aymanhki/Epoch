@@ -12,6 +12,7 @@ import ArrowCircleUpSharpIcon from '@mui/icons-material/ArrowCircleUpSharp';
 import ArrowCircleDownSharpIcon from '@mui/icons-material/ArrowCircleDownSharp';
 import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../services/post";
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import PopupUserList from "./PopupUserList";
 
 
 export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
@@ -33,6 +34,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [releaseDay, setReleaseDay] = useState(-1);
     const [releaseYear, setReleaseYear] = useState(-1);
     const [releaseHour, setReleaseHour] = useState('');
+    const [releaseMinute, setReleaseMinute] = useState(-1);
+    const [releaseSecond, setReleaseSecond] = useState(-1);
     const [fileBlob, setFileBlob] = useState(null);
     const [updating, setUpdating] = useState(false);
     const [updatingMessage, setUpdatingMessage] = useState('');
@@ -45,15 +48,15 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [downVoted, setDownVoted] = useState(false);
     const [voteResult, setVoteResult] = useState(0);
     const [originalVote, setOriginalVote] = useState(0);
+    const [favoritedByUsernameList, setFavoritedByUsernameList] = useState((post && post.favorited_by_usernames) ? post.favorited_by_usernames : []);
+    const [voteByUsernameList, setVoteByUsernameList] = useState((post && post.votes_by_usernames) ? post.votes_by_usernames : []);
+    const [showFavoritedByList, setShowFavoritedByList] = useState(false);
+    const [showVoteByList, setShowVoteByList] = useState(false);
 
 
     useEffect(() => {
-        const now = new Date();
-        const currentTime = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
-        const postTime = new Date(post.created_at);
-        const initialTimeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
-
-        //setEditable(initialTimeDifferenceInSeconds <= timeAllowedToEditInSeconds);
+        let postTime = new Date(post.created_at)
+        postTime = new Date(Date.UTC(postTime.getFullYear(), postTime.getMonth(), postTime.getDate(), postTime.getHours(), postTime.getMinutes(), postTime.getSeconds()));
 
         const timerInterval = setInterval(() => {
             const currentTime = new Date();
@@ -68,6 +71,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         setReleaseMonth(parseInt(date.getMonth() + 1));
         setReleaseDay(parseInt(date.getDate()));
         setReleaseYear(parseInt(date.getFullYear()));
+        setReleaseMinute(parseInt(date.getMinutes()));
+        setReleaseSecond(parseInt(date.getSeconds()));
 
         let hour = date.getHours();
         let finalHour = (hour > 12) ? ((hour - 12) + ':00 PM') : (hour + ':00 AM');
@@ -86,6 +91,11 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         setOverlayImageUrl(imageUrl);
         setShowOverlay(true);
     };
+
+    const handlePostMediaClick = () => {
+        setOverlayImageUrl(post.file);
+        setShowOverlay(true);
+    }
 
     const toggleFavorite = () => {
         if (postViewer) {
@@ -122,6 +132,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                         }, 5000);
                     });
             }
+
+            setShowFavoritedByList(false);
         }
     }
 
@@ -142,13 +154,9 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
     const postIsInThePast = () => {
         const now = new Date();
-        const currentTimeUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
-
-        const postTimeUTC = new Date(post.release);
-        postTimeUTC.setHours(postTimeUTC.getHours() + (postTimeUTC.getTimezoneOffset() / 60)); // Adjust for local time zone offset
-        const postTimeUTCTimestamp = Date.UTC(postTimeUTC.getFullYear(), postTimeUTC.getMonth(), postTimeUTC.getDate(), postTimeUTC.getHours(), postTimeUTC.getMinutes(), postTimeUTC.getSeconds(), postTimeUTC.getMilliseconds());
-
-        return currentTimeUTC >= postTimeUTCTimestamp;
+        let postTime = new Date(post.release);
+        postTime = new Date(Date.UTC(postTime.getFullYear(), postTime.getMonth(), postTime.getDate(), postTime.getHours(), postTime.getMinutes(), postTime.getSeconds()));
+        return now >= postTime;
     }
 
     const toggleCaptionVisibility = () => {
@@ -217,6 +225,58 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         setShowPostPopup(true);
     }
 
+
+
+    const getReleaseFormat = () => {
+        let date = new Date(post.release);
+        date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+        const now = new Date();
+        const diff = now - date;
+        const diffInSeconds = Math.floor(diff / 1000);
+        const options = {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: true
+        };
+
+        if (date > now) {
+            const diff = date - now;
+            const diffInSeconds = Math.floor(diff / 1000);
+            if (diffInSeconds < 60) {
+                return "In " + Math.floor(diffInSeconds) + " seconds";
+            }
+
+            if (diffInSeconds < 3600) {
+                return "In " + Math.floor(diffInSeconds / 60) + " minutes";
+            }
+
+            if (diffInSeconds < 86400) {
+                return "In " + Math.floor(diffInSeconds / 3600) + " hours";
+            }
+
+            return "Scheduled for " + new Intl.DateTimeFormat('en-US', options).format(date);
+        }
+
+        if (diffInSeconds < 60) {
+            return "Just now";
+        }
+
+        if (diffInSeconds < 3600) {
+            return Math.floor(diffInSeconds / 60) + " minutes ago";
+        }
+
+        if (diffInSeconds < 86400) {
+            return Math.floor(diffInSeconds / 3600) + " hours ago";
+        }
+
+        return new Intl.DateTimeFormat('en-US', options).format(date); //(date.toString()).slice(0, 15) + ", " + (finalHours) + ":" + date.getMinutes() + ":" + date.getSeconds() + " " + amOrPm;
+    }
+
     const onVotePost = (postId, userId, vote, action) => {
         // there are 6 scenarios:
         // 1. user has not voted on the post and wants to upvote
@@ -226,6 +286,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         // 5. user has downvoted the post and wants to upvote
         // 6. user has upvoted the post and wants to downvote
 
+        setShowVoteByList(false)
         if (vote === 0 && action === 'upVote') {
             setVote(1);
             setUpVoted(true);
@@ -458,7 +519,39 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     }, [post.votes, postViewer]);
 
 
+    useEffect(() => {
+        if (favorited)
+        {
+            let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            updatedFavoritedByUsernameList.push({username:postViewer.username, user_id:postViewer.id});
+            setFavoritedByUsernameList(updatedFavoritedByUsernameList);
+        }
+        else
+        {
+            let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            setFavoritedByUsernameList(updatedFavoritedByUsernameList);
+        }
+    }, [favorited, favoritedByUsernameList, postViewer, post, favoritedByCount]);
 
+    useEffect(() => {
+        if (vote == 0)
+        {
+            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            setVoteByUsernameList(updatedVoteByUsernameList);
+        }
+        else if(vote == 1)
+        {
+            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:1});
+            setVoteByUsernameList(updatedVoteByUsernameList);
+        }
+        else
+        {
+            let updatedVoteByUsernameList = voteByUsernameList.filter((user) => user.user_id !== postViewer.id);
+            updatedVoteByUsernameList.push({user_id:postViewer.id, username:postViewer.username, vote:-1});
+            setVoteByUsernameList(updatedVoteByUsernameList);
+        }
+    }, [vote, voteByUsernameList, postViewer, post, voteResult]);
 
     return (
         <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
@@ -473,7 +566,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     <div className="post-header-info">
                         <h3 className={'post-username'}
                             onClick={() => navigate(`/${post.username}`)}>{post.username}</h3>
-                        <p className={'post-date'}>{post.release}</p>
+                        <p className={'post-date'}>{getReleaseFormat()}</p>
                     </div>
                 </div>
 
@@ -513,7 +606,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     )}
                 </p>
                 )}
-                {(post.file && showFullCaption) && <div className={'file-wrapper'}>
+                {(post.file && showFullCaption) && <div className={'file-wrapper'} onClick={handlePostMediaClick}>
                     <div className={'post-file'}><SmartMedia file={post.file} fileUrl={post.file}
                                                              file_type={post.file_type}
                                                              file_name={post.file_name} className={"post-media"}/></div>
@@ -532,7 +625,12 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                                     onVotePost(post.post_id, postViewer.id, vote, 'upVote');
                                 }
                             }}></ArrowCircleUpSharpIcon>
-                            <p className={'vote-count'}>{voteResult}</p>
+                            <button className={'vote-count'} onClick={() => {
+                                if (voteByUsernameList.length > 0) {
+                                    setShowFavoritedByList(false);
+                                    setShowVoteByList(true);
+                                }
+                            }}>{voteResult}</button>
                             <ArrowCircleDownSharpIcon className={`down-vote-button ${downVoted ? 'active' : ''}`} onClick={() => {
                                 if(vote === -1)
                                 {
@@ -553,7 +651,13 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     {postViewer && (
                         <div className={'favorite-button-wrapper'}>
                             <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`} onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
-                            <p className={'favorited-by-count'}>{favoritedByCount}</p>
+                            <button className={'favorited-by-count'} onClick={() => {
+                                if (favoritedByCount > 0) {
+                                    setShowVoteByList(false);
+                                    setShowFavoritedByList(true);
+                                }
+                            }}>
+                                {favoritedByCount}</button>
                         </div>)}
 
 
@@ -570,20 +674,23 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                 )}
             </div>
 
+            <PopupUserList showUserListModal={showFavoritedByList} setShowUserListModal={setShowFavoritedByList} popupList={favoritedByUsernameList}/>
+             <PopupUserList showUserListModal={showVoteByList} setShowUserListModal={setShowVoteByList} popupList={voteByUsernameList}/>
+
             
             {(post.file) ?
                 (showPostPopup && fileBlob && postViewer && postAdmin) && (
                     <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
                                profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
                                setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} postFile={fileBlob}
-                               year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour}
+                               year={releaseYear} month={releaseMonth}  day={releaseDay} hour={releaseHour}  minute={releaseMinute} second={releaseSecond}
                                postId={post.post_id} userId={postViewer.id}/>)
                 :
                 (showPostPopup && postViewer && postAdmin) && (
                     <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
                                profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
                                setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear}
-                               month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id}
+                               month={releaseMonth} day={releaseDay} hour={releaseHour} minute={releaseMinute} second={releaseSecond} postId={post.post_id}
                                userId={postViewer.id}/>)
             }
         </div>

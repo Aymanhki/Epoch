@@ -1,12 +1,10 @@
-# epoch
+# Epoch
 
 ## A time capsule social media platform
 
 ## About the Project
 
-Epoch is a time capsule app that lets users posts things at a later date. These posts can be random or can be chosen for
-a specific day or time. Once these posts are scheduled and posted other users will be notified can vote for how accurate
-these predictions are.
+Epoch is a social media platform for time capsules. Write down your thoughts, feelings, and predictions, and send them to the future. You can also read other people's capsules and vote them up or down depending on the accuracy or likeability of the time capsule or prediction. Create your network of followers, explore popular hashtags, and comment and share your favorite capsules. Save your favorite capsules to your profile and keep track of your own capsules and the capsules you've interacted with. Epoch is a place to share your thoughts and predictions with the world and to see what others have to say about the future.
 
 ## Our Team
 
