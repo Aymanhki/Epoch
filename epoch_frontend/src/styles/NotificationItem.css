@@ -35,7 +35,7 @@
 .notification-profile-pic-wrapper {
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end;
 }
 
 .target-profile-pic-container {
