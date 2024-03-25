@@ -96,6 +96,11 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         setShowOverlay(true);
     };
 
+    const handlePostMediaClick = () => {
+        setOverlayImageUrl(post.file);
+        setShowOverlay(true);
+    }
+
     const toggleFavorite = () => {
         if (postViewer) {
             if (favorited) {
@@ -557,7 +562,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     )}
                 </p>
                 )}
-                {(post.file && showFullCaption) && <div className={'file-wrapper'}>
+                {(post.file && showFullCaption) && <div className={'file-wrapper'} onClick={handlePostMediaClick}>
                     <div className={'post-file'}><SmartMedia file={post.file} fileUrl={post.file}
                                                              file_type={post.file_type}
                                                              file_name={post.file_name} className={"post-media"}/></div>
