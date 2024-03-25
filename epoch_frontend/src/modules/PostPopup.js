@@ -170,7 +170,7 @@ export default function PostPopup({
             const offsetMinutes = Math.abs(timezoneOffset) % 60;
             const offsetSign = timezoneOffset >= 0 ? '+' : '-';
             const offsetString = `${offsetSign}${Math.abs(offsetHours).toString().padStart(2, '0')}:${offsetMinutes.toString().padStart(2, '0')}`;
-            const todayUTC = now;
+            const todayUTC = now.toISOString();
 
             if (!postText && !uploadedFile) {
                 setErrorMessage('Post text or media file is required');
@@ -205,7 +205,7 @@ export default function PostPopup({
                 setSelectedYear(parseInt(selectedYear))
 
                 selectedDate = new Date(Date.UTC(selectedYear, selectedMonth - 1, selectedDay, hours, selectedMinute, selectedSecond, 0));
-                selectedDateUTC = new Date(selectedYear, selectedMonth - 1, selectedDay, hours, selectedMinute, selectedSecond, 0);
+                selectedDateUTC = new Date(selectedYear, selectedMonth - 1, selectedDay, hours, selectedMinute, selectedSecond, 0).toISOString();
 
                 if (selectedDate < today) {
                     setErrorMessage('Date and time must be in the future');
