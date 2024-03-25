@@ -229,8 +229,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         const diff = now - date;
         const diffInSeconds = Math.floor(diff / 1000);
         const options = {
-            weekday: 'long',
-            month: 'long',
+            weekday: 'short',
+            month: 'short',
             day: 'numeric',
             year: 'numeric',
             hour: 'numeric',
@@ -251,7 +251,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             }
 
             if (diffInSeconds < 86400) {
-                return "In " + Math.floor(diffInSeconds / 3600) + " hours";
+                return "In " + Math.floor(diffInSeconds / 3600) + (Math.floor(diffInSeconds / 3600) > 1 ? " hours" : " hour");
             }
 
             return "Scheduled for " + new Intl.DateTimeFormat('en-US', options).format(date);
@@ -266,10 +266,10 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         }
 
         if (diffInSeconds < 86400) {
-            return Math.floor(diffInSeconds / 3600) + " hours ago";
+            return Math.floor(diffInSeconds / 3600) + (Math.floor(diffInSeconds / 3600) > 1 ? " hours ago" : " hour ago");
         }
 
-        return new Intl.DateTimeFormat('en-US', options).format(date); //(date.toString()).slice(0, 15) + ", " + (finalHours) + ":" + date.getMinutes() + ":" + date.getSeconds() + " " + amOrPm;
+        return new Intl.DateTimeFormat('en-US', options).format(date);
     }
 
     const onVotePost = (postId, userId, vote, action) => {
