@@ -178,8 +178,6 @@ def update_post(conn, request_data):
     oldeFileRemoved = bool(data.get("oldFileRemoved"))
     time_zone = data.get("time_zone")
     user_fetch = access_user_persistence().get_user(username)
-    selected_date = datetime.fromisoformat(selected_date)
-    created_at = datetime.fromisoformat(created_at)
 
     if user_fetch and user_fetch.id == user_id:
         if file_base64:
