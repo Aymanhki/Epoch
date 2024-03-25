@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 import os
 import pytz
 import json
@@ -321,9 +321,27 @@ def get_post_dict(current_post, posts_media, username, profile_picture_url, prof
     post_dict["profile_picture_type"] = profile_picture_type
     post_dict["profile_picture_name"] = profile_picture_name
     post_dict["username"] = username
-    post_dict["release"] = current_post[5].strftime("%Y-%m-%dT%H:%M:%S%z")
     post_dict["caption"] = current_post[3]
-    post_dict["created_at"] = current_post[4].strftime("%Y-%m-%dT%H:%M:%S%z")
+    # This is how the time is stored in the database
+    # CREATE TABLE IF NOT EXISTS posts
+    # (
+    #     post_id        SERIAL PRIMARY KEY,
+    #     user_id        INT REFERENCES users (user_id),
+    #     media_id       INT REFERENCES media_content (media_id),
+    #     caption        TEXT,
+    #     created_at     TIMESTAMP WITH TIME ZONE NOT NULL,
+    #     release        TIMESTAMP WITH TIME ZONE NOT NULL, -- this is the selected date
+    #     favorite_count INT DEFAULT 0 NOT NULL,
+    #     votes_count    INT DEFAULT 0 NOT NULL
+    # );
+
+    # need to send back to frontend in format '2024-03-25T10:03:28.949-05:00'
+    # include timezone offset
+    post_dict["created_at"] = current_post[4].strftime("%Y-%m-%dT%H:%M:%S")
+    post_dict["release"] = current_post[5].strftime("%Y-%m-%dT%H:%M:%S")
+    post_dict["time_zone"] = current_post[8]
+    post_dict["created_at"] = post_dict["created_at"] + current_post[8]
+    post_dict["release"] = post_dict["release"] + current_post[8]
 
     if current_post[2] is not None:
         post_media = posts_media.get(i)

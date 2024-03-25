@@ -17,7 +17,7 @@ import PopupUserList from "./PopupUserList";
 
 export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
     const captionCharLimit = 240;
-    const timeAllowedToEditInSeconds = 180;
+    const timeAllowedToEditInSeconds = 30;
     const [editable, setEditable] = useState(false);
     const [editing, setEditing] = useState(false);
     const [truncatedCaption, setTruncatedCaption] = useState((post && post.caption) ? post.caption.slice(0, captionCharLimit) + '...' : '');
@@ -57,10 +57,9 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     useEffect(() => {
         const now = new Date();
         const currentTime = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
-        const postTime = new Date(post.created_at);
+        const postTime = getActualDate(post.created_at)
         const initialTimeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
 
-        //setEditable(initialTimeDifferenceInSeconds <= timeAllowedToEditInSeconds);
 
         const timerInterval = setInterval(() => {
             const currentTime = new Date();
@@ -157,11 +156,10 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     }, [post.caption]);
 
     const postIsInThePast = () => {
-        const postTime = new Date(post.release);
-        const currentTime = new Date();
-        const postTimeUTC = new Date(Date.UTC(postTime.getFullYear(), postTime.getMonth(), postTime.getDate(), postTime.getHours(), postTime.getMinutes(), postTime.getSeconds(), postTime.getMilliseconds()));
-        const currentTimeUTC = new Date(Date.UTC(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), currentTime.getHours(), currentTime.getMinutes(), currentTime.getSeconds(), currentTime.getMilliseconds()));
-        return currentTimeUTC > postTimeUTC;
+        const now = new Date();
+        const postTime = getActualDate(post.release)
+        const timeDifferenceInSeconds = Math.floor((now - postTime) / 1000);
+        return timeDifferenceInSeconds >= 0;
     }
 
     const toggleCaptionVisibility = () => {
@@ -228,6 +226,102 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         }
 
         setShowPostPopup(true);
+    }
+
+    const getActualDate = (dateString) => {
+        // dateString = 2024-03-25T16:57:06-05:00
+        // parse the date
+        // parse the time
+        // parse time zone
+        // convert to local time
+        // return the date and time object
+        // first find the sign of the time zone '+' or '-'
+
+        let timeZoneSign;
+        const date = dateString.split('T')[0];
+        let time = dateString.split('T')[1];
+
+        if (time.includes('-'))
+        {
+            timeZoneSign = '-';
+        }
+        else
+        {
+            timeZoneSign = '+';
+        }
+
+        time = time.split(timeZoneSign)[0];
+        const timeZoneHours = parseInt(dateString.split('T')[1].split(timeZoneSign)[1].split(':')[0]);
+        const timeZoneMinutes = parseInt(dateString.split('T')[1].split(timeZoneSign)[1].split(':')[1]);
+
+        let hours = parseInt(time.split(':')[0]);
+        let minutes = parseInt(time.split(':')[1]);
+        let seconds = parseInt(time.split(':')[2]);
+        let year = parseInt(date.split('-')[0]);
+        let month = parseInt(date.split('-')[1]);
+        let day = parseInt(date.split('-')[2]);
+        let finalHours = hours;
+        let finalMinutes = minutes;
+
+        // convert to local time
+        if (timeZoneSign === '-')
+        {
+            finalHours = hours - timeZoneHours;
+            finalMinutes = minutes - timeZoneMinutes;
+        }
+        else
+        {
+            finalHours = hours + timeZoneHours;
+            finalMinutes = minutes + timeZoneMinutes;
+        }
+
+        if (finalMinutes >= 60) {
+        finalHours += 1;
+        finalMinutes -= 60;
+        } else if (finalMinutes < 0) {
+            finalHours -= 1;
+            finalMinutes += 60;
+        }
+
+        if (finalHours >= 24) {
+            finalHours -= 24;
+            day += 1;
+        } else if (finalHours < 0) {
+            finalHours += 24;
+            day -= 1;
+        }
+
+        const maxDaysInMonth = new Date(year, month, 0).getDate();
+        if (day > maxDaysInMonth) {
+            day = 1;
+            month += 1;
+        } else if (day < 1) {
+            month -= 1;
+            const previousMonthMaxDays = new Date(year, month, 0).getDate();
+            day = previousMonthMaxDays;
+        }
+
+        if (month > 12) {
+            month = 1;
+            year += 1;
+        }
+        else if (month < 1) {
+            month = 12;
+            year -= 1;
+        }
+
+        let toReturn = Date(year, month - 1, day, finalHours, finalMinutes, seconds);
+
+        // If time zone is different from local time zone, then apply local time zone as well
+        // get local time zone first
+        // const now = new Date();
+        // const localTimeZoneOffset = now.getTimezoneOffset();
+
+        return toReturn;
+    }
+
+    const formatDate = (date) => {
+        return date.toString();
     }
 
     const onVotePost = (postId, userId, vote, action) => {
@@ -519,7 +613,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     <div className="post-header-info">
                         <h3 className={'post-username'}
                             onClick={() => navigate(`/${post.username}`)}>{post.username}</h3>
-                        <p className={'post-date'}>{post.release}</p>
+                        <p className={'post-date'}>{formatDate(getActualDate(post.release))}</p>
                     </div>
                 </div>
 

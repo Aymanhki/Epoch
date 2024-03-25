@@ -165,7 +165,12 @@ export default function PostPopup({
             let selectedDateUTC;
             const now = new Date();
             const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
-            const todayUTC = today.toISOString();
+            const timezoneOffset = -now.getTimezoneOffset();
+            const offsetHours = Math.floor(timezoneOffset / 60);
+            const offsetMinutes = Math.abs(timezoneOffset) % 60;
+            const offsetSign = timezoneOffset >= 0 ? '+' : '-';
+            const offsetString = `${offsetSign}${Math.abs(offsetHours).toString().padStart(2, '0')}:${offsetMinutes.toString().padStart(2, '0')}`;
+            const todayUTC = now;
 
             if (!postText && !uploadedFile) {
                 setErrorMessage('Post text or media file is required');
@@ -200,7 +205,7 @@ export default function PostPopup({
                 setSelectedYear(parseInt(selectedYear))
 
                 selectedDate = new Date(Date.UTC(selectedYear, selectedMonth - 1, selectedDay, hours, selectedMinute, selectedSecond, 0));
-                selectedDateUTC = selectedDate.toISOString();
+                selectedDateUTC = new Date(selectedYear, selectedMonth - 1, selectedDay, hours, selectedMinute, selectedSecond, 0);
 
                 if (selectedDate < today) {
                     setErrorMessage('Date and time must be in the future');
@@ -223,6 +228,7 @@ export default function PostPopup({
                         selectedDate: postNow ? todayUTC : selectedDateUTC,
                         createdAt: todayUTC,
                         username: username,
+                        time_zone: offsetString
                     }
 
                     newPost(postObject).then((resolve) => {
@@ -261,7 +267,8 @@ export default function PostPopup({
                         selectedDate: postNow ? todayUTC : selectedDateUTC,
                         createdAt: todayUTC,
                         username: username,
-                        postId: postId
+                        postId: postId,
+                        time_zone: offsetString
                     }
 
                     updatePost(postObject, userId).then((resolve) => {

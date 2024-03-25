@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'README.md'
+      - 'ReadMe.md'
       - 'epoch_tests_results/**'
       - 'epoch_tests_results/*'
       - 'epoch_tests_results/'
