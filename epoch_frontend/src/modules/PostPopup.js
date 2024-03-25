@@ -162,8 +162,10 @@ export default function PostPopup({
     const handlePost = () => {
         if (!posting) {
             let selectedDate;
+            let selectedDateUTC;
             const now = new Date();
             const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
+            const todayUTC = today.toISOString();
 
             if (!postText && !uploadedFile) {
                 setErrorMessage('Post text or media file is required');
@@ -198,6 +200,7 @@ export default function PostPopup({
                 setSelectedYear(parseInt(selectedYear))
 
                 selectedDate = new Date(Date.UTC(selectedYear, selectedMonth - 1, selectedDay, hours, selectedMinute, selectedSecond, 0));
+                selectedDateUTC = selectedDate.toISOString();
 
                 if (selectedDate < today) {
                     setErrorMessage('Date and time must be in the future');
@@ -217,8 +220,8 @@ export default function PostPopup({
                         fileType: uploadedFile ? uploadedFile.type : null,
                         fileName: uploadedFile ? uploadedFile.name : null,
                         postNow: postNow,
-                        selectedDate: postNow ? today : selectedDate,
-                        createdAt: today,
+                        selectedDate: postNow ? todayUTC : selectedDateUTC,
+                        createdAt: todayUTC,
                         username: username,
                     }
 
@@ -255,8 +258,8 @@ export default function PostPopup({
                         fileName: uploadedFile ? uploadedFile.name : null,
                         oldFileRemoved: editPostFileRemoved,
                         postNow: postNow,
-                        selectedDate: postNow ? today : selectedDate,
-                        createdAt: today,
+                        selectedDate: postNow ? todayUTC : selectedDateUTC,
+                        createdAt: todayUTC,
                         username: username,
                         postId: postId
                     }

@@ -32,8 +32,8 @@ CREATE TABLE IF NOT EXISTS posts
     user_id        INT REFERENCES users (user_id),
     media_id       INT REFERENCES media_content (media_id),
     caption        TEXT,
-    created_at     TIMESTAMP     NOT NULL,
-    release        TIMESTAMP     NOT NULL,
+    created_at     TIMESTAMP WITH TIME ZONE NOT NULL,
+    release        TIMESTAMP WITH TIME ZONE NOT NULL, -- this is the selected date
     favorite_count INT DEFAULT 0 NOT NULL,
     votes_count    INT DEFAULT 0 NOT NULL
 );
