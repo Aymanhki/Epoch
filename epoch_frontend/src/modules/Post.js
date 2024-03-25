@@ -152,14 +152,11 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     }, [post.caption]);
 
     const postIsInThePast = () => {
-        const now = new Date();
-        const currentTimeUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
-
-        const postTimeUTC = new Date(post.release);
-        postTimeUTC.setHours(postTimeUTC.getHours() + (postTimeUTC.getTimezoneOffset() / 60)); // Adjust for local time zone offset
-        const postTimeUTCTimestamp = Date.UTC(postTimeUTC.getFullYear(), postTimeUTC.getMonth(), postTimeUTC.getDate(), postTimeUTC.getHours(), postTimeUTC.getMinutes(), postTimeUTC.getSeconds(), postTimeUTC.getMilliseconds());
-
-        return currentTimeUTC >= postTimeUTCTimestamp;
+        const postTime = new Date(post.release);
+        const currentTime = new Date();
+        const postTimeUTC = new Date(Date.UTC(postTime.getFullYear(), postTime.getMonth(), postTime.getDate(), postTime.getHours(), postTime.getMinutes(), postTime.getSeconds(), postTime.getMilliseconds()));
+        const currentTimeUTC = new Date(Date.UTC(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), currentTime.getHours(), currentTime.getMinutes(), currentTime.getSeconds(), currentTime.getMilliseconds()));
+        return currentTimeUTC > postTimeUTC;
     }
 
     const toggleCaptionVisibility = () => {

@@ -145,12 +145,10 @@
 
 @media (max-width: 768px) {
     .navbar {
-        /* now it should be at the bottom */
         bottom: 0;
         top: auto;
         height: 3rem;
         padding: 0.5rem;
-
     }
 
     .navbar .left {

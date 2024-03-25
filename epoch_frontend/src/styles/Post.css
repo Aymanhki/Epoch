@@ -289,13 +289,14 @@
 
 .view-comments-button {
 
-    border-radius: 1rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
     background-color: #ffffff;
     color: #222222;
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
     font-weight: bold;
-    border: none;
-    cursor: pointer;
 }
 
 .view-comments-button:hover {

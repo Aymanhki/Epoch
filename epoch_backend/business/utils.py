@@ -321,9 +321,9 @@ def get_post_dict(current_post, posts_media, username, profile_picture_url, prof
     post_dict["profile_picture_type"] = profile_picture_type
     post_dict["profile_picture_name"] = profile_picture_name
     post_dict["username"] = username
-    post_dict["release"] = current_post[5].strftime("%Y-%m-%d %H:%M:%S")
+    post_dict["release"] = current_post[5].strftime("%Y-%m-%dT%H:%M:%S%z")
     post_dict["caption"] = current_post[3]
-    post_dict["created_at"] = current_post[4].strftime("%Y-%m-%d %H:%M:%S")
+    post_dict["created_at"] = current_post[4].strftime("%Y-%m-%dT%H:%M:%S%z")
 
     if current_post[2] is not None:
         post_media = posts_media.get(i)

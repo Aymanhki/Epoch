@@ -76,7 +76,7 @@ describe('Input Field Validation', () => {
         await waitFor(() => {
             expect(screen.getByText("* Name must be between 1 and 30 characters")).toBeInTheDocument();
             expect(screen.getByText("* Username must be between 1 and 30 characters and can only contain letters, numbers, and the following special characters: . _ @ $ -")).toBeInTheDocument();
-            expect(screen.getByText("* Password must be between 1 and 254 characters, at least one uppercase letter, one lowercase letter, one number, and one special character")).toBeInTheDocument();
+            expect(screen.getByText("* Password must be between 8 and 254 characters, at least one uppercase letter, one lowercase letter, one number, and one special character")).toBeInTheDocument();
         }, {timeout: DEFAULT_WAIT_TIME});
     });
 

@@ -46,9 +46,8 @@ def new_post(conn, request_data):
     selected_date = data.get("selectedDate")
     created_at = data.get("createdAt")
     user_fetch = access_user_persistence().get_user(username)
-
-    # date format is "2024-02-22T06:36:12.653Z"
-    selected_date = datetime.fromisoformat(selected_date.replace('Z', '+00:00'))
+    selected_date =  datetime.strptime(selected_date, '%Y-%m-%dT%H:%M:%S.%fZ').isoformat()
+    created_at = datetime.strptime(created_at, '%Y-%m-%dT%H:%M:%S.%fZ').isoformat()
 
     if user_fetch:
         user_id = user_fetch.id
@@ -178,6 +177,8 @@ def update_post(conn, request_data):
     created_at = data.get("createdAt")
     oldeFileRemoved = bool(data.get("oldFileRemoved"))
     user_fetch = access_user_persistence().get_user(username)
+    selected_date = datetime.fromisoformat(selected_date)
+    created_at = datetime.fromisoformat(created_at)
 
     if user_fetch and user_fetch.id == user_id:
         if file_base64:
