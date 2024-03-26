@@ -56,12 +56,13 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [showDeletePostPopup, setShowDeletePostPopup] = useState(false);
     const [deletePostError, setDeletePostError] = useState(false);
     const [deletePostErrorPrompt, setDeletePostErrorPrompt] = useState('');
-    const {transform: inTransformDelete} = useSpring({
+
+    const {transform: inTransformDeletePost} = useSpring({
         transform: `translateY(${showDeletePostPopup ? 0 : 100}vh)`,
         config: {duration: 300},
     });
 
-    const {transform: outTransformDelete} = useSpring({
+    const {transform: outTransformDeletePost} = useSpring({
         transform: `translateY(${showDeletePostPopup ? 0 : -100}vh)`,
         config: {duration: 300},
     });
@@ -730,7 +731,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    transform: showDeletePostPopup ? inTransformDelete : outTransformDelete,
+                    transform: showDeletePostPopup ? inTransformDeletePost : outTransformDeletePost,
                     zIndex: 1000
                 }}
             >
