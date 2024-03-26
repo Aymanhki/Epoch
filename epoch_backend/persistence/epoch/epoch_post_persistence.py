@@ -111,12 +111,11 @@ class epoch_post_persistence(post_persistence):
     def get_all_hashtag_posts(self, hashtag: str):
         connection = get_db_connection()
         cursor = connection.cursor()
-        hashtag_pattern = f"%{hashtag}%"
-        cursor.execute("SELECT * FROM posts WHERE caption LIKE %s", (hashtag_pattern,))
+        hashtag_pattern = f"% {hashtag} %"
+        cursor.execute("SELECT * FROM posts WHERE CONCAT(' ', caption, ' ') LIKE %s", (hashtag_pattern,))
         posts = cursor.fetchall()
         posts_media = get_posts_media(posts)
         posts_users_info = get_posts_users_info(posts)
-
         all_posts = []
 
         for i in range(len(posts)):
