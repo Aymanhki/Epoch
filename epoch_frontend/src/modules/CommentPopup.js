@@ -61,7 +61,8 @@ export default function CommentPopup({
         setCommenting(true);
         setCommentButtonPrompt('Commenting...');
         const now = new Date();
-        const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
+        const today = now.toISOString();
+
         const commentObject = {
             username: username,
             post_id: postId,
