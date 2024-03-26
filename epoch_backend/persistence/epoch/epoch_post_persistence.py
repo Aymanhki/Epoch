@@ -204,9 +204,6 @@ class epoch_post_persistence(post_persistence):
         cursor.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
         fav_user_info = cursor.fetchone()
 
-        if (user_info[0] != user_id):
-            cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (user_info[0], "delete-favorite", post_id, fav_user_info[2], fav_user_info[1]))
-            connection.commit()
         connection.close()
 
     def get_favorites(self, user_id: int):
@@ -275,10 +272,4 @@ class epoch_post_persistence(post_persistence):
         cursor.execute("SELECT * FROM users WHERE user_id=%s", (user_id,))
         vote_user_info = cursor.fetchone()
 
-        if (user_info[0] != user_id):
-            if vote == 1:
-                cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (user_info[0], "delete-up-vote", post_id, vote_user_info[2], vote_user_info[1]))
-            else:
-                cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (user_info[0], "delete-down-vote", post_id, vote_user_info[2], vote_user_info[1]))
-            connection.commit()
         connection.close()

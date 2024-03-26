@@ -16,11 +16,19 @@ class epoch_notification_persistence(notification_persistence):
 
         for i in range(len(notifs)):
             notifs[i] = notification(notifs[i][0], notifs[i][1], notifs[i][2], notifs[i][3], str(notifs[i][4]), notifs[i][5], notifs[i][6], notifs[i][7]).__dict__
-            curr.execute("SELECT profile_pic FROM users WHERE username = %s", (notifs[i]["target_username"],))
-            notifs[i]["target_profile_pic"] = curr.fetchone()[0]
-            curr.execute("SELECT path FROM media_content WHERE media_id = %s", (notifs[i]["target_profile_pic"],))
-            notifs[i]["target_profile_pic"] = curr.fetchone()[0]
+            username_search = notifs[i]["target_username"]
+            curr.execute("SELECT profile_pic FROM users WHERE username = %s", (username_search,))
+            user_fetch = curr.fetchone()
 
+            if user_fetch is not None:
+                notifs[i]["target_profile_pic"] = user_fetch[0]
+                curr.execute("SELECT path FROM media_content WHERE media_id = %s", (notifs[i]["target_profile_pic"],))
+                media_fetch = curr.fetchone()
+                notifs[i]["target_profile_pic"] = media_fetch[0]
+            else:
+                notifs[i] = None
+
+        notifs = [notif for notif in notifs if notif is not None]
 
 
         curr.close()
