@@ -28,16 +28,20 @@ export default function PostPopup({
                                   }) {
     const maxImageBytes = 30000001;
     const maxVideoBytes = 300000001;
+    const now = new Date();
+    const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
+    let finalHour = (today.getHours() > 12) ? today.getHours() - 12 : today.getHours();
+    finalHour = finalHour + ':00 ' + (today.getHours() >= 12 ? 'PM' : 'AM');
     const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif", "webm", "mov", "HEIC", "heic", "JPG", "JPEG", "PNG", "MP4", "MP3", "GIF", "WEBM", "MOV", "QuickTime", "quicktime", "M4A", "m4a"]
     const [uploadedFile, setUploadedFile] = useState((editPost && postFile) ? postFile : null);
     const [postText, setPostText] = useState((editPost && caption) ? caption : null);
     const [postNow, setPostNow] = useState(false);
-    const [selectedYear, setSelectedYear] = useState((editPost && year) ? year : null);
-    const [selectedMonth, setSelectedMonth] = useState((editPost && month) ? month : null);
-    const [selectedDay, setSelectedDay] = useState((editPost && day) ? day : null);
-    const [selectedHour, setSelectedHour] = useState((editPost && hour) ? hour : null);
-    const [selectedMinute, setSelectedMinute] = useState((editPost && minute) ? minute : null);
-    const [selectedSecond, setSelectedSecond] = useState((editPost && second) ? second : null);
+    const [selectedYear, setSelectedYear] = useState((editPost && year) ? year : today.getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState((editPost && month) ? month : today.getMonth() + 1);
+    const [selectedDay, setSelectedDay] = useState((editPost && day) ? day : today.getDate());
+    const [selectedHour, setSelectedHour] = useState((editPost && hour) ? hour : finalHour);
+    const [selectedMinute, setSelectedMinute] = useState((editPost && minute) ? minute : today.getMinutes());
+    const [selectedSecond, setSelectedSecond] = useState((editPost && second) ? second : today.getSeconds());
     const [postButtonPrompt, setPostButtonPrompt] = useState((editPost) ? 'Save' : 'Post');
     const [error, setError] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -100,13 +104,17 @@ export default function PostPopup({
 
 
     useEffect(() => {
+        const now = new Date();
+        const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
+        let finalHour = (today.getHours() > 12) ? today.getHours() - 12 : today.getHours();
+        finalHour = finalHour + ':00 ' + (today.getHours() >= 12 ? 'PM' : 'AM');
         if (postNow && !editPost) {
-            setSelectedYear(null);
-            setSelectedMonth(null);
-            setSelectedDay(null);
-            setSelectedHour(null);
-            setSelectedMinute(null);
-            setSelectedSecond(null);
+            setSelectedYear((editPost && year) ? year : today.getFullYear());
+            setSelectedMonth((editPost && month) ? month : today.getMonth() + 1);
+            setSelectedDay((editPost && day) ? day : today.getDate());
+            setSelectedHour((editPost && hour) ? hour : finalHour);
+            setSelectedMinute((editPost && minute) ? minute : today.getMinutes());
+            setSelectedSecond((editPost && second) ? second : today.getSeconds());
         }
 
     }, [postNow, editPost]);
@@ -118,6 +126,10 @@ export default function PostPopup({
     }, [showPopup, editPost]);
 
     const resetState = () => {
+        const now = new Date();
+        const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
+        let finalHour = (today.getHours() > 12) ? today.getHours() - 12 : today.getHours();
+        finalHour = finalHour + ':00 ' + (today.getHours() >= 12 ? 'PM' : 'AM');
         setPostButtonPrompt('Post');
         setPostText(null);
         setUploadedFile(null);
@@ -125,13 +137,13 @@ export default function PostPopup({
         setSuccess(false);
         setSuccessMessage('');
         setErrorMessage('');
-        setSelectedYear(null);
-        setSelectedMonth(null);
-        setSelectedDay(null);
-        setSelectedHour(null);
+        setSelectedYear((editPost && year) ? year : today.getFullYear());
+        setSelectedMonth((editPost && month) ? month : today.getMonth() + 1);
+        setSelectedDay((editPost && day) ? day : today.getDate());
+        setSelectedHour((editPost && hour) ? hour : finalHour);
         setHasUploadedFile(false);
-        setSelectedMinute(null);
-        setSelectedSecond(null);
+        setSelectedMinute((editPost && minute) ? minute : today.getMinutes());
+        setSelectedSecond((editPost && second) ? second : today.getSeconds());
     }
 
     const handleClosing = () => {

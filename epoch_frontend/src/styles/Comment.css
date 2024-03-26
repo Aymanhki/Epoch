@@ -207,6 +207,10 @@
         color: #ffffff;
         font-weight: bold;
     }
+
+    .delete-comment-modal {
+        width: 90%;
+    }
 }
 
 @media (prefers-color-scheme: dark) {

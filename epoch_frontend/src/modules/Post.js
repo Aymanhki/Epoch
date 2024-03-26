@@ -18,7 +18,7 @@ import {animated, useSpring} from "react-spring";
 
 export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
     const captionCharLimit = 240;
-    const timeAllowedToEditInSeconds = 180;
+    const timeAllowedToEditInSeconds = 30000;
     const [editable, setEditable] = useState(false);
     const [editing, setEditing] = useState(false);
     const [truncatedCaption, setTruncatedCaption] = useState((post && post.caption) ? post.caption.slice(0, captionCharLimit) + '...' : '');
@@ -77,10 +77,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             setEditable(timeDifferenceInSeconds <= timeAllowedToEditInSeconds);
         }, 1000);
 
-        return () => clearInterval(timerInterval);
-
-
-        const date = new Date(post.release);
+        let date = new Date(post.release);
+        date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
         setReleaseMonth(parseInt(date.getMonth() + 1));
         setReleaseDay(parseInt(date.getDate()));
         setReleaseYear(parseInt(date.getFullYear()));
@@ -90,6 +88,10 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         let hour = date.getHours();
         let finalHour = (hour > 12) ? ((hour - 12) + ':00 PM') : (hour + ':00 AM');
         setReleaseHour(finalHour);
+
+        return () => clearInterval(timerInterval);
+
+
     }, [post.created_at, post.release, timeAllowedToEditInSeconds]);
 
     useEffect(() => {
