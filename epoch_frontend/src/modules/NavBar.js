@@ -125,7 +125,7 @@ const NavBar = ({profilePic, profilePicType, showNewPostPopup, setShowNewPostPop
 
 
                         <div className="dropdown-content">
-                            <span onClick={() => handleLogout()}>Logout</span>
+                            <span onClick={() => handleLogout()}>Sign Out</span>
                             <span onClick={() => navigate('/epoch/profile')}>Profile</span>
                         </div>
                     }

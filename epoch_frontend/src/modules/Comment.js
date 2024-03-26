@@ -169,7 +169,7 @@ function Comment({commentObject, commentViewer, refreshComments, setRefreshComme
               <div className="delete-comment-overlay" onClick={() => setShowDeleteCommentPopup(false)}></div>
 
               <div className="delete-comment-modal">
-                  <h3 className="delete-comment-header">Are you sure you want to delete this post?</h3>
+                  <h3 className="delete-comment-header">Are you sure you want to delete this comment?</h3>
                   {deleteCommentError && <p className="delete-comment-error">{deleteCommentErrorPrompt}</p>}
 
                   <div className={'delete-comment-buttons-wrapper'}>
