@@ -27,7 +27,7 @@ export default function PostPopup({
                                       userId
                                   }) {
     const maxImageBytes = 30000001;
-    const maxVideoBytes = 200000001;
+    const maxVideoBytes = 300000001;
     const allowedFileTypes = ["jpg", "jpeg", "png", "mp4", "mp3", "gif", "webm", "mov", "HEIC", "heic", "JPG", "JPEG", "PNG", "MP4", "MP3", "GIF", "WEBM", "MOV", "QuickTime", "quicktime", "M4A", "m4a"]
     const [uploadedFile, setUploadedFile] = useState((editPost && postFile) ? postFile : null);
     const [postText, setPostText] = useState((editPost && caption) ? caption : null);

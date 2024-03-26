@@ -63,7 +63,7 @@ class epoch_user_persistence(user_persistence):
     def remove_user(self, username: str):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute(f"DELETE FROM notifications WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}')")
+        cursor.execute(f"DELETE FROM notifications WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}') or target_username = '{username}'")
         connection.commit()
         cursor.execute(f"DELETE FROM followers WHERE user_id = (SELECT user_id FROM users WHERE username = '{username}')")
         connection.commit()
@@ -147,7 +147,7 @@ class epoch_user_persistence(user_persistence):
     def remove_user_by_id(self, user_id: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute(f"DELETE FROM notifications WHERE user_id = {user_id}")
+        cursor.execute(f"DELETE FROM notifications WHERE user_id = {user_id} or target_username = (SELECT username FROM users WHERE user_id = {user_id})")
         connection.commit()
         cursor.execute(f"DELETE FROM followers WHERE user_id = {user_id}")
         connection.commit()
@@ -257,8 +257,6 @@ class epoch_user_persistence(user_persistence):
 
         if(following_id != user_id):
             cursor.execute("DELETE FROM notifications WHERE user_id = %s AND type = 'new-follower' AND target_id = %s", (following_id, user_id))
-            connection.commit()
-            cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (following_id, "lost-follower", user_id, user_info[2], user_info[1]))
             connection.commit()
 
         cursor.close()
