@@ -55,12 +55,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
 
     useEffect(() => {
-        const now = new Date();
-        const currentTime = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
-        const postTime = new Date(post.created_at);
-        const initialTimeDifferenceInSeconds = Math.floor((currentTime - postTime) / 1000);
-
-        //setEditable(initialTimeDifferenceInSeconds <= timeAllowedToEditInSeconds);
+        let postTime = new Date(post.created_at)
+        postTime = new Date(Date.UTC(postTime.getFullYear(), postTime.getMonth(), postTime.getDate(), postTime.getHours(), postTime.getMinutes(), postTime.getSeconds()));
 
         const timerInterval = setInterval(() => {
             const currentTime = new Date();
@@ -95,6 +91,11 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         setOverlayImageUrl(imageUrl);
         setShowOverlay(true);
     };
+
+    const handlePostMediaClick = () => {
+        setOverlayImageUrl(post.file);
+        setShowOverlay(true);
+    }
 
     const toggleFavorite = () => {
         if (postViewer) {
@@ -153,13 +154,9 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
     const postIsInThePast = () => {
         const now = new Date();
-        const currentTimeUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
-
-        const postTimeUTC = new Date(post.release);
-        postTimeUTC.setHours(postTimeUTC.getHours() + (postTimeUTC.getTimezoneOffset() / 60)); // Adjust for local time zone offset
-        const postTimeUTCTimestamp = Date.UTC(postTimeUTC.getFullYear(), postTimeUTC.getMonth(), postTimeUTC.getDate(), postTimeUTC.getHours(), postTimeUTC.getMinutes(), postTimeUTC.getSeconds(), postTimeUTC.getMilliseconds());
-
-        return currentTimeUTC >= postTimeUTCTimestamp;
+        let postTime = new Date(post.release);
+        postTime = new Date(Date.UTC(postTime.getFullYear(), postTime.getMonth(), postTime.getDate(), postTime.getHours(), postTime.getMinutes(), postTime.getSeconds()));
+        return now >= postTime;
     }
 
     const toggleCaptionVisibility = () => {
@@ -226,6 +223,58 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         }
 
         setShowPostPopup(true);
+    }
+
+
+
+    const getReleaseFormat = () => {
+        let date = new Date(post.release);
+        date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+        const now = new Date();
+        const diff = now - date;
+        const diffInSeconds = Math.floor(diff / 1000);
+        const options = {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: true
+        };
+
+        if (date > now) {
+            const diff = date - now;
+            const diffInSeconds = Math.floor(diff / 1000);
+            if (diffInSeconds < 60) {
+                return "In " + Math.floor(diffInSeconds) + " seconds";
+            }
+
+            if (diffInSeconds < 3600) {
+                return "In " + Math.floor(diffInSeconds / 60) + " minutes";
+            }
+
+            if (diffInSeconds < 86400) {
+                return "In " + Math.floor(diffInSeconds / 3600) + (Math.floor(diffInSeconds / 3600) > 1 ? " hours" : " hour");
+            }
+
+            return "Scheduled for " + new Intl.DateTimeFormat('en-US', options).format(date);
+        }
+
+        if (diffInSeconds < 60) {
+            return "Just now";
+        }
+
+        if (diffInSeconds < 3600) {
+            return Math.floor(diffInSeconds / 60) + " minutes ago";
+        }
+
+        if (diffInSeconds < 86400) {
+            return Math.floor(diffInSeconds / 3600) + (Math.floor(diffInSeconds / 3600) > 1 ? " hours ago" : " hour ago");
+        }
+
+        return new Intl.DateTimeFormat('en-US', options).format(date);
     }
 
     const onVotePost = (postId, userId, vote, action) => {
@@ -517,7 +566,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     <div className="post-header-info">
                         <h3 className={'post-username'}
                             onClick={() => navigate(`/${post.username}`)}>{post.username}</h3>
-                        <p className={'post-date'}>{post.release}</p>
+                        <p className={'post-date'}>{getReleaseFormat()}</p>
                     </div>
                 </div>
 
@@ -557,7 +606,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                     )}
                 </p>
                 )}
-                {(post.file && showFullCaption) && <div className={'file-wrapper'}>
+                {(post.file && showFullCaption) && <div className={'file-wrapper'} onClick={handlePostMediaClick}>
                     <div className={'post-file'}><SmartMedia file={post.file} fileUrl={post.file}
                                                              file_type={post.file_type}
                                                              file_name={post.file_name} className={"post-media"}/></div>

@@ -1,7 +1,7 @@
 .post-comments-page-container {
         display: flex;
     justify-content: center;
-    margin-top: 1rem;
+    margin-top: 5rem;
 }
 
 .post-comments-page{
@@ -113,6 +113,10 @@
 
     .post-comments-page {
         width: 100%;
+    }
+
+    .post-comments-page-container {
+        margin-top: 1rem;
     }
 }
 

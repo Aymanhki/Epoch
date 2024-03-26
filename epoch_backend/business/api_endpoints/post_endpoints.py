@@ -45,10 +45,9 @@ def new_post(conn, request_data):
     post_text = data.get("postText")
     selected_date = data.get("selectedDate")
     created_at = data.get("createdAt")
+    time_zone = data.get("time_zone")
     user_fetch = access_user_persistence().get_user(username)
 
-    # date format is "2024-02-22T06:36:12.653Z"
-    selected_date = datetime.fromisoformat(selected_date.replace('Z', '+00:00'))
 
     if user_fetch:
         user_id = user_fetch.id
@@ -59,7 +58,7 @@ def new_post(conn, request_data):
             file_uploaded = is_file_in_bucket(path)
 
             if media_id is not None and file_uploaded:
-                new_post = post(user_id, media_id, post_text, selected_date, created_at)
+                new_post = post(user_id, media_id, post_text, selected_date, created_at, time_zone)
                 post_id = access_post_persistence().add_post(new_post)
 
                 if post_id is not None:
@@ -70,7 +69,7 @@ def new_post(conn, request_data):
                 send_response(conn, 500, "Internal Server Error", b"<h1>500 Internal Server Error</h1>",
                               headers=get_cors_headers(origin))
         else:
-            new_post = post(user_id, None, post_text, selected_date, created_at)
+            new_post = post(user_id, None, post_text, selected_date, created_at, time_zone)
             access_post_persistence().add_post(new_post)
             send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
     else:
@@ -177,6 +176,7 @@ def update_post(conn, request_data):
     selected_date = data.get("selectedDate")
     created_at = data.get("createdAt")
     oldeFileRemoved = bool(data.get("oldFileRemoved"))
+    time_zone = data.get("time_zone")
     user_fetch = access_user_persistence().get_user(username)
 
     if user_fetch and user_fetch.id == user_id:
@@ -187,7 +187,7 @@ def update_post(conn, request_data):
             file_uploaded = is_file_in_bucket(path)
 
             if media_id is not None and file_uploaded:
-                new_post = post(user_id, media_id, post_text, selected_date, created_at)
+                new_post = post(user_id, media_id, post_text, selected_date, created_at, time_zone)
                 access_post_persistence().update_post(post_id, new_post)
                 send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
             else:
@@ -195,11 +195,11 @@ def update_post(conn, request_data):
                               headers=get_cors_headers(origin))
 
         elif oldeFileRemoved:
-            new_post = post(user_id, None, post_text, selected_date, created_at)
+            new_post = post(user_id, None, post_text, selected_date, created_at, time_zone)
             access_post_persistence().update_post(post_id, new_post)
             send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
         else:
-            new_post = post(user_id, -1, post_text, selected_date, created_at)
+            new_post = post(user_id, -1, post_text, selected_date, created_at, time_zone)
             access_post_persistence().update_post(post_id, new_post)
             send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
     else:

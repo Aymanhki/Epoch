@@ -9,7 +9,7 @@ import Feed from "../modules/Feed";
 import {UserContext} from '../services/UserContext';
 import '../styles/Home.css';
 import PostPopup from "../modules/PostPopup";
-
+import {getUserNotifications} from '../services/notification'
 
 function Home() {
     const [redirectToLogin, setRedirectToLogin] = useState(false);
@@ -30,17 +30,13 @@ function Home() {
                     setRedirectToLogin(false);
                     updateUser(data);
                     setIsLoading(false);
-
                 })
                 .catch(error => {
                     setRedirectToLogin(true);
                     setIsLoading(false);
                     updateUser(null);
                 });
-            setIsLoading(false);
         }
-
-        setIsLoading(false);
     }, [setIsLoading, setRedirectToLogin, updateUser, user]);
 
 
@@ -57,7 +53,7 @@ function Home() {
         <div>
 
             {<NavBar profilePic={user.profile_pic_data} profilePicType={user.profile_pic_type}
-                     showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>}
+                     showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} userId={user.id}/>}
             {isLoading ? (
                 <Spinner/>
             ) : (

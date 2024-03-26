@@ -1,0 +1,152 @@
+.notification-item-container {
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+}
+
+.notification-item-container.notification-read {
+    background: #ffffff;
+}
+
+.notification-item-container.notification-read:hover {
+    background: #e8f8ff;
+    text-decoration: underline;
+}
+
+.notification-item-container.notification-unread {
+    background: #e8f8ff;
+
+}
+
+.notification-item-container.notification-unread:hover {
+    background: #e8f8ff;
+    text-decoration: underline;
+}
+
+.notification-item {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    width: 100%;
+    height: 100%;
+
+}
+
+.notification-profile-pic-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.target-profile-pic-container {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    object-fit: cover;
+
+}
+
+.target-profile-pic {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    object-fit: cover;
+}
+
+.notification-item p {
+    margin: 0;
+}
+
+
+.notification-icon {
+}
+
+.notification-text-container {
+
+}
+
+.notification-text {
+
+}
+
+.notification-mark-read {
+
+}
+
+.notification-read-checkbox {
+    margin: 0;
+}
+
+.notification-up-vote-icon {
+
+}
+
+.notification-down-vote-icon{
+
+}
+
+.notification-delete-up-vote-icon{
+
+}
+
+.notification-delete-down-vote-icon{
+
+}
+
+.notification-new-comment-icon{
+
+}
+
+.notification-delete-comment-icon {
+
+}
+
+.notification-favorite-icon {
+
+}
+
+.notification-delete-favorite-icon {
+
+}
+
+.notification-follow-icon {
+
+}
+
+.notification-unfollow-icon {
+
+}
+
+@media (prefers-color-scheme: dark) {
+    .notification-item-container.notification-read {
+        background: #333;
+    }
+
+    .notification-item-container.notification-read:hover {
+        background: #555;
+    }
+
+    .notification-item-container.notification-unread {
+        background: #555;
+    }
+
+    .notification-item-container.notification-unread:hover {
+        background: #555;
+    }
+}
+
+@media (max-width: 1024px) {
+
+}
+
+@media (max-width: 768px) {
+
+}

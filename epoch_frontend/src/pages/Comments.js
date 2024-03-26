@@ -110,7 +110,7 @@ function Comments() {
 
   return (
     <>
-    {<NavBar profilePic={user.profile_pic_data } profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>}
+    {<NavBar profilePic={user.profile_pic_data } profilePicType={user.profile_pic_type} showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} userId={user.id}/>}
       {isLoading ? (
         <Spinner />
       ) : (

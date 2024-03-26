@@ -4,6 +4,7 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate} from "react-router-dom";
 import {Spinner} from '../modules/Spinner'
 import NavBar from "../modules/NavBar";
+import {UserContext} from "../services/UserContext";
 import {TextField} from "@mui/material";
 import '../styles/UserList.css'
 import PostPopup from "../modules/PostPopup";
@@ -53,7 +54,7 @@ function Userlist() {
                 console.log("Error fetching following list:", error);
                 navigate("/epoch/home");
             });
-    }, [setFullUserList, navigate,  setIsLoading]);
+    }, [setFullUserList, navigate, setIsLoading]);
 
     useEffect(() => {
         changeStatus(false);
@@ -96,7 +97,7 @@ function Userlist() {
                     <>
 
                     <NavBar profilePic={userInfo.profile_pic_data} profilePicType={userInfo.profile_pic_type}
-                                showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}/>
+                                showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup} userId={userInfo.id}/>
 
                             <div className={"user-list-page"}>
 
@@ -122,13 +123,13 @@ function Userlist() {
                                     </div>
 
                                     { (filteredList.length > 0 || searchInput.length > 0) ? (<UserListModule userList={filteredList}/>) : (<UserListModule userList={fullUserList}/>) }
-                                    
+
                                 </div>
 
                             <PostPopup showPopup={showNewPostPopup} setShowPopup={setShowNewPostPopup}
                                     username={userInfo.username} profilePic={userInfo.profile_pic_data} refreshFeed={refreshFeed}
                                     setRefreshFeed={setRefreshFeed}/>
-                                    
+
                             </div>
 
 

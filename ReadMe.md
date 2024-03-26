@@ -1,4 +1,4 @@
-# epoch
+# Epoch
 
 ## A time capsule social media platform
 
