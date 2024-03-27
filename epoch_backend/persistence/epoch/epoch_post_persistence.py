@@ -211,8 +211,10 @@ class epoch_post_persistence(post_persistence):
                 if old_mention not in new_mentioned:
                     cursor.execute("SELECT user_id FROM users WHERE username=%s", (old_mention,))
                     mentioned_user = cursor.fetchone()
-                    cursor.execute("DELETE FROM notifications WHERE user_id=%s AND target_id=%s AND type=%s", (mentioned_user[0], post_id, "mention"))
-                    connection.commit()
+
+                    if mentioned_user:
+                        cursor.execute("DELETE FROM notifications WHERE user_id=%s AND target_id=%s AND type=%s", (mentioned_user[0], post_id, "mention"))
+                        connection.commit()
 
 
         connection.close()
