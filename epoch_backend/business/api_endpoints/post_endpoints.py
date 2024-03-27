@@ -70,8 +70,8 @@ def new_post(conn, request_data):
                               headers=get_cors_headers(origin))
         else:
             new_post = post(user_id, None, post_text, selected_date, created_at, time_zone)
-            access_post_persistence().add_post(new_post)
-            send_response(conn, 200, "OK", b"", headers=get_cors_headers(origin))
+            post_id = access_post_persistence().add_post(new_post)
+            send_response(conn, 200, "OK", json.dumps({"postId": post_id}).encode('UTF-8'), headers=get_cors_headers(origin))
     else:
         send_response(conn, 404, "Could not find the username you are trying to post", b"<h1>404 Not Found</h1>",
                       headers=get_cors_headers(origin))
