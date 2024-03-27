@@ -18,6 +18,16 @@
     margin: 1rem;
 }
 
+.scroll-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    padding: 1rem;
+    margin: 1rem;
+}
+
 
 .new-post-button {
     background-color: #ffffff;

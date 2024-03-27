@@ -204,6 +204,7 @@ function Profile() {
     }, [setIsFollowing, setIsFollowingPrompt, viewedId, user]);
 
     const fetchProfileFollowData = () => {
+        setIsLoading(true);
         if (isCurrentUser) {
             profileFollowNetwork("self")
                 .then(data => {

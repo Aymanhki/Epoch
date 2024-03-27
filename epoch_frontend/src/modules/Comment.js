@@ -190,4 +190,4 @@ function Comment({commentObject, commentViewer, refreshComments, setRefreshComme
   );
 }
 
-export default Comment
+export default Comment;
