@@ -92,17 +92,12 @@ export default function Feed({
                             {feedPosts.length === 0 &&
                                 <div className={'no-posts'}>No posts to show, follow some people or make a new
                                     post</div>}
-                                    
-                            {feedPosts.length > 0 &&
-                            <div className="scroll-container" ref={ref}>
-                                <ViewportList viewportRef={ref} items={feedPosts} >
-                                    {(item) => (
-                                        <Post key={item.post_id} post={item} postViewer={currentUser} refreshFeed={refreshFeed}
-                                                    setRefreshFeed={setRefreshFeed} isInFavorites={isInFavorites}/>
-                                    )}
-                                </ViewportList>
-                            </div>}
-
+                            {feedPosts.map((newPost, index)=> <Post key={newPost.post_id} 
+                                                                    post={newPost}
+                                                                    postViewer={currentUser} 
+                                                                    refreshFeed={refreshFeed} 
+                                                                    setRefreshFeed={setRefreshFeed}
+                                                                    isInFavorites={isInFavorites}/>)}
                         </div>
 
                         {(currentUser && ((!isInProfile && feedUsername && currentUser.username === feedUsername) || (isInProfile && feedUserId && currentUser.id === feedUserId)) && !viewingOnly) && (
