@@ -4,6 +4,7 @@ import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlin
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined';
 import PersonRemoveAlt1OutlinedIcon from '@mui/icons-material/PersonRemoveAlt1Outlined';
+import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithoutContactOutlined';
 import React from "react";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState, useRef} from "react";
@@ -63,6 +64,10 @@ function NotificationItem({notification, setShowNotifications, onRead}) {
             setNotificationIcon(<PersonRemoveAlt1OutlinedIcon className={"notification-unfollow-icon"}/>);
             setNotificationText(notification.target_name + ' (@'+ notification.target_username +') has unfollowed you');
             setNotificationActionLink('/' + notification.target_username);
+        } else if (notification.type === 'mention') {
+            setNotificationIcon(<ConnectWithoutContactOutlinedIcon className={"notification-mention-icon"}/>);
+            setNotificationText(notification.target_name + ' (@'+ notification.target_username +') has dedicated a post to you');
+            setNotificationActionLink('/epoch/comments/' + notification.target_id);
         }
     }, [notification]);
 
