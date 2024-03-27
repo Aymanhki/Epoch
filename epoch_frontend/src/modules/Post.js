@@ -14,6 +14,7 @@ import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../ser
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import PopupUserList from "./PopupUserList";
 import {animated, useSpring} from "react-spring";
+import {render} from "@testing-library/react";
 
 
 export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
@@ -181,48 +182,31 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         setShowFullCaption(false);
     }
 
-    const renderCaptionWithHighlights = (toRender) => {
-        if (!toRender) {
-            return null;
-        }
+const renderCaptionWithHighlights = (toRender) => {
+    if (!toRender) {
+        return null;
+    }
 
-        let toReturn = toRender;
+    let regex = /(@[a-zA-Z0-9_]+)|(#\w+)|(https?:\/\/[^\s]+)/g;
+    let parts = toRender.split(regex);
 
-        let usernameReg = /@([a-zA-Z0-9_]+)/g;
-        let hashtagReg = /#([a-zA-Z0-9_]+)/g;
-        let urlReg = /https?:\/\/[^\s]+/g;
-        let allReg = /(@[a-zA-Z][a-zA-Z0-9_]*)|(#([a-zA-Z][a-zA-Z0-9_]*))|(https?:\/\/[^\s]+)/g;
+    let elements = parts.map((part, index) => {
 
-        if (!toReturn.match(allReg)) {
-            return <span>{toReturn}</span>;
-        }
-
-        toReturn = toReturn.split(allReg);
-        console.log(toReturn);
-        toReturn = toReturn.map((word, index) => {
-            if (word) {
-                if (word.match(usernameReg)) {
-                    return <span key={index} className={'mention'}
-                                 onClick={() => navigate(`/${word.substring(1)}`)}>{word} </span>;
-                } else if (word.match(hashtagReg)) {
-                    return <span key={index} className={'hashtag'}
-                                 onClick={() => navigate(`/epoch/hashtags/${word.substring(1)}`)}>{word} </span>;
-                } else if (word.match(urlReg)) {
-                    return <span key={index}><a href={word} target="_blank" rel="noreferrer">{word} </a></span>;
-                } else {
-                    return <span key={index}>{word} </span>;
-                }
+        if (part) {
+            if (part.startsWith('@')) {
+                return <a key={index} href={`/${part.substring(1)}`} className="hashtag">{part}</a>;
+            } else if (part.startsWith('#')) {
+                return <a key={index} href={`/hashtags/${part}`} className="hashtag">{part}</a>;
+            } else if (part.startsWith('http')) {
+                return <a key={index} href={part} className="hashtag">{part}</a>;
+            } else {
+                return part;
             }
-            else
-            {
-                return word;
-            }
-        });
+        }
+    });
 
-
-        return toReturn;
-    };
-
+    return <div>{elements}</div>;
+};
 
     const gotUsersMentioned = () => {
         const usernames = [];
@@ -247,7 +231,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                 if ( (isInFavorites && favorited) || !isInFavorites) {
                     if (usernames.length > 0) {
                         for (let i = 0; i < usernames.length && !visible; i++) {
-                            if (postViewer.username === usernames[i]) {
+                            if (postViewer && postViewer.username === usernames[i]) {
                                 visible = true;
                             }
                         }
@@ -600,13 +584,13 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     }, [post.votes, postViewer]);
 
     useEffect(() => {
-        if (favorited)
+        if (favorited && postViewer)
         {
             let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
             updatedFavoritedByUsernameList.push({username:postViewer.username, user_id:postViewer.id});
             setFavoritedByUsernameList(updatedFavoritedByUsernameList);
         }
-        else
+        else if (!favorited && postViewer)
         {
             let updatedFavoritedByUsernameList = favoritedByUsernameList.filter((user) => user.user_id !== postViewer.id);
             setFavoritedByUsernameList(updatedFavoritedByUsernameList);
