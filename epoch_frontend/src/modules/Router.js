@@ -1,5 +1,6 @@
 import React from 'react';
 import {BrowserRouter, Route, Routes, Navigate, useParams} from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
 
 import Login from '../pages/login';
 import Register from '../pages/register';
@@ -28,14 +29,14 @@ function Router() {
                 <Route path="/epoch/hashtags/:hashtag" element={<Hashtag />} />
                 <Route path="/epoch/comments/:post-id" element={<Comments />} />
 
-                <Route path="/epoch/favorites" element={<Favorites />} />
+                <Route path="/epoch/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
                 <Route path="/epoch/login" element={<Login />} />
                 <Route path="/epoch/register" element={<Register />} />
-                <Route path="/epoch/home" element={<Home />} />
-                <Route path="/epoch/:username" element={<ProfileRedirect />} />
-                <Route path="/epoch/userlist" element={<Userlist/>} />
-                <Route path="/epoch/search" element={<Userlist/>} />
-                <Route path="/:username" element={<ProfileRedirect />} />
+                <Route path="/epoch/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+                <Route path="/epoch/:username" element={<ProtectedRoute><ProfileRedirect /></ProtectedRoute>} />
+                <Route path="/epoch/userlist" element={<ProtectedRoute><Userlist /></ProtectedRoute>} />
+                <Route path="/epoch/search" element={<ProtectedRoute><Userlist /></ProtectedRoute>} />
+                <Route path="/:username" element={<ProtectedRoute><ProfileRedirect /></ProtectedRoute>} />
                 
 
                 {/* Catch-all route for 404 */}

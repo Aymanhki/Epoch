@@ -13,11 +13,12 @@ import ArrowCircleDownSharpIcon from '@mui/icons-material/ArrowCircleDownSharp';
 import {favoritePost, removeFavoritePost, votePost, removeVotePost} from "../services/post";
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import PopupUserList from "./PopupUserList";
+import {animated, useSpring} from "react-spring";
 
 
 export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isInFavorites}) {
     const captionCharLimit = 240;
-    const timeAllowedToEditInSeconds = 180;
+    const timeAllowedToEditInSeconds = 30000;
     const [editable, setEditable] = useState(false);
     const [editing, setEditing] = useState(false);
     const [truncatedCaption, setTruncatedCaption] = useState((post && post.caption) ? post.caption.slice(0, captionCharLimit) + '...' : '');
@@ -52,7 +53,19 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     const [voteByUsernameList, setVoteByUsernameList] = useState((post && post.votes_by_usernames) ? post.votes_by_usernames : []);
     const [showFavoritedByList, setShowFavoritedByList] = useState(false);
     const [showVoteByList, setShowVoteByList] = useState(false);
+    const [showDeletePostPopup, setShowDeletePostPopup] = useState(false);
+    const [deletePostError, setDeletePostError] = useState(false);
+    const [deletePostErrorPrompt, setDeletePostErrorPrompt] = useState('');
 
+    const {transform: inTransformDeletePost} = useSpring({
+        transform: `translateY(${showDeletePostPopup ? 0 : 100}vh)`,
+        config: {duration: 300},
+    });
+
+    const {transform: outTransformDeletePost} = useSpring({
+        transform: `translateY(${showDeletePostPopup ? 0 : -100}vh)`,
+        config: {duration: 300},
+    });
 
     useEffect(() => {
         let postTime = new Date(post.created_at)
@@ -64,10 +77,8 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             setEditable(timeDifferenceInSeconds <= timeAllowedToEditInSeconds);
         }, 1000);
 
-        return () => clearInterval(timerInterval);
-
-
-        const date = new Date(post.release);
+        let date = new Date(post.release);
+        date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
         setReleaseMonth(parseInt(date.getMonth() + 1));
         setReleaseDay(parseInt(date.getDate()));
         setReleaseYear(parseInt(date.getFullYear()));
@@ -77,6 +88,10 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         let hour = date.getHours();
         let finalHour = (hour > 12) ? ((hour - 12) + ':00 PM') : (hour + ':00 AM');
         setReleaseHour(finalHour);
+
+        return () => clearInterval(timerInterval);
+
+
     }, [post.created_at, post.release, timeAllowedToEditInSeconds]);
 
     useEffect(() => {
@@ -86,7 +101,6 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             setEditing(false);
         }
     }, [showPostPopup]);
-
     const handleProfilePhotoClick = (imageUrl) => {
         setOverlayImageUrl(imageUrl);
         setShowOverlay(true);
@@ -190,24 +204,27 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
     }
 
     const onDeletePost = (postId, userId) => {
-        setError(true);
-        setErrorMessage('Deleting post...');
+
+        setDeletePostError(true);
+        setDeletePostErrorPrompt('Deleting post...');
+
         deletePost(postId, userId)
             .then(() => {
-                setError(false);
-                setErrorMessage('');
+                setDeletePostError(false);
+                setDeletePostErrorPrompt('');
+                setShowDeletePostPopup(false);
                 setPostAdmin(false);
-                setError(false);
-                setErrorMessage('');
                 setDeleted(true);
                 setRefreshFeed(true);
             })
             .catch((error) => {
-                setError(true);
-                setErrorMessage(error);
+                setShowDeletePostPopup(true);
+                setDeletePostError(true);
+                setDeletePostErrorPrompt(error);
+
                 setTimeout(() => {
-                    setError(false);
-                    setErrorMessage('');
+                    setDeletePostError(false);
+                    setDeletePostErrorPrompt('');
                 }, 5000);
             });
     }
@@ -224,8 +241,6 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
         setShowPostPopup(true);
     }
-
-
 
     const getReleaseFormat = () => {
         let date = new Date(post.release);
@@ -248,11 +263,11 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             const diff = date - now;
             const diffInSeconds = Math.floor(diff / 1000);
             if (diffInSeconds < 60) {
-                return "In " + Math.floor(diffInSeconds) + " seconds";
+                return "In " + Math.floor(diffInSeconds) + (Math.floor(diffInSeconds) > 1 ? " seconds" : " second");
             }
 
             if (diffInSeconds < 3600) {
-                return "In " + Math.floor(diffInSeconds / 60) + " minutes";
+                return "In " + Math.floor(diffInSeconds / 60) + (Math.floor(diffInSeconds / 60) > 1 ? " minutes" : " minute");
             }
 
             if (diffInSeconds < 86400) {
@@ -267,7 +282,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         }
 
         if (diffInSeconds < 3600) {
-            return Math.floor(diffInSeconds / 60) + " minutes ago";
+            return Math.floor(diffInSeconds / 60) + (Math.floor(diffInSeconds / 60) > 1 ? " minutes ago" : " minute ago");
         }
 
         if (diffInSeconds < 86400) {
@@ -518,7 +533,6 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
     }, [post.votes, postViewer]);
 
-
     useEffect(() => {
         if (favorited)
         {
@@ -553,6 +567,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         }
     }, [vote, voteByUsernameList, postViewer, post, voteResult]);
 
+
     return (
         <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
              style={{display: (((postIsInThePast() || postAdmin) && (!deleted) && ((isInFavorites && favorited) || !isInFavorites))) ? 'block' : 'none'}}>
@@ -579,7 +594,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                         }}></BorderColorOutlinedIcon>)}
                     {(postViewer && postAdmin && !editing) && (
                         <DeleteForeverOutlinedIcon className="delete-post-button-icon" onClick={() => {
-                            onDeletePost(post.post_id, postViewer.id);
+                            setShowDeletePostPopup(true);
                         }}></DeleteForeverOutlinedIcon>)}
 
                 </div>
@@ -587,24 +602,24 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
             <div className="post-body">
                 {post.caption && post.caption.length > 0 && (
-                <p className={"post-caption"}>
-                    {(showFullCaption && post.caption) ? renderCaptionWithHashtags(post.caption) : (
-                        <>
-                            {renderCaptionWithHashtags(truncatedCaption)}
-                            <span className="see-more" onClick={toggleCaptionVisibility}>
+                    <p className={"post-caption"}>
+                        {(showFullCaption && post.caption) ? renderCaptionWithHashtags(post.caption) : (
+                            <>
+                                {renderCaptionWithHashtags(truncatedCaption)}
+                                <span className="see-more" onClick={toggleCaptionVisibility}>
                                     See more
                                 </span>
-                        </>
-                    )}
-                    {(showFullCaption && post.caption && post.caption.length >= captionCharLimit) && (
-                        <>
-                            {' '}
-                            <span className="see-less" onClick={toggleSeeLess}>
+                            </>
+                        )}
+                        {(showFullCaption && post.caption && post.caption.length >= captionCharLimit) && (
+                            <>
+                                {' '}
+                                <span className="see-less" onClick={toggleSeeLess}>
                                     See less
                                 </span>
-                        </>
-                    )}
-                </p>
+                            </>
+                        )}
+                    </p>
                 )}
                 {(post.file && showFullCaption) && <div className={'file-wrapper'} onClick={handlePostMediaClick}>
                     <div className={'post-file'}><SmartMedia file={post.file} fileUrl={post.file}
@@ -615,42 +630,41 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                 <div className="post-footer">
                     {postViewer && (
                         <div className={'vote-buttons'}>
-                            <ArrowCircleUpSharpIcon className={`up-vote-button ${upVoted ? 'active' : ''}`} onClick={() => {
-                                if(vote === 1)
-                                {
-                                    onVotePost(post.post_id, postViewer.id, vote, 'removeUpVote');
-                                }
-                                else
-                                {
-                                    onVotePost(post.post_id, postViewer.id, vote, 'upVote');
-                                }
-                            }}></ArrowCircleUpSharpIcon>
+                            <ArrowCircleUpSharpIcon className={`up-vote-button ${upVoted ? 'active' : ''}`}
+                                                    onClick={() => {
+                                                        if (vote === 1) {
+                                                            onVotePost(post.post_id, postViewer.id, vote, 'removeUpVote');
+                                                        } else {
+                                                            onVotePost(post.post_id, postViewer.id, vote, 'upVote');
+                                                        }
+                                                    }}></ArrowCircleUpSharpIcon>
                             <button className={'vote-count'} onClick={() => {
                                 if (voteByUsernameList.length > 0) {
                                     setShowFavoritedByList(false);
                                     setShowVoteByList(true);
                                 }
                             }}>{voteResult}</button>
-                            <ArrowCircleDownSharpIcon className={`down-vote-button ${downVoted ? 'active' : ''}`} onClick={() => {
-                                if(vote === -1)
-                                {
-                                    onVotePost(post.post_id, postViewer.id, vote, 'removeDownVote');
-                                }
-                                else
-                                {
-                                    onVotePost(post.post_id, postViewer.id, vote, 'downVote');
-                                }
-                            }}></ArrowCircleDownSharpIcon>
+                            <ArrowCircleDownSharpIcon className={`down-vote-button ${downVoted ? 'active' : ''}`}
+                                                      onClick={() => {
+                                                          if (vote === -1) {
+                                                              onVotePost(post.post_id, postViewer.id, vote, 'removeDownVote');
+                                                          } else {
+                                                              onVotePost(post.post_id, postViewer.id, vote, 'downVote');
+                                                          }
+                                                      }}></ArrowCircleDownSharpIcon>
                         </div>
                     )}
 
                     {((!showCommentsSection) && postViewer) && (
-                        <button className={"view-comments-button"} onClick={() => navigate(`/epoch/comments/${post.post_id}`)}><ForumOutlinedIcon/></button>
+                        <button className={"view-comments-button"}
+                                onClick={() => navigate(`/epoch/comments/${post.post_id}`)}><ForumOutlinedIcon/>
+                        </button>
                     )}
-                    
+
                     {postViewer && (
                         <div className={'favorite-button-wrapper'}>
-                            <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`} onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
+                            <FavoriteBorderOutlinedIcon className={`favorite-button ${favorited ? 'active' : ''}`}
+                                                        onClick={() => toggleFavorite()}></FavoriteBorderOutlinedIcon>
                             <button className={'favorited-by-count'} onClick={() => {
                                 if (favoritedByCount > 0) {
                                     setShowVoteByList(false);
@@ -663,9 +677,19 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
                 </div>
                 {(post.file) ?
-                (showPostPopup && fileBlob && postViewer && postAdmin) && (<PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username} profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} postFile={fileBlob} year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
-                :
-                (showPostPopup && postViewer && postAdmin) && (<PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username} profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
+                    (showPostPopup && fileBlob && postViewer && postAdmin) && (
+                        <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
+                                   profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
+                                   setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption}
+                                   postFile={fileBlob} year={releaseYear} month={releaseMonth} day={releaseDay}
+                                   hour={releaseHour} postId={post.post_id} userId={postViewer.id}/>)
+                    :
+                    (showPostPopup && postViewer && postAdmin) && (
+                        <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
+                                   profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
+                                   setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear}
+                                   month={releaseMonth} day={releaseDay} hour={releaseHour} postId={post.post_id}
+                                   userId={postViewer.id}/>)
                 }
                 {showOverlay && (
                     <div className={'post-full-size-profile-photo-overlay'} onClick={closeOverlay}>
@@ -674,25 +698,62 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
                 )}
             </div>
 
-            <PopupUserList showUserListModal={showFavoritedByList} setShowUserListModal={setShowFavoritedByList} popupList={favoritedByUsernameList}/>
-             <PopupUserList showUserListModal={showVoteByList} setShowUserListModal={setShowVoteByList} popupList={voteByUsernameList}/>
+            <PopupUserList showUserListModal={showFavoritedByList} setShowUserListModal={setShowFavoritedByList}
+                           popupList={favoritedByUsernameList}/>
+            <PopupUserList showUserListModal={showVoteByList} setShowUserListModal={setShowVoteByList}
+                           popupList={voteByUsernameList}/>
 
-            
+
             {(post.file) ?
                 (showPostPopup && fileBlob && postViewer && postAdmin) && (
                     <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
                                profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
                                setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} postFile={fileBlob}
-                               year={releaseYear} month={releaseMonth}  day={releaseDay} hour={releaseHour}  minute={releaseMinute} second={releaseSecond}
+                               year={releaseYear} month={releaseMonth} day={releaseDay} hour={releaseHour}
+                               minute={releaseMinute} second={releaseSecond}
                                postId={post.post_id} userId={postViewer.id}/>)
                 :
                 (showPostPopup && postViewer && postAdmin) && (
                     <PostPopup showPopup={showPostPopup} setShowPopup={setShowPostPopup} username={postViewer.username}
                                profilePic={postViewer.profile_pic_data} refreshFeed={refreshFeed}
                                setRefreshFeed={setRefreshFeed} editPost={true} caption={post.caption} year={releaseYear}
-                               month={releaseMonth} day={releaseDay} hour={releaseHour} minute={releaseMinute} second={releaseSecond} postId={post.post_id}
+                               month={releaseMonth} day={releaseDay} hour={releaseHour} minute={releaseMinute}
+                               second={releaseSecond} postId={post.post_id}
                                userId={postViewer.id}/>)
             }
+
+            <animated.div
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transform: showDeletePostPopup ? inTransformDeletePost : outTransformDeletePost,
+                    zIndex: 1000
+                }}
+            >
+                <div className="delete-post-overlay" onClick={() => setShowDeletePostPopup(false)}></div>
+
+                <div className="delete-post-modal">
+                    <h3 className="delete-post-header">Are you sure you want to delete this post?</h3>
+                    {deletePostError && <p className="delete-post-error">{deletePostErrorPrompt}</p>}
+
+                    <div className={'delete-post-buttons-wrapper'}>
+                        <button className="delete-post-button-no"
+                                onClick={() => setShowDeletePostPopup(false)}>No
+                        </button>
+                        <button className="delete-post-button-yes" data-testid="delete-post-button-yes"
+                                id="delete-post-button-yes"
+                                onClick={() => {onDeletePost(post.post_id, postViewer.id);}}>Yes
+                        </button>
+                    </div>
+                </div>
+            </animated.div>
         </div>
     );
 }

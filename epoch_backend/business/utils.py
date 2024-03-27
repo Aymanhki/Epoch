@@ -365,6 +365,6 @@ def get_comment_dict(curr_comment, username, profile_picture_url, profile_pictur
     comment_dict["profile_picture_name"] = profile_picture_name
     comment_dict["username"] = username
     comment_dict["comment"] = curr_comment[3]
-    comment_dict["created_at"] = curr_comment[4].strftime("%Y-%m-%d %H:%M:%S")
+    comment_dict["created_at"] = curr_comment[4].isoformat()
 
     return comment_dict

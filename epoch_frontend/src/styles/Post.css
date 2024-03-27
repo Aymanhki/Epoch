@@ -48,8 +48,7 @@
     align-content: center;
     justify-content: center;
     width: 100%;
-    max-height: 50rem;
-    max-height: 500px; 
+    max-height: 30rem;
     object-fit: contain;
     overflow: hidden;
     cursor: pointer;
@@ -69,7 +68,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
+    z-index: 1000;
 }
 
 .full-size-image {
@@ -323,6 +322,75 @@
     cursor: pointer;
 }
 
+.delete-post-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    z-index: 1000;
+}
+
+.delete-post-modal {
+    position: absolute;
+    border-radius: 1rem;
+    padding: 1rem;
+    background-color: white;
+    width: 30%;
+    max-height: 50%;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.delete-post-header {
+
+}
+
+.delete-post-error {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.delete-post-buttons-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.delete-post-button-no {
+    padding: 0.5rem;
+    border-radius: 10%;
+    cursor: pointer;
+    background-color: white;
+    color: green;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    border: none;
+}
+
+.delete-post-button-yes {
+    padding: 0.5rem;
+    border-radius: 10%;
+    cursor: pointer;
+    background-color: white;
+    color: red;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+    border: none;
+}
+
+.delete-post-button-no:hover {
+    background-color: green;
+    color: white;
+}
+
+.delete-post-button-yes:hover {
+    background-color: red;
+    color: white;
+}
+
 
 @media (max-width: 768px) {
     .post-header {
@@ -435,6 +503,10 @@
         justify-content: center;
         gap: 0.5rem;
     }
+
+    .delete-post-modal {
+        width: 90%;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -492,6 +564,11 @@
     .favorited-by-count:hover {
         background: inherit;
         border: 0 solid #444444;
+        color: white;
+    }
+
+    .delete-post-modal {
+        background-color: #333333;
         color: white;
     }
 
