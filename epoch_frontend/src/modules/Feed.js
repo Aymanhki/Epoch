@@ -68,8 +68,6 @@ export default function Feed({
             setFeedPosts(posts.sort((a, b) => new Date(b.release) - new Date(a.release)));
             setIsLoading(false);
         }
-        console.log(feedPosts);
-        setFeedPosts(feedPosts);
         setRefreshFeed(false);
     }, [feedUserId, feedUsername, currentUser, isInProfile, posts, setRefreshFeed]);
 
