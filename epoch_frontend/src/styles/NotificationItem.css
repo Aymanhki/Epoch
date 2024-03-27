@@ -125,6 +125,10 @@
 
 }
 
+.notification-mention-icon {
+
+}
+
 @media (prefers-color-scheme: dark) {
     .notification-item-container.notification-read {
         background: #333;

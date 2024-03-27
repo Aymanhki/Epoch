@@ -181,26 +181,92 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
         setShowFullCaption(false);
     }
 
-    const renderCaptionWithHashtags = (toRender) => {
+    const renderCaptionWithHighlights = (toRender) => {
+        if (!toRender) {
+            return null;
+        }
 
-        if(!toRender) {return;}
-        const words = toRender.split(' ');
-        return words.map((word, index) => {
-            if (word.startsWith('#') && word.length > 1) {
-                const hashtag = word.slice(1);
+        let toReturn = toRender;
 
-                return (
-                    <>
-                      <span key={index} className="hashtag" onClick={() => navigate(`/hashtags/#${hashtag}`)}>
-                        {word}
-                      </span>
-                        {' '}
-                    </>
-                );
-            } else {
-                return word + ' ';
+        let usernameReg = /@([a-zA-Z0-9_]+)/g;
+        let hashtagReg = /#([a-zA-Z0-9_]+)/g;
+        let urlReg = /https?:\/\/[^\s]+/g;
+        let allReg = /(@[a-zA-Z][a-zA-Z0-9_]*)|(#([a-zA-Z][a-zA-Z0-9_]*))|(https?:\/\/[^\s]+)/g;
+
+        if (!toReturn.match(allReg)) {
+            return <span>{toReturn}</span>;
+        }
+
+        toReturn = toReturn.split(allReg);
+        console.log(toReturn);
+        toReturn = toReturn.map((word, index) => {
+            if (word) {
+                if (word.match(usernameReg)) {
+                    return <span key={index} className={'mention'}
+                                 onClick={() => navigate(`/${word.substring(1)}`)}>{word} </span>;
+                } else if (word.match(hashtagReg)) {
+                    return <span key={index} className={'hashtag'}
+                                 onClick={() => navigate(`/epoch/hashtags/${word.substring(1)}`)}>{word} </span>;
+                } else if (word.match(urlReg)) {
+                    return <span key={index}><a href={word} target="_blank" rel="noreferrer">{word} </a></span>;
+                } else {
+                    return <span key={index}>{word} </span>;
+                }
+            }
+            else
+            {
+                return word;
             }
         });
+
+
+        return toReturn;
+    };
+
+
+    const gotUsersMentioned = () => {
+        const usernames = [];
+        const regex = /@([a-zA-Z0-9_]+)/g;
+        const matches = post.caption.match(regex);
+
+        if (matches) {
+            for (let i = 0; i < matches.length; i++) {
+                usernames.push(matches[i].substring(1));
+            }
+        }
+
+        return usernames;
+    }
+
+    const isPostVisible = () => {
+        const usernames = gotUsersMentioned();
+        let visible = false;
+
+        if (postIsInThePast() || postAdmin) {
+            if (!deleted) {
+                if ( (isInFavorites && favorited) || !isInFavorites) {
+                    if (usernames.length > 0) {
+                        for (let i = 0; i < usernames.length && !visible; i++) {
+                            if (postViewer.username === usernames[i]) {
+                                visible = true;
+                            }
+                        }
+
+                        if (!visible)
+                        {
+                            visible = postAdmin;
+                        }
+                    }
+                    else
+                    {
+                        visible = true;
+                    }
+                }
+            }
+        }
+
+
+        return visible;
     }
 
     const onDeletePost = (postId, userId) => {
@@ -570,7 +636,7 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
 
     return (
         <div className={`post ${showFullCaption ? 'post-expanded' : ''}`}
-             style={{display: (((postIsInThePast() || postAdmin) && (!deleted) && ((isInFavorites && favorited) || !isInFavorites))) ? 'block' : 'none'}}>
+             style={{display: ( isPostVisible() ) ? 'block' : 'none'}}>
             <div className="post-header">
                 <div className="post-header-left">
                     <div className={'profile-photo-container'}
@@ -603,9 +669,9 @@ export default function Post({post, postViewer, refreshFeed, setRefreshFeed, isI
             <div className="post-body">
                 {post.caption && post.caption.length > 0 && (
                     <p className={"post-caption"}>
-                        {(showFullCaption && post.caption) ? renderCaptionWithHashtags(post.caption) : (
+                        {(showFullCaption && post.caption) ? renderCaptionWithHighlights(post.caption) : (
                             <>
-                                {renderCaptionWithHashtags(truncatedCaption)}
+                                {renderCaptionWithHighlights(truncatedCaption)}
                                 <span className="see-more" onClick={toggleCaptionVisibility}>
                                     See more
                                 </span>

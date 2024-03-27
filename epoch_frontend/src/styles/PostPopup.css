@@ -138,6 +138,24 @@
     justify-content: center;
 }
 
+.hashtag {
+    color: darkblue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.link {
+    color: darkblue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.mention {
+    color: darkblue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .media-preview {
     width: 100%;
     max-height: 14rem;
@@ -295,5 +313,17 @@
 
     .uploaded-file-preview {
         border: 0.1rem solid #ffffff;
+    }
+
+    .hashtag {
+        color: lightblue;
+    }
+
+    .link {
+        color: lightblue;
+    }
+
+    .mention {
+        color: lightblue;
     }
 }

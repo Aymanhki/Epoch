@@ -6,7 +6,9 @@ from ...business.utils import get_db_connection, get_posts_media, get_profile_in
 import base64
 import json
 import datetime
+import re
 
+username_reg = re.compile(r'@([a-zA-Z0-9_]+)')
 
 class epoch_post_persistence(post_persistence):
     def __init__(self):
@@ -27,8 +29,29 @@ class epoch_post_persistence(post_persistence):
         post_id = cursor.fetchone()[0]
 
         connection.commit()
-        connection.close()
 
+        if new_post.caption:
+            username_reg = re.compile(r'@([a-zA-Z0-9_]+)')
+            words = re.split(username_reg, new_post.caption)
+            mentioned = words
+
+
+            if len(mentioned) > 0:
+                cursor.execute("SELECT user_id, username, name FROM users WHERE username IN %s", (tuple(mentioned),))
+                mentioned_users = cursor.fetchall()
+                cursor.execute("SELECT username, name FROM users WHERE user_id=%s", (new_post.user_id,))
+                user_info = cursor.fetchone()
+
+                for mentioned_user in mentioned_users:
+                    cursor.execute("SELECT * FROM notifications WHERE user_id=%s AND target_id=%s AND type=%s", (mentioned_user[0], post_id, "mention"))
+                    mentioned_notification = cursor.fetchone()
+
+                    if not mentioned_notification:
+                        cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (mentioned_user[0], "mention", post_id, user_info[0], user_info[1]))
+                        connection.commit()
+
+
+        connection.close()
         return post_id
 
     def get_post(self, post_id: int):
@@ -50,6 +73,7 @@ class epoch_post_persistence(post_persistence):
     def remove_post(self, post_id: int):
         connection = get_db_connection()
         cursor = connection.cursor()
+        cursor.execute("DELETE FROM notifications WHERE target_id=%s AND type=%s", (post_id, "mention"))
         cursor.execute("DELETE FROM favorites WHERE post_id=%s", (post_id,))
         cursor.execute("DELETE FROM comments WHERE post_id=%s", (post_id,))
         cursor.execute("DELETE FROM votes WHERE post_id=%s", (post_id,))
@@ -134,6 +158,7 @@ class epoch_post_persistence(post_persistence):
         cursor.execute("SELECT * FROM posts WHERE post_id=%s", (post_id,))
         old_post = cursor.fetchone()
         old_post_media_id = old_post[2]
+        old_post_caption = old_post[3]
 
         if new_post.media_id is not None and new_post.media_id != -1:
             if (old_post_media_id is not None and new_post.media_id != old_post_media_id) or old_post_media_id is None:
@@ -149,8 +174,47 @@ class epoch_post_persistence(post_persistence):
             else:
                 cursor.execute("UPDATE posts SET caption=%s, release=%s WHERE post_id=%s",
                                (new_post.caption, new_post.release, post_id))
-
         connection.commit()
+
+        # if the old caption had a mention that was removed in the new caption, remove the notification
+        # if the new caption has a mention that was not in the old caption, add the notification
+
+
+        new_mentioned = []
+
+        if new_post.caption:
+            new_username_reg = re.compile(r'@([a-zA-Z0-9_]+)')
+            new_words = re.split(new_username_reg, new_post.caption)
+            new_mentioned = new_words
+
+
+            if len(new_mentioned) > 0:
+                cursor.execute("SELECT user_id, username, name FROM users WHERE username IN %s", (tuple(new_mentioned),))
+                mentioned_users = cursor.fetchall()
+                cursor.execute("SELECT username, name FROM users WHERE user_id=%s", (new_post.user_id,))
+                user_info = cursor.fetchone()
+
+                for mentioned_user in mentioned_users:
+                    cursor.execute("SELECT * FROM notifications WHERE user_id=%s AND target_id=%s AND type=%s", (mentioned_user[0], post_id, "mention"))
+                    mentioned_notification = cursor.fetchone()
+
+                    if not mentioned_notification:
+                        cursor.execute("INSERT INTO notifications (user_id, type, target_id, target_username, target_name) VALUES (%s, %s, %s, %s, %s)", (mentioned_user[0], "mention", post_id, user_info[0], user_info[1]))
+                        connection.commit()
+
+        if old_post_caption:
+            old_username_reg = re.compile(r'@([a-zA-Z0-9_]+)')
+            old_words = re.split(old_username_reg, old_post_caption)
+            old_mentioned = old_words
+
+            for old_mention in old_mentioned:
+                if old_mention not in new_mentioned:
+                    cursor.execute("SELECT user_id FROM users WHERE username=%s", (old_mention,))
+                    mentioned_user = cursor.fetchone()
+                    cursor.execute("DELETE FROM notifications WHERE user_id=%s AND target_id=%s AND type=%s", (mentioned_user[0], post_id, "mention"))
+                    connection.commit()
+
+
         connection.close()
 
     def get_followed_users_posts(self, user_id: int):
