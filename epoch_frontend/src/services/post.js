@@ -66,13 +66,15 @@ function newPost(postObject) {
     });
 }
 
-function getAllUserPosts(userId) {
+function getAllUserPosts(userId, offset, limit) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
         xhr.open('GET', `${serverUrl}/api/user/posts/`, true);
         xhr.setRequestHeader('User-Id', userId);
+        xhr.setRequestHeader('Offset', offset);
+        xhr.setRequestHeader('Limit', limit);
         xhr.withCredentials = true;
         xhr.timeout = 10000000;
 
@@ -106,13 +108,15 @@ function getAllUserPosts(userId) {
     });
 }
 
-function getAllHashtagPosts(hashtag) {
+function getAllHashtagPosts(hashtag, offset, limit) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
         xhr.open('GET', `${serverUrl}/api/post/hashtag/`, true);
         xhr.setRequestHeader('Hashtag', hashtag);
+        xhr.setRequestHeader('Offset', offset);
+        xhr.setRequestHeader('Limit', limit);
         xhr.withCredentials = true;
         xhr.timeout = 10000000;
 
@@ -240,13 +244,15 @@ function updatePost(newPostObject, userId) {
     });
 }
 
-function getFollowedUsersPost(userId) {
+function getFollowedUsersPost(userId, offset, limit) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
         xhr.open('GET', `${serverUrl}/api/followed/posts/`, true);
         xhr.setRequestHeader('User-Id', userId);
+        xhr.setRequestHeader('Offset', offset);
+        xhr.setRequestHeader('Limit', limit);
         xhr.withCredentials = true;
         xhr.timeout = 10000000;
 
@@ -363,13 +369,15 @@ function removeFavoritePost(postId, userId) {
     });
 }
 
-function getFavoritePosts(userId) {
+function getFavoritePosts(userId, offset, limit) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         const currentLocation = window.location;
         const serverUrl = `${currentLocation.protocol}//${currentLocation.hostname}:8080`;
         xhr.open('GET', `${serverUrl}/api/favorite/posts/`, true);
         xhr.setRequestHeader('User-Id', userId);
+        xhr.setRequestHeader('Offset', offset);
+        xhr.setRequestHeader('Limit', limit);
         xhr.withCredentials = true;
         xhr.timeout = 10000000;
 

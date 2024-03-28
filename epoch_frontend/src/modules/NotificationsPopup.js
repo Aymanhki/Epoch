@@ -105,7 +105,7 @@ function NotificationsPopup ({showNotifications, setShowNotifications, newUnread
         if (!showNotifications && !isLoading ) {
             const interval = setInterval(() => {
                 getNotifications();
-            }, 10000);
+            }, 90000000);
 
             return () => clearInterval(interval);
         }
