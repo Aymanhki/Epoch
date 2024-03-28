@@ -29,14 +29,16 @@
 }
 
 .feed-loading {
-display: flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    padding-top: 3rem;
+    margin-top: 3rem;
+    padding-bottom: 3rem;
     height: 100%;
-    padding: 1rem;
-    margin: 1rem;
+    width: 100%;
+    background: #333333;
 }
 
 .new-post-button {
@@ -80,6 +82,48 @@ display: flex;
     margin: 1rem;
 }
 
+.load-more-top-buttons-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+}
+
+.load-previous-posts-button {
+    background-color: #1a2a6c;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+}
+
+.reset-feed-button {
+    background-color: #1a2a6c;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+}
+
+.reset-feed-button:hover {
+    background-color: white;
+    color: #1a2a6c;
+}
+
+.load-previous-posts-button:hover {
+    background-color: white;
+    color: #1a2a6c;
+}
+
 @media (max-width: 1024px) {
     .new-post-button {
         right: calc(10%);
@@ -98,4 +142,25 @@ display: flex;
         background-color: #ffffff;
         color: #222222;
     }
+
+    .load-previous-posts-button {
+        background-color: white;
+        color: black;
+    }
+
+    .reset-feed-button {
+        background-color: white;
+        color: black;
+    }
+
+    .load-previous-posts-button:hover {
+        background-color: #333333;
+        color: white;
+    }
+
+    .reset-feed-button:hover {
+        background-color: #333333;
+        color: white;
+    }
+
 }
