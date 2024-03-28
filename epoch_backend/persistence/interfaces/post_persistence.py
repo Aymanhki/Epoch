@@ -20,15 +20,15 @@ class post_persistence(ABC):
         pass
 
     @abstractmethod
-    def get_all_user_posts(self, user_id: int):
+    def get_all_user_posts(self, user_id: int, offset: int, limit: int):
         pass
     
     @abstractmethod
-    def get_all_hashtag_posts(self, hashtag: str):
+    def get_all_hashtag_posts(self, hashtag: str, offset: int, limit: int):
         pass
     
     @abstractmethod
-    def get_followed_users_posts(self, user_id: int):
+    def get_followed_users_posts(self, user_id: int, offset: int, limit: int):
         pass
 
     @abstractmethod
@@ -40,7 +40,7 @@ class post_persistence(ABC):
         pass
 
     @abstractmethod
-    def get_favorites(self, user_id: int):
+    def get_favorites(self, user_id: int, offset: int, limit: int):
         pass
     
     @abstractmethod

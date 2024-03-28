@@ -12,7 +12,6 @@ import PostPopup from '../modules/PostPopup';
 
 function Hashtag() {
     const location = useLocation();
-    const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [refreshFeed, setRefreshFeed] = useState(true);
     const {user, updateUser} = useContext(UserContext);
@@ -20,38 +19,19 @@ function Hashtag() {
     const [hashtagName, setHashtagName] = useState(location.pathname.split('/hashtags/')[1]);
     const [hashtag, setHashtag] = useState(location.hash ? location.hash : '#' + hashtagName);
 
-    const updatePosts = React.useCallback(() => {
-        getAllHashtagPosts(hashtag)
-            .then((newPosts) => {
-                setPosts(newPosts);
-                setIsLoading(false);
-                setRefreshFeed(false);
-            })
-            .catch((error) => {
-                console.log(error);
-                setIsLoading(false);
-                setRefreshFeed(false);
-            });
-    }, [hashtag]);
-
     useEffect(() => {
         if (!user) {
             getUserInfo()
                 .then((data) => {
                     updateUser(data);
+                    setIsLoading(false);
                 })
                 .catch((error) => {
                     updateUser(null);
+                    setIsLoading(false);
                 });
         }
     }, [updateUser, user, setIsLoading]);
-
-    useEffect(() => {
-        if (refreshFeed) {
-            setIsLoading(true);
-            updatePosts();
-        }
-    }, [updatePosts, refreshFeed]);
 
     useEffect(() => {
         const newHashtag = location.hash ? location.hash : '#' + hashtagName;
@@ -59,10 +39,10 @@ function Hashtag() {
         if (hashtag !== newHashtag) {
             setRefreshFeed(true);
             setIsLoading(true);
-            setPosts([]);
             setHashtag(newHashtag);
             setHashtagName(location.pathname.split('/hashtags/')[1]);
         }
+
     }, [location.pathname, location.hash, hashtag, hashtagName]);
 
     return (
@@ -79,12 +59,12 @@ function Hashtag() {
                                 <Feed feedUsername={user.username} feedUserId={user.id} isInProfile={false}
                                       currentUser={user} showNewPostPopup={showNewPostPopup}
                                       setShowNewPostPopup={setShowNewPostPopup} refreshFeed={refreshFeed}
-                                      setRefreshFeed={setRefreshFeed} posts={posts} isInFavorites={false}/>
+                                      setRefreshFeed={setRefreshFeed} posts={null} isInFavorites={false} hashtag={hashtag} isInHashtags={true}/>
                             ) : (
                                 <Feed feedUsername={null} feedUserId={null} isInProfile={false} currentUser={null}
                                       showNewPostPopup={showNewPostPopup} setShowNewPostPopup={setShowNewPostPopup}
                                       refreshFeed={refreshFeed} setRefreshFeed={setRefreshFeed} viewingOnly={true}
-                                      posts={posts} isInFavorites={false}/>
+                                      posts={null} isInFavorites={false} isInHashtags={true} hashtag={hashtag}/>
                             )}
                         </div>
                     </div>

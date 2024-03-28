@@ -8,7 +8,6 @@ import json
 import datetime
 import re
 
-username_reg = re.compile(r'@([a-zA-Z0-9_]+)')
 
 class epoch_post_persistence(post_persistence):
     def __init__(self):
@@ -114,10 +113,10 @@ class epoch_post_persistence(post_persistence):
 
         connection.close()
 
-    def get_all_user_posts(self, user_id: int):
+    def get_all_user_posts(self, user_id: int, offset: int, limit: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM posts WHERE user_id=%s", (user_id,))
+        cursor.execute("SELECT * FROM posts WHERE user_id=%s ORDER BY created_at DESC LIMIT %s OFFSET %s", (user_id, limit, offset))
         posts = cursor.fetchall()
         posts_media = get_posts_media(posts)
         username, profile_picture_url, profile_picture_type, profile_picture_name = get_profile_info(user_id)
@@ -132,11 +131,11 @@ class epoch_post_persistence(post_persistence):
         connection.close()
         return all_posts
 
-    def get_all_hashtag_posts(self, hashtag: str):
+    def get_all_hashtag_posts(self, hashtag: str, offset: int, limit: int):
         connection = get_db_connection()
         cursor = connection.cursor()
         hashtag_pattern = f"%{hashtag}"
-        cursor.execute("SELECT * FROM posts WHERE caption LIKE %s", (hashtag_pattern,))
+        cursor.execute("SELECT * FROM posts WHERE caption LIKE %s ORDER BY created_at DESC LIMIT %s OFFSET %s", (hashtag_pattern, limit, offset))
         posts = cursor.fetchall()
         posts_media = get_posts_media(posts)
         posts_users_info = get_posts_users_info(posts)
@@ -219,12 +218,10 @@ class epoch_post_persistence(post_persistence):
 
         connection.close()
 
-    def get_followed_users_posts(self, user_id: int):
+    def get_followed_users_posts(self, user_id: int, offset: int, limit: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute(
-            "SELECT * FROM posts WHERE user_id = %s OR user_id IN (SELECT following_id FROM following WHERE user_id = %s)",
-            (user_id, user_id))
+        cursor.execute("SELECT * FROM posts WHERE user_id IN (SELECT following_id FROM following WHERE user_id = %s) ORDER BY created_at DESC LIMIT %s OFFSET %s", (user_id, limit, offset))
         posts = cursor.fetchall()
         posts_media = get_posts_media(posts)
         posts_users_info = get_posts_users_info(posts)
@@ -272,11 +269,10 @@ class epoch_post_persistence(post_persistence):
 
         connection.close()
 
-    def get_favorites(self, user_id: int):
+    def get_favorites(self, user_id: int, offset: int, limit: int):
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM posts WHERE post_id IN (SELECT post_id FROM favorites WHERE user_id=%s)",
-                       (user_id,))
+        cursor.execute("SELECT * FROM posts WHERE post_id IN (SELECT post_id FROM favorites WHERE user_id=%s) ORDER BY created_at DESC LIMIT %s OFFSET %s", (user_id, limit, offset))
         posts = cursor.fetchall()
         posts_media = get_posts_media(posts)
         posts_users_info = get_posts_users_info(posts)

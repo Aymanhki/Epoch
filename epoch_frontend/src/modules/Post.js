@@ -211,11 +211,14 @@ const renderCaptionWithHighlights = (toRender) => {
     const gotUsersMentioned = () => {
         const usernames = [];
         const regex = /@([a-zA-Z0-9_]+)/g;
-        const matches = post.caption.match(regex);
 
-        if (matches) {
-            for (let i = 0; i < matches.length; i++) {
-                usernames.push(matches[i].substring(1));
+        if (post.caption) {
+            const matches = post.caption.match(regex);
+
+            if (matches) {
+                for (let i = 0; i < matches.length; i++) {
+                    usernames.push(matches[i].substring(1));
+                }
             }
         }
 
