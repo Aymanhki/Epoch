@@ -1,5 +1,5 @@
 import React from 'react'
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import '../styles/PostPopup.css';
 import SmartMedia from "./SmartMedia";
 import {newPost, updatePost} from "../services/post.js"
@@ -57,10 +57,11 @@ export default function PostPopup({
     const [editPostFileRemoved, setEditPostFileRemoved] = useState(false);
     const checkBoxRef = React.createRef();
     const navigate = useNavigate();
+    const fileInputRef = useRef()
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
-
+        
         if (selectedFile) {
             if (!allowedFileTypes.includes(selectedFile.type.split('/')[1]) ) {
                 setErrorMessage("Unsupported file type: \""+ (selectedFile.type.split('/')[1]) +"\". Try: .jpg, .jpeg, .png, .mp4, .mp3, .gif, .webm, .mov, .heic, .m4a");
@@ -84,6 +85,7 @@ export default function PostPopup({
                 setError(false);
             }
         }
+        fileInputRef.current.value = null;
     };
 
     const {transform: inTransform, opacity: inOpacity} = useSpring({
@@ -153,12 +155,11 @@ export default function PostPopup({
         if (!posting) {
             setUploadedFile(null);
             setHasUploadedFile(false);
-
+            
             if (editPost && postFile) {
                 setEditPostFileRemoved(true);
             }
         }
-        document.getElementById("file").value = null;
     };
 
     const handlePost = () => {
@@ -360,6 +361,7 @@ export default function PostPopup({
                                     name="file"
                                     id="file"
                                     disabled={hasUploadedFile || posting}
+                                    ref = {fileInputRef}
                                 />
 
                                 {uploadedFile ? (<SmartMedia file={uploadedFile} className={'media-preview'}/>) :
